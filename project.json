@@ -1,0 +1,32 @@
+{
+  "project": {
+    "name": "recipt",
+    "description": "Receipt processing and management system",
+    "version": "1.0.0",
+    "repository": {
+      "type": "git",
+      "url": "http://feelinglucky.synology.me:3052/jopark/recipt.git",
+      "origin": "http://feelinglucky.synology.me:3052/jopark/recipt.git"
+    },
+    "git": {
+      "remote": {
+        "origin": "http://feelinglucky.synology.me:3052/jopark/recipt.git"
+      },
+      "branch": {
+        "main": "main",
+        "develop": "develop"
+      },
+      "workflow": {
+        "commit_convention": "conventional_commits",
+        "branch_strategy": "git_flow"
+      }
+    },
+    "development": {
+      "environment": "local",
+      "docs_path": "./docs",
+      "config_files": [
+        "project.json"
+      ]
+    }
+  }
+}
