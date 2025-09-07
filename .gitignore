@@ -169,6 +169,8 @@ artifacts/
 # Docker
 *.tar
 docker-compose.override.yml
+docker-compose.*.backup
+docker/volumes/
 
 # Project specific
 project_data/
