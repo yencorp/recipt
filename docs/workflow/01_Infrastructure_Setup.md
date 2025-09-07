@@ -16,10 +16,10 @@
 **설명**: Docker Compose 기반 마이크로서비스 아키텍처 설계  
 
 **세부 작업**:
-- [ ] 컨테이너 구성 설계 (frontend, backend, database, ocr-service)
-- [ ] 네트워크 구성 계획
-- [ ] 볼륨 마운트 전략 수립
-- [ ] 포트 할당 계획
+- [x] 컨테이너 구성 설계 (frontend, backend, database, ocr-service)
+- [x] 네트워크 구성 계획
+- [x] 볼륨 마운트 전략 수립
+- [x] 포트 할당 계획
 
 **완료 기준**:
 - docker-compose.dev.yml 설계 문서 작성
@@ -34,10 +34,10 @@
 **담당자**: DevOps 엔지니어 + 백엔드 리드  
 
 **세부 작업**:
-- [ ] 모노레포 vs 멀티레포 결정
-- [ ] 각 서비스별 디렉터리 구조 설계
-- [ ] 공통 설정 파일 위치 결정
-- [ ] Docker 관련 파일 배치 계획
+- [x] 모노레포 vs 멀티레포 결정
+- [x] 각 서비스별 디렉터리 구조 설계
+- [x] 공통 설정 파일 위치 결정
+- [x] Docker 관련 파일 배치 계획
 
 **완료 기준**:
 - 프로젝트 구조 문서 작성
@@ -51,10 +51,10 @@
 **담당자**: DevOps 엔지니어  
 
 **세부 작업**:
-- [ ] Git 브랜치 전략 수립 (Git Flow vs GitHub Flow)
-- [ ] GitHub Actions 워크플로우 설계
-- [ ] 테스트 자동화 전략
-- [ ] 배포 단계 정의
+- [x] Git 브랜치 전략 수립 (Git Flow vs GitHub Flow)
+- [x] GitHub Actions 워크플로우 설계
+- [x] 테스트 자동화 전략
+- [x] 배포 단계 정의
 
 **완료 기준**:
 - CI/CD 파이프라인 문서 작성
@@ -72,10 +72,10 @@
 **담당자**: DevOps 엔지니어  
 
 **세부 작업**:
-- [ ] docker-compose.dev.yml 작성
-- [ ] PostgreSQL 컨테이너 설정
-- [ ] Redis 캐시 컨테이너 설정
-- [ ] 네트워크 및 볼륨 설정
+- [x] docker-compose.dev.yml 작성
+- [x] PostgreSQL 컨테이너 설정
+- [x] Redis 캐시 컨테이너 설정
+- [x] 네트워크 및 볼륨 설정
 
 **완료 기준**:
 - 데이터베이스 컨테이너 정상 실행
@@ -90,10 +90,10 @@
 **담당자**: DevOps 엔지니어 + 백엔드 개발자  
 
 **세부 작업**:
-- [ ] NestJS 개발용 Dockerfile 작성
-- [ ] 환경 변수 설정 (.env.development)
-- [ ] 핫 리로드 설정
-- [ ] 볼륨 마운트 설정
+- [x] NestJS 개발용 Dockerfile 작성
+- [x] 환경 변수 설정 (.env.development)
+- [x] 핫 리로드 설정
+- [x] 볼륨 마운트 설정
 
 **완료 기준**:
 - 백엔드 컨테이너 정상 실행
@@ -108,10 +108,10 @@
 **담당자**: DevOps 엔지니어 + 프론트엔드 개발자  
 
 **세부 작업**:
-- [ ] React + VITE 개발용 Dockerfile 작성
-- [ ] 환경 변수 설정 (.env.development)
-- [ ] 핫 리로드 및 HMR 설정
-- [ ] 포트 포워딩 설정
+- [x] React + VITE 개발용 Dockerfile 작성
+- [x] 환경 변수 설정 (.env.development)
+- [x] 핫 리로드 및 HMR 설정
+- [x] 포트 포워딩 설정
 
 **완료 기준**:
 - 프론트엔드 컨테이너 정상 실행
@@ -126,10 +126,10 @@
 **담당자**: DevOps 엔지니어 + Python 개발자  
 
 **세부 작업**:
-- [ ] Python FastAPI 개발용 Dockerfile 작성
-- [ ] OCR 라이브러리 설치 스크립트
-- [ ] 환경 변수 설정
-- [ ] 파일 업로드 볼륨 설정
+- [x] Python FastAPI 개발용 Dockerfile 작성
+- [x] OCR 라이브러리 설치 스크립트
+- [x] 환경 변수 설정
+- [x] 파일 업로드 볼륨 설정
 
 **완료 기준**:
 - OCR 서비스 컨테이너 정상 실행

@@ -204,29 +204,20 @@ services:
     volumes:
       - ./apps/frontend:/app
       - /app/node_modules
-      - /app/.next
     depends_on:
       backend:
         condition: service_healthy
     networks:
-      - recipt-dev-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      - recipt-network
     
-    # Next.js 개발 환경 최적화 설정
+    # React + VITE 개발 환경 설정
     environment:
       NODE_ENV: development
-      NEXT_TELEMETRY_DISABLED: 1
+      VITE_API_URL: http://backend:8000/api
+      VITE_OCR_URL: http://ocr-service:8001/api
       
       # Timezone
       TZ: Asia/Seoul
-    
-    depends_on:
-      - backend
     
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
@@ -281,7 +272,7 @@ services:
       UPLOAD_DIR: /app/uploads
       PROCESSED_DIR: /app/processed
       MAX_FILE_SIZE: 10485760
-      ALLOWED_EXTENSIONS: jpg,jpeg,png,pdf
+      _ALLOWED_EXTENSIONS_RAW: jpg,jpeg,png,pdf
       MAX_CONCURRENT_PROCESSES: 5
       
       # Database Configuration (for ML model storage)

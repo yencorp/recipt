@@ -4,9 +4,10 @@ OCR 서비스 설정 관리
 """
 
 import os
-from typing import List
+from typing import List, Union
 from functools import lru_cache
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -26,7 +27,21 @@ class Settings(BaseSettings):
     # 파일 업로드 설정
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
     MAX_BATCH_SIZE: int = 10
-    ALLOWED_EXTENSIONS: List[str] = ["jpg", "jpeg", "png", "pdf"]
+    _ALLOWED_EXTENSIONS_RAW: Union[str, List[str]] = "jpg,jpeg,png,pdf"
+    
+    @property
+    def ALLOWED_EXTENSIONS(self) -> List[str]:
+        """Parse ALLOWED_EXTENSIONS from env var (comma-separated or JSON)"""
+        v = self._ALLOWED_EXTENSIONS_RAW
+        if isinstance(v, str):
+            try:
+                # Try parsing as JSON first
+                import json
+                return json.loads(v)
+            except (json.JSONDecodeError, ValueError):
+                # Fallback to comma-separated parsing
+                return [ext.strip() for ext in v.split(',') if ext.strip()]
+        return v
     
     # 이미지 처리 설정
     MAX_IMAGE_WIDTH: int = 2048
@@ -76,6 +91,7 @@ class Settings(BaseSettings):
         env_file = ".env.development"
         env_file_encoding = "utf-8"
         case_sensitive = True
+        extra = "ignore"  # 추가 환경변수 무시
 
 
 @lru_cache()
