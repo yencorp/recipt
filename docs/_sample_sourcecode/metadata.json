@@ -1,0 +1,7 @@
+{
+  "name": "AI 영수증 관리자",
+  "description": "AI를 사용하여 영수증을 스캔하고, 주요 정보를 추출하며, 프로젝트별로 비용을 정리하는 지능형 영수증 관리 애플리케이션입니다.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

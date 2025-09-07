@@ -1,0 +1,457 @@
+# =================================================================
+# Docker Compose - 개발환경 설정
+# 프로젝트: 광남동성당 청소년위원회 예결산 관리 시스템
+# 환경: Development
+# =================================================================
+
+version: '3.8'
+
+services:
+  # =================================================================
+  # Database Service - PostgreSQL 15
+  # =================================================================
+  database:
+    container_name: recipt-database-dev
+    image: postgres:15-alpine
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_DB: recipt_db
+      POSTGRES_USER: recipt
+      POSTGRES_PASSWORD: recipt123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+      TZ: Asia/Seoul
+    
+    ports:
+      - "5432:5432"
+    
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - ./database/backups:/backups
+    
+    networks:
+      - recipt-network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recipt -d recipt_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # =================================================================
+  # Redis Cache Service
+  # =================================================================
+  redis:
+    container_name: recipt-redis-dev
+    image: redis:7-alpine
+    restart: unless-stopped
+    
+    command: redis-server --appendonly yes --requirepass redis123
+    
+    environment:
+      TZ: Asia/Seoul
+    
+    ports:
+      - "6379:6379"
+    
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/etc/redis/redis.conf:ro
+    
+    networks:
+      - recipt-network
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  # =================================================================
+  # Backend Service - NestJS API
+  # =================================================================
+  backend:
+    container_name: recipt-backend-dev
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    
+    environment:
+      # Database Configuration
+      DATABASE_URL: postgresql://recipt:recipt123@database:5432/recipt_db
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: recipt_db
+      DATABASE_USER: recipt
+      DATABASE_PASSWORD: recipt123
+      
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis123
+      
+      # Application Configuration
+      NODE_ENV: development
+      PORT: 8000
+      API_PREFIX: api
+      
+      # JWT Configuration
+      JWT_SECRET: dev-jwt-secret-key-change-in-production
+      JWT_EXPIRES_IN: 7d
+      
+      # OCR Service Configuration
+      OCR_SERVICE_URL: http://ocr-service:8001
+      
+      # File Upload Configuration
+      MAX_FILE_SIZE: 10485760  # 10MB
+      UPLOAD_DIRECTORY: /app/uploads
+      
+      # Development Settings
+      ENABLE_CORS: true
+      LOG_LEVEL: debug
+      ENABLE_SWAGGER: true
+      
+      # Timezone
+      TZ: Asia/Seoul
+    
+    ports:
+      - "8000:8000"
+    
+    volumes:
+      - ./apps/backend:/app:delegated
+      - /app/node_modules
+      - backend_uploads:/app/uploads
+      - ./logs/backend:/app/logs
+    
+    networks:
+      - recipt-network
+    
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # =================================================================
+  # Frontend Service - React + VITE
+  # =================================================================
+  frontend:
+    container_name: recipt-frontend-dev
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    
+    environment:
+      # VITE Configuration
+      VITE_API_URL: http://localhost:8000
+      VITE_API_PREFIX: api
+      
+      # Application Configuration
+      VITE_APP_NAME: 광남동성당 예결산 관리 시스템
+      VITE_APP_VERSION: dev
+      VITE_NODE_ENV: development
+      
+      # Feature Flags
+      VITE_ENABLE_DEVTOOLS: true
+      VITE_ENABLE_MOCK_API: false
+      
+      # File Upload Configuration
+      VITE_MAX_FILE_SIZE: 10485760
+      VITE_ALLOWED_FILE_TYPES: jpg,jpeg,png,pdf
+      
+      # OCR Service Configuration
+      VITE_OCR_SERVICE_URL: http://localhost:8001
+      
+      # Development Settings
+      VITE_ENABLE_HMR: true
+      VITE_HOST: 0.0.0.0
+      VITE_PORT: 3000
+      
+      # Timezone
+      TZ: Asia/Seoul
+    
+    ports:
+      - "3000:3000"
+    
+    volumes:
+      - ./apps/frontend:/app:delegated
+      - /app/node_modules
+      - /app/dist
+    
+    networks:
+      - recipt-network
+    
+    depends_on:
+      - backend
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # =================================================================
+  # OCR Service - Python FastAPI
+  # =================================================================
+  ocr-service:
+    container_name: recipt-ocr-dev
+    build:
+      context: ./apps/ocr-service
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    
+    environment:
+      # Application Configuration
+      PYTHONPATH: /app
+      PYTHONUNBUFFERED: 1
+      ENVIRONMENT: development
+      
+      # FastAPI Configuration
+      HOST: 0.0.0.0
+      PORT: 8001
+      RELOAD: true
+      LOG_LEVEL: debug
+      
+      # OCR Configuration
+      TESSERACT_CMD: /usr/bin/tesseract
+      TESSERACT_LANG: kor+eng
+      OCR_CONFIDENCE_THRESHOLD: 60
+      
+      # File Processing Configuration
+      UPLOAD_DIR: /app/uploads
+      PROCESSED_DIR: /app/processed
+      MAX_FILE_SIZE: 10485760
+      ALLOWED_EXTENSIONS: jpg,jpeg,png,pdf
+      MAX_CONCURRENT_PROCESSES: 5
+      
+      # Database Configuration (for ML model storage)
+      DATABASE_URL: postgresql://recipt:recipt123@database:5432/recipt_db
+      
+      # ML Model Configuration
+      MODEL_PATH: /app/models
+      ENABLE_MODEL_CACHE: true
+      
+      # Performance Settings
+      WORKERS: 2
+      WORKER_CONNECTIONS: 1000
+      
+      # Timezone
+      TZ: Asia/Seoul
+    
+    ports:
+      - "8001:8001"
+    
+    volumes:
+      - ./apps/ocr-service:/app:delegated
+      - ocr_uploads:/app/uploads
+      - ocr_processed:/app/processed
+      - ocr_models:/app/models
+      - ./logs/ocr-service:/app/logs
+    
+    networks:
+      - recipt-network
+    
+    depends_on:
+      database:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 90s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15m"
+        max-file: "5"
+
+# =================================================================
+# Networks Configuration
+# =================================================================
+networks:
+  recipt-network:
+    driver: bridge
+    name: recipt-dev-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+    driver_opts:
+      com.docker.network.bridge.name: recipt-dev-br0
+      com.docker.network.driver.mtu: 1500
+
+# =================================================================
+# Volumes Configuration
+# =================================================================
+volumes:
+  # Database Volumes
+  postgres_data:
+    driver: local
+    name: recipt-postgres-dev-data
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/docker/volumes/postgres
+
+  redis_data:
+    driver: local
+    name: recipt-redis-dev-data
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/docker/volumes/redis
+
+  # Application Volumes
+  backend_uploads:
+    driver: local
+    name: recipt-backend-dev-uploads
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/docker/volumes/backend/uploads
+
+  ocr_uploads:
+    driver: local
+    name: recipt-ocr-dev-uploads
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/docker/volumes/ocr/uploads
+
+  ocr_processed:
+    driver: local
+    name: recipt-ocr-dev-processed
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/docker/volumes/ocr/processed
+
+  ocr_models:
+    driver: local
+    name: recipt-ocr-dev-models
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/docker/volumes/ocr/models
+
+# =================================================================
+# Development Environment Notes
+# =================================================================
+# 
+# 🚀 시작하기:
+#   docker-compose -f docker-compose.dev.yml up -d
+#
+# 📊 서비스 상태 확인:
+#   docker-compose -f docker-compose.dev.yml ps
+#
+# 📋 로그 확인:
+#   docker-compose -f docker-compose.dev.yml logs -f [service-name]
+#
+# 🔄 서비스 재시작:
+#   docker-compose -f docker-compose.dev.yml restart [service-name]
+#
+# 🛑 전체 중지:
+#   docker-compose -f docker-compose.dev.yml down
+#
+# 🧹 볼륨 포함 완전 정리:
+#   docker-compose -f docker-compose.dev.yml down -v
+#
+# 📡 접속 정보:
+#   - Frontend: http://localhost:3000
+#   - Backend API: http://localhost:8000
+#   - Backend Docs: http://localhost:8000/api/docs
+#   - OCR Service: http://localhost:8001
+#   - PostgreSQL: localhost:5432 (recipt/recipt123)
+#   - Redis: localhost:6379 (password: redis123)
+#
+# 🔧 개발 설정:
+#   - 모든 소스 코드는 실시간 동기화
+#   - Hot reload 활성화
+#   - 개발용 환경 변수 적용
+#   - 디버깅 모드 활성화
+# =================================================================
