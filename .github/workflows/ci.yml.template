@@ -1,0 +1,563 @@
+# =================================================================
+# CI/CD Pipeline - GitHub Actions Template
+# 프로젝트: 광남동성당 청소년위원회 예결산 관리 시스템
+# 설명: Pull Request 및 메인 브랜치 CI 워크플로우
+# =================================================================
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/**'
+      - 'docker-compose.*.yml'
+      - 'package*.json'
+  
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/**'
+      - 'docker-compose.*.yml'
+      - 'package*.json'
+
+# 동시 실행 제한 (같은 브랜치에서는 최신 워크플로우만 실행)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 환경 변수 설정
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # =================================================================
+  # Job 1: 코드 품질 검사
+  # =================================================================
+  code-quality:
+    name: 코드 품질 검사
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 전체 히스토리 (SonarQube용)
+
+      - name: 🟢 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🐍 Python 설정
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 의존성 설치 (Node.js)
+        run: |
+          npm ci
+          npm run build --workspace=packages/shared
+          npm run build --workspace=packages/ui-components
+
+      - name: 📦 의존성 설치 (Python)
+        run: |
+          cd apps/ocr-service
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: ✨ ESLint 검사
+        run: npm run lint
+
+      - name: 🎨 Prettier 검사
+        run: npm run format:check
+
+      - name: 🐍 Python 린트 검사
+        run: |
+          cd apps/ocr-service
+          flake8 app/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 app/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: 🔒 보안 취약점 검사 (Node.js)
+        run: npm audit --audit-level=high
+
+      - name: 🔒 보안 취약점 검사 (Python)
+        run: |
+          cd apps/ocr-service
+          safety check --json
+
+      - name: 📊 TypeScript 타입 검사
+        run: |
+          npm run type-check --workspace=apps/frontend
+          npm run type-check --workspace=apps/backend
+
+  # =================================================================
+  # Job 2: 단위 테스트
+  # =================================================================
+  unit-tests:
+    name: 단위 테스트
+    runs-on: ubuntu-latest
+    needs: code-quality
+
+    strategy:
+      matrix:
+        service: [frontend, backend, ocr-service]
+        include:
+          - service: frontend
+            test-command: 'npm run test:unit --workspace=apps/frontend'
+            coverage-path: 'apps/frontend/coverage'
+          - service: backend
+            test-command: 'npm run test:unit --workspace=apps/backend'
+            coverage-path: 'apps/backend/coverage'
+          - service: ocr-service
+            test-command: 'cd apps/ocr-service && python -m pytest --cov=app --cov-report=xml'
+            coverage-path: 'apps/ocr-service/coverage.xml'
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 설정
+        if: matrix.service != 'ocr-service'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🐍 Python 설정
+        if: matrix.service == 'ocr-service'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 의존성 설치
+        run: |
+          if [ "${{ matrix.service }}" = "ocr-service" ]; then
+            cd apps/ocr-service
+            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
+          else
+            npm ci
+            npm run build --workspace=packages/shared
+          fi
+
+      - name: 🧪 단위 테스트 실행
+        run: ${{ matrix.test-command }}
+
+      - name: 📊 테스트 커버리지 업로드
+        uses: codecov/codecov-action@v3
+        with:
+          file: ${{ matrix.coverage-path }}
+          flags: ${{ matrix.service }}
+          name: ${{ matrix.service }}-coverage
+
+  # =================================================================
+  # Job 3: 통합 테스트
+  # =================================================================
+  integration-tests:
+    name: 통합 테스트
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: recipt_test
+          POSTGRES_USER: recipt_test
+          POSTGRES_PASSWORD: test123
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🐍 Python 설정
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 의존성 설치
+        run: |
+          npm ci
+          npm run build --workspace=packages/shared
+          npm run build --workspace=packages/database
+          cd apps/ocr-service && pip install -r requirements.txt
+
+      - name: 🗃️ 데이터베이스 마이그레이션
+        run: |
+          npm run migration:run --workspace=apps/backend
+        env:
+          DATABASE_URL: postgresql://recipt_test:test123@localhost:5432/recipt_test
+
+      - name: 🧪 백엔드 통합 테스트
+        run: npm run test:integration --workspace=apps/backend
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://recipt_test:test123@localhost:5432/recipt_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret
+
+      - name: 🧪 OCR 서비스 통합 테스트
+        run: |
+          cd apps/ocr-service
+          python -m pytest tests/integration/ -v
+        env:
+          DATABASE_URL: postgresql://recipt_test:test123@localhost:5432/recipt_test
+
+  # =================================================================
+  # Job 4: E2E 테스트 (develop/main 브랜치만)
+  # =================================================================
+  e2e-tests:
+    name: E2E 테스트
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🐍 Python 설정
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 의존성 설치
+        run: |
+          npm ci
+          cd apps/ocr-service && pip install -r requirements.txt
+
+      - name: 🎭 Playwright 설치
+        run: npx playwright install --with-deps
+
+      - name: 🐳 Docker Compose 환경 시작
+        run: |
+          docker-compose -f docker-compose.test.yml up -d
+          sleep 30  # 서비스 시작 대기
+
+      - name: 🏥 서비스 헬스체크
+        run: |
+          curl -f http://localhost:3000 || exit 1
+          curl -f http://localhost:8000/health || exit 1
+          curl -f http://localhost:8001/health || exit 1
+
+      - name: 🧪 E2E 테스트 실행
+        run: npx playwright test
+        env:
+          BASE_URL: http://localhost:3000
+          API_URL: http://localhost:8000
+
+      - name: 📸 테스트 실패 스크린샷 업로드
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 🐳 Docker Compose 정리
+        if: always()
+        run: docker-compose -f docker-compose.test.yml down -v
+
+  # =================================================================
+  # Job 5: 빌드 테스트
+  # =================================================================
+  build-test:
+    name: 빌드 테스트
+    runs-on: ubuntu-latest
+    needs: code-quality
+
+    strategy:
+      matrix:
+        service: [frontend, backend, ocr-service]
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 설정
+        if: matrix.service != 'ocr-service'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🐍 Python 설정
+        if: matrix.service == 'ocr-service'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 의존성 설치
+        run: |
+          if [ "${{ matrix.service }}" = "ocr-service" ]; then
+            cd apps/ocr-service
+            pip install -r requirements.txt
+          else
+            npm ci
+            npm run build --workspace=packages/shared
+          fi
+
+      - name: 🏗️ 프로덕션 빌드
+        run: |
+          if [ "${{ matrix.service }}" = "frontend" ]; then
+            npm run build --workspace=apps/frontend
+          elif [ "${{ matrix.service }}" = "backend" ]; then
+            npm run build --workspace=apps/backend
+          else
+            echo "OCR Service는 런타임 서비스이므로 별도 빌드 불필요"
+          fi
+
+      - name: 🐳 Docker 이미지 빌드 테스트
+        run: |
+          docker build -f apps/${{ matrix.service }}/Dockerfile.dev apps/${{ matrix.service }} -t recipt-${{ matrix.service }}:test
+          docker run --rm recipt-${{ matrix.service }}:test echo "빌드 성공"
+
+  # =================================================================
+  # Job 6: 보안 검사
+  # =================================================================
+  security-scan:
+    name: 보안 검사
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 CodeQL 분석 초기화
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, python
+
+      - name: 🔍 CodeQL 분석 실행
+        uses: github/codeql-action/analyze@v2
+
+      - name: 🐳 Docker 이미지 보안 스캔 (Trivy)
+        run: |
+          docker build -f apps/frontend/Dockerfile.dev apps/frontend -t recipt-frontend:test
+          docker build -f apps/backend/Dockerfile.dev apps/backend -t recipt-backend:test
+          docker build -f apps/ocr-service/Dockerfile.dev apps/ocr-service -t recipt-ocr:test
+          
+          # Trivy 설치 및 스캔
+          sudo apt-get update && sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_Linux-64bit.deb
+          sudo dpkg -i trivy_Linux-64bit.deb
+          
+          trivy image --exit-code 1 --severity HIGH,CRITICAL recipt-frontend:test
+          trivy image --exit-code 1 --severity HIGH,CRITICAL recipt-backend:test
+          trivy image --exit-code 1 --severity HIGH,CRITICAL recipt-ocr:test
+
+  # =================================================================
+  # Job 7: 성능 테스트
+  # =================================================================
+  performance-test:
+    name: 성능 테스트
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🐳 Docker Compose 환경 시작
+        run: |
+          docker-compose -f docker-compose.test.yml up -d
+          sleep 60  # 서비스 완전 시작 대기
+
+      - name: ⚡ K6 성능 테스트 설치
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: 🧪 API 성능 테스트 실행
+        run: |
+          k6 run --vus 10 --duration 30s tests/performance/api-load-test.js
+
+      - name: 📊 성능 테스트 결과 업로드
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: performance-results.json
+
+      - name: 🐳 Docker Compose 정리
+        if: always()
+        run: docker-compose -f docker-compose.test.yml down -v
+
+  # =================================================================
+  # Job 8: 아티팩트 생성 (main 브랜치만)
+  # =================================================================
+  create-artifacts:
+    name: 아티팩트 생성
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, security-scan, performance-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📥 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 의존성 설치
+        run: npm ci
+
+      - name: 🏗️ 프로덕션 빌드
+        run: |
+          npm run build --workspace=packages/shared
+          npm run build --workspace=packages/ui-components
+          npm run build --workspace=apps/frontend
+          npm run build --workspace=apps/backend
+
+      - name: 🐳 Docker 이미지 빌드 및 태그
+        run: |
+          # SHA 기반 태그 생성
+          IMAGE_TAG=${GITHUB_SHA::8}
+          
+          # 프로덕션 이미지 빌드
+          docker build -f apps/frontend/Dockerfile.prod apps/frontend -t ${{ env.REGISTRY }}/recipt-frontend:${IMAGE_TAG}
+          docker build -f apps/backend/Dockerfile.prod apps/backend -t ${{ env.REGISTRY }}/recipt-backend:${IMAGE_TAG}
+          docker build -f apps/ocr-service/Dockerfile.prod apps/ocr-service -t ${{ env.REGISTRY }}/recipt-ocr:${IMAGE_TAG}
+          
+          # latest 태그 추가
+          docker tag ${{ env.REGISTRY }}/recipt-frontend:${IMAGE_TAG} ${{ env.REGISTRY }}/recipt-frontend:latest
+          docker tag ${{ env.REGISTRY }}/recipt-backend:${IMAGE_TAG} ${{ env.REGISTRY }}/recipt-backend:latest
+          docker tag ${{ env.REGISTRY }}/recipt-ocr:${IMAGE_TAG} ${{ env.REGISTRY }}/recipt-ocr:latest
+
+      - name: 🔐 Container Registry 로그인
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Docker 이미지 푸시
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::8}
+          
+          docker push ${{ env.REGISTRY }}/recipt-frontend:${IMAGE_TAG}
+          docker push ${{ env.REGISTRY }}/recipt-backend:${IMAGE_TAG}
+          docker push ${{ env.REGISTRY }}/recipt-ocr:${IMAGE_TAG}
+          
+          docker push ${{ env.REGISTRY }}/recipt-frontend:latest
+          docker push ${{ env.REGISTRY }}/recipt-backend:latest
+          docker push ${{ env.REGISTRY }}/recipt-ocr:latest
+
+  # =================================================================
+  # Job 9: 알림 (실패 시)
+  # =================================================================
+  notify-on-failure:
+    name: 실패 알림
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests, integration-tests, e2e-tests, build-test, security-scan, performance-test]
+    if: failure()
+
+    steps:
+      - name: 📱 Slack 알림
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#dev-ci'
+          text: |
+            🚨 CI 파이프라인 실패
+            
+            • 저장소: ${{ github.repository }}
+            • 브랜치: ${{ github.ref_name }}
+            • 커밋: ${{ github.sha }}
+            • 작성자: ${{ github.actor }}
+            • 워크플로우: ${{ github.workflow }}
+            
+            실패한 작업을 확인해주세요: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # =================================================================
+  # Job 10: 성공 알림 (main 브랜치)
+  # =================================================================
+  notify-on-success:
+    name: 성공 알림
+    runs-on: ubuntu-latest
+    needs: [create-artifacts]
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📱 Slack 알림
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#dev-ci'
+          text: |
+            ✅ CI 파이프라인 성공 - 프로덕션 배포 준비 완료
+            
+            • 저장소: ${{ github.repository }}
+            • 브랜치: ${{ github.ref_name }}
+            • 커밋: ${{ github.sha }}
+            • 작성자: ${{ github.actor }}
+            • 이미지 태그: ${GITHUB_SHA::8}
+            
+            배포를 위해 프로덕션 워크플로우를 실행하세요.
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+# =================================================================
+# 워크플로우 설정 완료
+# 
+# 사용법:
+# 1. .github/workflows/ci.yml로 복사
+# 2. GitHub Secrets 설정:
+#    - SLACK_WEBHOOK_URL: Slack 웹훅 URL
+# 3. 필요에 따라 환경 변수 및 설정 조정
+# =================================================================
