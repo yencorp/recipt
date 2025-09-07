@@ -1,0 +1,49 @@
+# =================================================================
+# OCR Service - Python Dependencies
+# 프로젝트: 광남동성당 청소년위원회 예결산 관리 시스템
+# =================================================================
+
+# Web Framework
+fastapi==0.110.0
+uvicorn[standard]==0.27.0
+
+# OCR Engine
+pytesseract==0.3.10
+opencv-python==4.9.0.80
+pillow==10.2.0
+numpy==1.26.4
+
+# File Handling
+python-multipart==0.0.9
+aiofiles==23.2.1
+
+# Image Processing
+scikit-image==0.22.0
+imageio==2.34.0
+
+# Data Processing
+pandas==2.2.0
+
+# HTTP Client
+httpx==0.27.0
+requests==2.31.0
+
+# Environment Configuration
+python-dotenv==1.0.1
+
+# Logging & Monitoring  
+structlog==24.1.0
+prometheus-client==0.20.0
+
+# System Monitoring
+psutil==5.9.8
+
+# Settings Management
+pydantic-settings==2.1.0
+
+# Development & Testing
+pytest==8.0.0
+pytest-asyncio==0.23.5
+black==24.2.0
+isort==5.13.2
+mypy==1.8.0
