@@ -19,4 +19,4 @@ If the argument is a number (or empty for default 50), show recent commit histor
 Usage examples:
 - /remind (shows last 50 commits)
 - /remind 10 (shows last 10 commits) 
-- /remind docs (reads and analyzes all docs/ files completely)
+- /remind docs (reads and analyzes all docs/ markdown files completely)

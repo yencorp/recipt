@@ -74,20 +74,24 @@
 **담당자**: 백엔드 개발자 (주니어) + DevOps 지원  
 
 **세부 작업**:
-- [ ] TypeORM 설정 파일 작성
-- [ ] 데이터베이스 연결 설정
-- [ ] 환경별 설정 분리 (dev, test, prod)
-- [ ] 마이그레이션 디렉터리 구조 설정
+- [x] TypeORM 설정 파일 작성
+- [x] 데이터베이스 연결 설정
+- [x] 환경별 설정 분리 (dev, test, prod)
+- [x] 마이그레이션 디렉터리 구조 설정
 
 **완료 기준**:
-- TypeORM 정상 연결 확인
-- 마이그레이션 명령어 실행 가능
-- 환경별 설정 분리 완료
+- TypeORM 정상 연결 확인 ✅
+- 마이그레이션 명령어 실행 가능 ✅
+- 환경별 설정 분리 완료 ✅
 
 **산출물**:
-- `backend/src/config/database.config.ts`
-- `backend/ormconfig.ts`
-- `backend/src/database/migrations/`
+- `apps/backend/src/config/database.config.ts` ✅
+- `apps/backend/ormconfig.ts` ✅
+- `apps/backend/src/database/migrations/` ✅
+- `apps/backend/src/database/data-source.ts` ✅
+- `apps/backend/src/database/database.service.ts` ✅
+- `apps/backend/src/database/database.module.ts` ✅
+- 환경별 설정 파일: `.env.development`, `.env.test`, `.env.production` ✅
 
 #### Task 2.5: 핵심 테이블 마이그레이션 작성 (4시간)
 **담당자**: 백엔드 개발자 2명 (병렬 작업)  
