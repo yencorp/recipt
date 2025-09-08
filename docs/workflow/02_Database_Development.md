@@ -16,10 +16,10 @@
 **설명**: PRD와 TSD를 기반으로 필요한 데이터 엔티티 추출  
 
 **세부 작업**:
-- [ ] PRD 기능 요구사항 분석
-- [ ] 핵심 엔티티 식별 (User, Organization, Event, Budget, Settlement 등)
-- [ ] 엔티티별 속성 정의
-- [ ] 비즈니스 규칙 정리
+- [x] PRD 기능 요구사항 분석
+- [x] 핵심 엔티티 식별 (User, Organization, Event, Budget, Settlement 등)
+- [x] 엔티티별 속성 정의
+- [x] 비즈니스 규칙 정리
 
 **완료 기준**:
 - 모든 필요 엔티티 식별 완료
