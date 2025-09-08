@@ -33,19 +33,28 @@
 - 관리자는 모든 단체에 접근 가능
 
 #### 1.2 Organization (단체)
-**목적**: 청소년위원회 내 각 단체 정보 관리  
-**설명**: 청년회, 자모회, 초등부, 중고등부 등 단체 정보
+**목적**: 광남동성당 청소년위원회 4개 단체 정보 관리  
+**설명**: PRD에 명시된 4개 고정 단체 - 청년회, 자모회, 초등부 주일학교, 중고등부 주일학교
 
 **핵심 속성**:
 - `id` (UUID): 단체 고유 식별자
 - `name` (VARCHAR): 단체명 (고유값)
+- `code` (VARCHAR): 단체 코드 (YOUTH, MOTHERS, ELEMENTARY, MIDDLE_HIGH)
 - `description` (TEXT): 단체 설명
+- `order_priority` (INTEGER): 표시 순서
 - `is_active` (BOOLEAN): 단체 활성화 상태
 - `created_at`, `updated_at`: 타임스탬프
+
+**고정 단체 정보 (PRD 기준)**:
+1. **청년회** (YOUTH): 청년 구성원들의 단체
+2. **자모회** (MOTHERS): 어머니 구성원들의 단체  
+3. **초등부 주일학교** (ELEMENTARY): 초등부 관련 단체
+4. **중고등부 주일학교** (MIDDLE_HIGH): 중고등부 관련 단체
 
 **비즈니스 규칙**:
 - 단체명은 최소 2자 이상
 - 비활성 단체는 새 행사 생성 불가
+- 4개 고정 단체 외 추가 단체는 관리자만 생성 가능
 
 #### 1.3 UserOrganization (사용자-단체 관계)
 **목적**: 사용자와 단체 간 다대다 관계 관리  
@@ -197,16 +206,18 @@
 
 #### 5.1 OCRJob (OCR 작업)
 **목적**: 영수증 OCR 처리 작업 관리  
-**설명**: 영수증 이미지의 텍스트 인식 작업 상태 추적
+**설명**: 다단계 OCR 엔진을 통한 영수증 이미지 텍스트 인식 작업 추적
 
 **핵심 속성**:
 - `id` (UUID): OCR 작업 고유 식별자
 - `settlement_id` (UUID): 결산서 참조
 - `status` (ENUM): 작업 상태 (PENDING, PROCESSING, COMPLETED, FAILED)
+- `engine_stage` (ENUM): OCR 엔진 단계 (TESSERACT, EASYOCR, GOOGLE_VISION)
 - `total_files` (INTEGER): 전체 파일 수
 - `processed_files` (INTEGER): 처리된 파일 수
 - `success_files` (INTEGER): 성공한 파일 수
 - `failed_files` (INTEGER): 실패한 파일 수
+- `confidence_threshold` (DECIMAL): 인식 신뢰도 임계값 (기본 0.6)
 - `error_message` (TEXT): 오류 메시지
 - `processing_started_at` (TIMESTAMP): 처리 시작 시간
 - `processing_completed_at` (TIMESTAMP): 처리 완료 시간
@@ -216,6 +227,8 @@
 **비즈니스 규칙**:
 - 처리된 파일 수 = 성공 파일 수 + 실패 파일 수
 - 처리된 파일 수 ≤ 전체 파일 수
+- OCR 엔진 다단계 처리: TesseractOCR → easyOCR → Google Vision API
+- 인식률 90% 미만 시 상위 엔진으로 재처리
 
 #### 5.2 Receipt (영수증)
 **목적**: 영수증 기본 정보 관리  
@@ -267,11 +280,38 @@
 - 할인 금액은 0 이상
 - 동일 영수증 내에서 표시 순서는 고유해야 함
 
-### 6. 콘텐츠 관리 엔티티
+### 6. 머신러닝 및 데이터 학습 엔티티
 
-#### 6.1 Post (블로그 게시물)
+#### 6.1 MLTrainingData (머신러닝 학습 데이터)
+**목적**: OCR 인식률 향상을 위한 학습 데이터 관리  
+**설명**: 사용자 피드백 기반 머신러닝 학습 데이터 저장 (FR-036)
+
+**핵심 속성**:
+- `id` (UUID): 학습 데이터 고유 식별자
+- `receipt_id` (UUID): 영수증 참조
+- `original_image_path` (TEXT): 원본 이미지 경로
+- `preprocessed_image_path` (TEXT): 전처리된 이미지 경로
+- `ocr_raw_text` (TEXT): 원본 OCR 인식 텍스트
+- `user_corrected_text` (TEXT): 사용자 수정 텍스트
+- `ocr_engine` (ENUM): 사용된 OCR 엔진 (TESSERACT, EASYOCR, GOOGLE_VISION)
+- `confidence_score` (DECIMAL): OCR 신뢰도 점수
+- `accuracy_score` (DECIMAL): 사용자 검증 후 정확도 점수
+- `extraction_data` (JSON): 추출된 구조화 데이터 (날짜, 상호, 금액 등)
+- `user_feedback` (JSON): 사용자 피드백 데이터
+- `training_status` (ENUM): 학습 상태 (PENDING, PROCESSED, VALIDATED)
+- `created_by` (UUID): 데이터 생성자 참조
+- `created_at`, `updated_at`: 타임스탬프
+
+**비즈니스 규칙**:
+- 사용자 수정이 있을 때만 학습 데이터로 저장
+- 정확도 점수는 0.0-1.0 범위
+- 개인정보가 포함된 데이터는 익명화 처리
+
+### 7. 콘텐츠 관리 엔티티
+
+#### 7.1 Post (블로그 게시물)
 **목적**: 공지사항 및 게시글 관리  
-**설명**: 위원회 소식 및 공지사항 콘텐츠
+**설명**: 위원회 소식 및 공지사항 콘텐츠 (FR-016~FR-019)
 
 **핵심 속성**:
 - `id` (UUID): 게시물 고유 식별자
@@ -279,6 +319,7 @@
 - `content` (TEXT): 내용
 - `summary` (VARCHAR): 요약
 - `is_published` (BOOLEAN): 발행 여부
+- `is_pinned` (BOOLEAN): 상단 고정 여부
 - `view_count` (INTEGER): 조회수
 - `author_id` (UUID): 작성자 참조
 - `published_at` (TIMESTAMP): 발행 일시
@@ -287,10 +328,31 @@
 **비즈니스 규칙**:
 - 제목은 최소 2자 이상
 - 내용은 최소 10자 이상
+- 관리자만 글 작성, 수정, 삭제 가능
 
-### 7. 인증 관리 엔티티
+#### 7.2 Notification (알림)
+**목적**: 시스템 내 알림 정보 관리  
+**설명**: 사용자별 개인화된 알림 및 시스템 공지
 
-#### 7.1 RefreshToken (리프레시 토큰)
+**핵심 속성**:
+- `id` (UUID): 알림 고유 식별자
+- `user_id` (UUID): 대상 사용자 참조 (NULL시 전체 공지)
+- `type` (ENUM): 알림 유형 (SYSTEM, BLOG_POST, OCR_COMPLETE, BUDGET_APPROVED)
+- `title` (VARCHAR): 알림 제목
+- `message` (TEXT): 알림 메시지
+- `link_url` (TEXT): 연결 URL (선택)
+- `is_read` (BOOLEAN): 읽음 여부
+- `priority` (ENUM): 우선순위 (LOW, NORMAL, HIGH, URGENT)
+- `expires_at` (TIMESTAMP): 만료 일시 (선택)
+- `created_at`: 생성 일시
+
+**비즈니스 규칙**:
+- 만료된 알림은 자동 정리
+- 긴급 알림은 이메일 전송 추가 고려
+
+### 8. 인증 관리 엔티티
+
+#### 8.1 RefreshToken (리프레시 토큰)
 **목적**: JWT 리프레시 토큰 관리  
 **설명**: 자동 로그인 및 토큰 갱신을 위한 토큰 저장
 
@@ -320,6 +382,10 @@
 8. **Settlement → Receipt**: 일대다 (결산서당 여러 영수증)
 9. **Receipt → ReceiptItem**: 일대다 (영수증당 여러 상품)
 10. **OCRJob → Receipt**: 일대다 (OCR 작업당 여러 영수증 처리 결과)
+11. **Receipt → MLTrainingData**: 일대다 (영수증당 여러 학습 데이터 생성 가능)
+12. **User → Post**: 일대다 (사용자는 여러 게시물 작성 가능)
+13. **User → Notification**: 일대다 (사용자별 개인 알림)
+14. **User → RefreshToken**: 일대다 (사용자당 여러 토큰)
 
 ### 주요 제약조건
 - 사용자-단체 관계의 고유성
