@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableIndex,
+  TableForeignKey,
 } from "typeorm";
 
 export class CreateOcrResultsTable1757332300000 implements MigrationInterface {
@@ -498,139 +498,148 @@ export class CreateOcrResultsTable1757332300000 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "ocr_results",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["receipt_scan_id"],
         referencedTableName: "receipt_scans",
         referencedColumnNames: ["id"],
         onDelete: "CASCADE",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "ocr_results",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["processed_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_receipt_scan_id", ["receipt_scan_id"]),
+      new TableIndex({
+        name: "idx_ocr_results_receipt_scan_id",
+        columnNames: ["receipt_scan_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_engine_type", ["engine_type"]),
+      new TableIndex({
+        name: "idx_ocr_results_engine_type",
+        columnNames: ["engine_type"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_status", ["status"]),
+      new TableIndex({
+        name: "idx_ocr_results_status",
+        columnNames: ["status"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_confidence_level", ["confidence_level"]),
+      new TableIndex({
+        name: "idx_ocr_results_confidence_level",
+        columnNames: ["confidence_level"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_overall_confidence", ["overall_confidence"], {
-        order: { overall_confidence: "DESC" },
+      new TableIndex({
+        name: "idx_ocr_results_overall_confidence",
+        columnNames: ["overall_confidence"],
         where: "overall_confidence IS NOT NULL",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_extracted_amount", ["extracted_amount"], {
-        order: { extracted_amount: "DESC" },
+      new TableIndex({
+        name: "idx_ocr_results_extracted_amount",
+        columnNames: ["extracted_amount"],
         where: "extracted_amount IS NOT NULL",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_extracted_date", ["extracted_date"], {
-        order: { extracted_date: "DESC" },
+      new TableIndex({
+        name: "idx_ocr_results_extracted_date",
+        columnNames: ["extracted_date"],
         where: "extracted_date IS NOT NULL",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_processing_time", ["processing_time_ms"], {
-        order: { processing_time_ms: "DESC" },
+      new TableIndex({
+        name: "idx_ocr_results_processing_time",
+        columnNames: ["processing_time_ms"],
         where: "processing_time_ms IS NOT NULL",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_detected_language", ["detected_language"]),
+      new TableIndex({
+        name: "idx_ocr_results_detected_language",
+        columnNames: ["detected_language"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index(
-        "idx_ocr_results_processing_completed",
-        ["processing_completed_at"],
-        {
-          order: { processing_completed_at: "DESC" },
-          where: "processing_completed_at IS NOT NULL",
-        },
-      ),
+      new TableIndex({
+        name: "idx_ocr_results_processing_completed",
+        columnNames: ["processing_completed_at"],
+        where: "processing_completed_at IS NOT NULL",
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_failed_status", ["status", "retry_count"], {
+      new TableIndex({
+        name: "idx_ocr_results_failed_status",
+        columnNames: ["status", "retry_count"],
         where: "status = 'FAILED'",
-      }),
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "ocr_results",
-      new Index(
-        "idx_ocr_results_engine_status_time",
-        ["engine_type", "status", "processing_completed_at"],
-        {
-          order: {
-            engine_type: "ASC",
-            status: "ASC",
-            processing_completed_at: "DESC",
-          },
-        },
-      ),
+      new TableIndex({
+        name: "idx_ocr_results_engine_status_time",
+        columnNames: ["engine_type", "status", "processing_completed_at"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index(
-        "idx_ocr_results_confidence_engine",
-        ["confidence_level", "engine_type"],
-        {
-          order: { confidence_level: "DESC", engine_type: "ASC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_ocr_results_confidence_engine",
+        columnNames: ["confidence_level", "engine_type"],
+      })
     );
 
     await queryRunner.createIndex(
       "ocr_results",
-      new Index("idx_ocr_results_scan_status", ["receipt_scan_id", "status"], {
-        order: { receipt_scan_id: "ASC", status: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_ocr_results_scan_status",
+        columnNames: ["receipt_scan_id", "status"],
+      })
     );
 
     // JSON 인덱스 (JSONB 검색용)
@@ -752,87 +761,87 @@ export class CreateOcrResultsTable1757332300000 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_ocr_results_metrics ON ocr_results;`,
+      `DROP TRIGGER IF EXISTS trigger_ocr_results_metrics ON ocr_results;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_ocr_results_updated_at ON ocr_results;`,
+      `DROP TRIGGER IF EXISTS trigger_ocr_results_updated_at ON ocr_results;`
     );
     await queryRunner.query(
-      `DROP FUNCTION IF EXISTS update_ocr_result_metrics();`,
+      `DROP FUNCTION IF EXISTS update_ocr_result_metrics();`
     );
 
     // 인덱스 삭제
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_notes_search;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_notes_search;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_vendor_name_search;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_vendor_name_search;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_raw_text_search;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_raw_text_search;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_anomaly_flags_gin;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_anomaly_flags_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_warning_messages_gin;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_warning_messages_gin;`
     );
     await queryRunner.query(`DROP INDEX IF EXISTS idx_ocr_results_tags_gin;`);
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_engine_config_gin;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_engine_config_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_extracted_items_gin;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_extracted_items_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_text_blocks_gin;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_text_blocks_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_ocr_results_raw_data_gin;`,
+      `DROP INDEX IF EXISTS idx_ocr_results_raw_data_gin;`
     );
     await queryRunner.dropIndex("ocr_results", "idx_ocr_results_scan_status");
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_confidence_engine",
+      "idx_ocr_results_confidence_engine"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_engine_status_time",
+      "idx_ocr_results_engine_status_time"
     );
     await queryRunner.dropIndex("ocr_results", "idx_ocr_results_failed_status");
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_processing_completed",
+      "idx_ocr_results_processing_completed"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_detected_language",
+      "idx_ocr_results_detected_language"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_processing_time",
+      "idx_ocr_results_processing_time"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_extracted_date",
+      "idx_ocr_results_extracted_date"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_extracted_amount",
+      "idx_ocr_results_extracted_amount"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_overall_confidence",
+      "idx_ocr_results_overall_confidence"
     );
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_confidence_level",
+      "idx_ocr_results_confidence_level"
     );
     await queryRunner.dropIndex("ocr_results", "idx_ocr_results_status");
     await queryRunner.dropIndex("ocr_results", "idx_ocr_results_engine_type");
     await queryRunner.dropIndex(
       "ocr_results",
-      "idx_ocr_results_receipt_scan_id",
+      "idx_ocr_results_receipt_scan_id"
     );
 
     // 외래키 삭제

@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableForeignKey,
+  TableIndex,
 } from "typeorm";
 
 export class CreateEventsTable1757332260435 implements MigrationInterface {
@@ -115,66 +115,78 @@ export class CreateEventsTable1757332260435 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "events",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["organization_id"],
         referencedTableName: "organizations",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "events",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["created_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "events",
-      new Index("idx_events_organization_id", ["organization_id"]),
+      new TableIndex({
+        name: "idx_events_organization_id",
+        columnNames: ["organization_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "events",
-      new Index("idx_events_created_by", ["created_by"]),
+      new TableIndex({
+        name: "idx_events_created_by",
+        columnNames: ["created_by"],
+      })
     );
 
     await queryRunner.createIndex(
       "events",
-      new Index("idx_events_start_date", ["start_date"], {
-        order: { start_date: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_events_start_date",
+        columnNames: ["start_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "events",
-      new Index("idx_events_status", ["status"]),
+      new TableIndex({
+        name: "idx_events_status",
+        columnNames: ["status"],
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "events",
-      new Index("idx_events_org_date", ["organization_id", "start_date"], {
-        order: { organization_id: "ASC", start_date: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_events_org_date",
+        columnNames: ["organization_id", "start_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "events",
-      new Index("idx_events_status_date", ["status", "start_date"], {
-        order: { status: "ASC", start_date: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_events_status_date",
+        columnNames: ["status", "start_date"],
+      })
     );
 
     // GIN 인덱스 (전문 검색용)
@@ -195,7 +207,7 @@ export class CreateEventsTable1757332260435 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_events_updated_at ON events;`,
+      `DROP TRIGGER IF EXISTS trigger_events_updated_at ON events;`
     );
 
     // 인덱스 삭제

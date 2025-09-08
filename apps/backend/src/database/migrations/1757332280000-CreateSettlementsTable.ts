@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableIndex,
+  TableForeignKey,
 } from "typeorm";
 
 export class CreateSettlementsTable1757332280000 implements MigrationInterface {
@@ -303,131 +303,142 @@ export class CreateSettlementsTable1757332280000 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "settlements",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["event_id"],
         referencedTableName: "events",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "settlements",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["organization_id"],
         referencedTableName: "organizations",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "settlements",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["created_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "settlements",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["reviewed_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "settlements",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["approved_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_organization_id", ["organization_id"]),
+      new TableIndex({
+        name: "idx_settlements_organization_id",
+        columnNames: ["organization_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_event_id", ["event_id"]),
+      new TableIndex({
+        name: "idx_settlements_event_id",
+        columnNames: ["event_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_status", ["status"]),
+      new TableIndex({
+        name: "idx_settlements_status",
+        columnNames: ["status"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_period_type", ["period_type"]),
+      new TableIndex({
+        name: "idx_settlements_period_type",
+        columnNames: ["period_type"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_year", ["settlement_year"], {
-        order: { settlement_year: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_settlements_year",
+        columnNames: ["settlement_year"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index(
-        "idx_settlements_period_dates",
-        ["period_start_date", "period_end_date"],
-        {
-          order: { period_start_date: "DESC", period_end_date: "DESC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_settlements_period_dates",
+        columnNames: ["period_start_date", "period_end_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_final", ["is_final"], {
+      new TableIndex({
+        name: "idx_settlements_final",
+        columnNames: ["is_final"],
         where: "is_final = TRUE",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_published", ["published_at"], {
-        order: { published_at: "DESC" },
+      new TableIndex({
+        name: "idx_settlements_published",
+        columnNames: ["published_at"],
         where: "published_at IS NOT NULL",
-      }),
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "settlements",
-      new Index(
-        "idx_settlements_org_year",
-        ["organization_id", "settlement_year"],
-        {
-          order: { organization_id: "ASC", settlement_year: "DESC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_settlements_org_year",
+        columnNames: ["organization_id", "settlement_year"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlements",
-      new Index("idx_settlements_status_year", ["status", "settlement_year"], {
-        order: { status: "ASC", settlement_year: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_settlements_status_year",
+        columnNames: ["status", "settlement_year"],
+      })
     );
 
     // GIN 인덱스 (전문 검색용)
@@ -472,18 +483,18 @@ export class CreateSettlementsTable1757332280000 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_settlements_net_amount ON settlements;`,
+      `DROP TRIGGER IF EXISTS trigger_settlements_net_amount ON settlements;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_settlements_updated_at ON settlements;`,
+      `DROP TRIGGER IF EXISTS trigger_settlements_updated_at ON settlements;`
     );
     await queryRunner.query(
-      `DROP FUNCTION IF EXISTS update_settlement_net_amount();`,
+      `DROP FUNCTION IF EXISTS update_settlement_net_amount();`
     );
 
     // 인덱스 삭제
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_settlements_title_search;`,
+      `DROP INDEX IF EXISTS idx_settlements_title_search;`
     );
     await queryRunner.dropIndex("settlements", "idx_settlements_status_year");
     await queryRunner.dropIndex("settlements", "idx_settlements_org_year");
@@ -496,7 +507,7 @@ export class CreateSettlementsTable1757332280000 implements MigrationInterface {
     await queryRunner.dropIndex("settlements", "idx_settlements_event_id");
     await queryRunner.dropIndex(
       "settlements",
-      "idx_settlements_organization_id",
+      "idx_settlements_organization_id"
     );
 
     // 외래키 삭제

@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableForeignKey,
+  TableIndex,
 } from "typeorm";
 
 export class CreateBudgetsTable1757332263014 implements MigrationInterface {
@@ -207,99 +207,113 @@ export class CreateBudgetsTable1757332263014 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "budgets",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["event_id"],
         referencedTableName: "events",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budgets",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["created_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budgets",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["approved_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_event_id", ["event_id"]),
+      new TableIndex({
+        name: "idx_budgets_event_id",
+        columnNames: ["event_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_created_by", ["created_by"]),
+      new TableIndex({
+        name: "idx_budgets_created_by",
+        columnNames: ["created_by"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_approved_by", ["approved_by"]),
+      new TableIndex({
+        name: "idx_budgets_approved_by",
+        columnNames: ["approved_by"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_status", ["status"]),
+      new TableIndex({
+        name: "idx_budgets_status",
+        columnNames: ["status"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_year", ["budget_year"], {
-        order: { budget_year: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_budgets_year",
+        columnNames: ["budget_year"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index(
-        "idx_budgets_period",
-        ["budget_period_start", "budget_period_end"],
-        {
-          order: { budget_period_start: "ASC", budget_period_end: "ASC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_budgets_period",
+        columnNames: ["budget_period_start", "budget_period_end"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_template", ["is_template"], {
+      new TableIndex({
+        name: "idx_budgets_template",
+        columnNames: ["is_template"],
         where: "is_template = TRUE",
-      }),
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_event_status", ["event_id", "status"], {
-        order: { event_id: "ASC", status: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budgets_event_status",
+        columnNames: ["event_id", "status"],
+      })
     );
 
     await queryRunner.createIndex(
       "budgets",
-      new Index("idx_budgets_year_status", ["budget_year", "status"], {
-        order: { budget_year: "DESC", status: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budgets_year_status",
+        columnNames: ["budget_year", "status"],
+      })
     );
 
     // GIN 인덱스 (전문 검색용)
@@ -338,13 +352,13 @@ export class CreateBudgetsTable1757332263014 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budgets_remaining_amount ON budgets;`,
+      `DROP TRIGGER IF EXISTS trigger_budgets_remaining_amount ON budgets;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budgets_updated_at ON budgets;`,
+      `DROP TRIGGER IF EXISTS trigger_budgets_updated_at ON budgets;`
     );
     await queryRunner.query(
-      `DROP FUNCTION IF EXISTS update_budget_remaining_amount();`,
+      `DROP FUNCTION IF EXISTS update_budget_remaining_amount();`
     );
 
     // 인덱스 삭제

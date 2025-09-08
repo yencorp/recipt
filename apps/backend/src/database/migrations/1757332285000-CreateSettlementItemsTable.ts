@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableIndex,
+  TableForeignKey,
 } from "typeorm";
 
 export class CreateSettlementItemsTable1757332285000
@@ -262,108 +262,111 @@ export class CreateSettlementItemsTable1757332285000
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "settlement_items",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["settlement_id"],
         referencedTableName: "settlements",
         referencedColumnNames: ["id"],
         onDelete: "CASCADE",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "settlement_items",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["created_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_settlement_id", ["settlement_id"]),
+      new TableIndex({
+        name: "idx_settlement_items_settlement_id",
+        columnNames: ["settlement_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_type", ["item_type"]),
+      new TableIndex({
+        name: "idx_settlement_items_type",
+        columnNames: ["item_type"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_category", ["category_name"]),
+      new TableIndex({
+        name: "idx_settlement_items_category",
+        columnNames: ["category_name"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_subcategory", ["subcategory_name"]),
+      new TableIndex({
+        name: "idx_settlement_items_subcategory",
+        columnNames: ["subcategory_name"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_actual_amount", ["actual_amount"], {
-        order: { actual_amount: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_settlement_items_actual_amount",
+        columnNames: ["actual_amount"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_variance_rate", ["variance_rate"], {
-        order: { variance_rate: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_settlement_items_variance_rate",
+        columnNames: ["variance_rate"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index("idx_settlement_items_highlighted", ["is_highlighted"], {
+      new TableIndex({
+        name: "idx_settlement_items_highlighted",
+        columnNames: ["is_highlighted"],
         where: "is_highlighted = TRUE",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index(
-        "idx_settlement_items_sort_order",
-        ["settlement_id", "sort_order"],
-        {
-          order: { settlement_id: "ASC", sort_order: "ASC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_settlement_items_sort_order",
+        columnNames: ["settlement_id", "sort_order"],
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "settlement_items",
-      new Index(
-        "idx_settlement_items_type_category",
-        ["settlement_id", "item_type", "category_name"],
-        {
-          order: {
-            settlement_id: "ASC",
-            item_type: "ASC",
-            category_name: "ASC",
-          },
-        },
-      ),
+      new TableIndex({
+        name: "idx_settlement_items_type_category",
+        columnNames: ["settlement_id", "item_type", "category_name"],
+      })
     );
 
     await queryRunner.createIndex(
       "settlement_items",
-      new Index(
-        "idx_settlement_items_type_amount",
-        ["item_type", "actual_amount"],
-        {
-          order: { item_type: "ASC", actual_amount: "DESC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_settlement_items_type_amount",
+        columnNames: ["item_type", "actual_amount"],
+      })
     );
 
     // GIN 인덱스 (전문 검색용)
@@ -429,58 +432,58 @@ export class CreateSettlementItemsTable1757332285000
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_settlement_items_calculations ON settlement_items;`,
+      `DROP TRIGGER IF EXISTS trigger_settlement_items_calculations ON settlement_items;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_settlement_items_updated_at ON settlement_items;`,
+      `DROP TRIGGER IF EXISTS trigger_settlement_items_updated_at ON settlement_items;`
     );
     await queryRunner.query(
-      `DROP FUNCTION IF EXISTS update_settlement_item_calculations();`,
+      `DROP FUNCTION IF EXISTS update_settlement_item_calculations();`
     );
 
     // 인덱스 삭제
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_settlement_items_category_search;`,
+      `DROP INDEX IF EXISTS idx_settlement_items_category_search;`
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_type_amount",
+      "idx_settlement_items_type_amount"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_type_category",
+      "idx_settlement_items_type_category"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_sort_order",
+      "idx_settlement_items_sort_order"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_highlighted",
+      "idx_settlement_items_highlighted"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_variance_rate",
+      "idx_settlement_items_variance_rate"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_actual_amount",
+      "idx_settlement_items_actual_amount"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_subcategory",
+      "idx_settlement_items_subcategory"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_category",
+      "idx_settlement_items_category"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_type",
+      "idx_settlement_items_type"
     );
     await queryRunner.dropIndex(
       "settlement_items",
-      "idx_settlement_items_settlement_id",
+      "idx_settlement_items_settlement_id"
     );
 
     // 외래키 삭제

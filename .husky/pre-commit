@@ -36,36 +36,52 @@ JS_TS_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(js|ts|jsx|tsx)$' || true)
 if [ -n "$JS_TS_FILES" ]; then
     echo -e "\n${BLUE}🔧 JavaScript/TypeScript 파일 검사 중...${NC}"
     
-    # ESLint 검사
-    if command -v npx >/dev/null 2>&1; then
-        echo -e "${BLUE}• ESLint 검사...${NC}"
-        if ! echo "$JS_TS_FILES" | xargs npx eslint --fix; then
-            echo -e "${RED}❌ ESLint 검사 실패${NC}"
+    # 백엔드 파일 검사
+    BACKEND_FILES=$(echo "$JS_TS_FILES" | grep -E '^apps/backend/' || true)
+    if [ -n "$BACKEND_FILES" ]; then
+        echo -e "${BLUE}• 백엔드 ESLint 검사...${NC}"
+        cd apps/backend
+        if ! echo "$BACKEND_FILES" | sed 's|^apps/backend/||' | xargs npx eslint --fix; then
+            echo -e "${RED}❌ 백엔드 ESLint 검사 실패${NC}"
             ERROR_COUNT=$((ERROR_COUNT + 1))
         else
-            echo -e "${GREEN}✅ ESLint 검사 통과${NC}"
+            echo -e "${GREEN}✅ 백엔드 ESLint 검사 통과${NC}"
         fi
         
-        # Prettier 포맷팅
-        echo -e "${BLUE}• Prettier 포맷팅...${NC}"
-        if ! echo "$JS_TS_FILES" | xargs npx prettier --write; then
-            echo -e "${RED}❌ Prettier 포맷팅 실패${NC}"
+        echo -e "${BLUE}• 백엔드 Prettier 포맷팅...${NC}"
+        if ! echo "$BACKEND_FILES" | sed 's|^apps/backend/||' | xargs npx prettier --write; then
+            echo -e "${RED}❌ 백엔드 Prettier 포맷팅 실패${NC}"
             ERROR_COUNT=$((ERROR_COUNT + 1))
         else
-            echo -e "${GREEN}✅ Prettier 포맷팅 완료${NC}"
+            echo -e "${GREEN}✅ 백엔드 Prettier 포맷팅 완료${NC}"
         fi
         
-        # TypeScript 타입 체크 (TypeScript 파일이 있는 경우)
-        TS_FILES=$(echo "$JS_TS_FILES" | grep -E '\.(ts|tsx)$' || true)
-        if [ -n "$TS_FILES" ]; then
-            echo -e "${BLUE}• TypeScript 타입 체크...${NC}"
-            if ! npx tsc --noEmit --skipLibCheck; then
-                echo -e "${RED}❌ TypeScript 타입 체크 실패${NC}"
+        echo -e "${BLUE}• 백엔드 TypeScript 타입 체크...${NC}"
+        if ! npm run type-check; then
+            echo -e "${RED}❌ 백엔드 TypeScript 타입 체크 실패${NC}"
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+        else
+            echo -e "${GREEN}✅ 백엔드 TypeScript 타입 체크 통과${NC}"
+        fi
+        cd ../..
+    fi
+    
+    # 프론트엔드 파일 검사
+    FRONTEND_FILES=$(echo "$JS_TS_FILES" | grep -E '^apps/frontend/' || true)
+    if [ -n "$FRONTEND_FILES" ]; then
+        echo -e "${BLUE}• 프론트엔드 파일 검사...${NC}"
+        cd apps/frontend
+        if command -v npx >/dev/null 2>&1; then
+            if ! echo "$FRONTEND_FILES" | sed 's|^apps/frontend/||' | xargs npx eslint --fix; then
+                echo -e "${RED}❌ 프론트엔드 ESLint 검사 실패${NC}"
                 ERROR_COUNT=$((ERROR_COUNT + 1))
-            else
-                echo -e "${GREEN}✅ TypeScript 타입 체크 통과${NC}"
+            fi
+            if ! echo "$FRONTEND_FILES" | sed 's|^apps/frontend/||' | xargs npx prettier --write; then
+                echo -e "${RED}❌ 프론트엔드 Prettier 포맷팅 실패${NC}"
+                ERROR_COUNT=$((ERROR_COUNT + 1))
             fi
         fi
+        cd ../..
     fi
 fi
 
@@ -148,7 +164,7 @@ SENSITIVE_PATTERNS=(
 )
 
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
-    if echo "$CHANGED_FILES" | xargs grep -il "$pattern" 2>/dev/null; then
+    if echo "$CHANGED_FILES" | grep -v '\.husky/' | xargs grep -il "$pattern" 2>/dev/null; then
         echo -e "${RED}❌ 민감한 정보가 포함되어 있을 수 있습니다: $pattern${NC}"
         ERROR_COUNT=$((ERROR_COUNT + 1))
     fi

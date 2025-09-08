@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableForeignKey,
+  TableIndex,
 } from "typeorm";
 
 export class CreateBudgetIncomesTable1757332265611
@@ -274,113 +274,129 @@ export class CreateBudgetIncomesTable1757332265611
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "budget_incomes",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["budget_id"],
         referencedTableName: "budgets",
         referencedColumnNames: ["id"],
         onDelete: "CASCADE",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budget_incomes",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["created_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budget_incomes",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["updated_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_budget_id", ["budget_id"]),
+      new TableIndex({
+        name: "idx_budget_incomes_budget_id",
+        columnNames: ["budget_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_created_by", ["created_by"]),
+      new TableIndex({
+        name: "idx_budget_incomes_created_by",
+        columnNames: ["created_by"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_category", ["category"]),
+      new TableIndex({
+        name: "idx_budget_incomes_category",
+        columnNames: ["category"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_status", ["status"]),
+      new TableIndex({
+        name: "idx_budget_incomes_status",
+        columnNames: ["status"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_expected_date", ["expected_date"], {
-        order: { expected_date: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_incomes_expected_date",
+        columnNames: ["expected_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_actual_date", ["actual_date"], {
-        order: { actual_date: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_incomes_actual_date",
+        columnNames: ["actual_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_priority", ["priority_level"], {
-        order: { priority_level: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_incomes_priority",
+        columnNames: ["priority_level"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_recurring", ["is_recurring"], {
+      new TableIndex({
+        name: "idx_budget_incomes_recurring",
+        columnNames: ["is_recurring"],
         where: "is_recurring = TRUE",
-      }),
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_budget_status", ["budget_id", "status"], {
-        order: { budget_id: "ASC", status: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_incomes_budget_status",
+        columnNames: ["budget_id", "status"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index(
-        "idx_budget_incomes_category_date",
-        ["category", "expected_date"],
-        {
-          order: { category: "ASC", expected_date: "ASC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_budget_incomes_category_date",
+        columnNames: ["category", "expected_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_incomes",
-      new Index("idx_budget_incomes_status_date", ["status", "expected_date"], {
-        order: { status: "ASC", expected_date: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_incomes_status_date",
+        columnNames: ["status", "expected_date"],
+      })
     );
 
     // GIN 인덱스 (전문 검색용)
@@ -439,62 +455,62 @@ export class CreateBudgetIncomesTable1757332265611
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budget_incomes_completion_rate ON budget_incomes;`,
+      `DROP TRIGGER IF EXISTS trigger_budget_incomes_completion_rate ON budget_incomes;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budget_incomes_updated_at ON budget_incomes;`,
+      `DROP TRIGGER IF EXISTS trigger_budget_incomes_updated_at ON budget_incomes;`
     );
     await queryRunner.query(
-      `DROP FUNCTION IF EXISTS update_income_completion_rate();`,
+      `DROP FUNCTION IF EXISTS update_income_completion_rate();`
     );
 
     // 인덱스 삭제
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_budget_incomes_source_name_search;`,
+      `DROP INDEX IF EXISTS idx_budget_incomes_source_name_search;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_budget_incomes_item_name_search;`,
+      `DROP INDEX IF EXISTS idx_budget_incomes_item_name_search;`
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_status_date",
+      "idx_budget_incomes_status_date"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_category_date",
+      "idx_budget_incomes_category_date"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_budget_status",
+      "idx_budget_incomes_budget_status"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_recurring",
+      "idx_budget_incomes_recurring"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_priority",
+      "idx_budget_incomes_priority"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_actual_date",
+      "idx_budget_incomes_actual_date"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_expected_date",
+      "idx_budget_incomes_expected_date"
     );
     await queryRunner.dropIndex("budget_incomes", "idx_budget_incomes_status");
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_category",
+      "idx_budget_incomes_category"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_created_by",
+      "idx_budget_incomes_created_by"
     );
     await queryRunner.dropIndex(
       "budget_incomes",
-      "idx_budget_incomes_budget_id",
+      "idx_budget_incomes_budget_id"
     );
 
     // 외래키 삭제

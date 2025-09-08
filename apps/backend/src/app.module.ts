@@ -1,24 +1,22 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CacheModule } from "@nestjs/cache-manager";
 // import { ThrottlerModule } from '@nestjs/throttler';
-import { ScheduleModule } from '@nestjs/schedule';
-import * as redisStore from 'cache-manager-redis-store';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { HealthController } from './health/health.controller';
-import { DatabaseModule } from './database/database.module';
+import { ScheduleModule } from "@nestjs/schedule";
+import * as redisStore from "cache-manager-redis-store";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { HealthController } from "./health/health.controller";
+import { DatabaseModule } from "./database/database.module";
+import { createDatabaseConfig } from "./config/database.config";
 
 @Module({
   imports: [
     // 환경 설정 모듈
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [
-        `.env.${process.env.NODE_ENV || 'development'}`,
-        '.env'
-      ],
+      envFilePath: [`.env.${process.env.NODE_ENV || "development"}`, ".env"],
       cache: true,
       expandVariables: true,
     }),
@@ -27,7 +25,6 @@ import { DatabaseModule } from './database/database.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const { createDatabaseConfig } = require('./config/database.config');
         return createDatabaseConfig(configService);
       },
       inject: [ConfigService],
@@ -39,11 +36,11 @@ import { DatabaseModule } from './database/database.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         store: redisStore as any,
-        host: configService.get('REDIS_HOST'),
-        port: configService.get('REDIS_PORT'),
-        password: configService.get('REDIS_PASSWORD'),
-        db: configService.get('REDIS_DB'),
-        ttl: configService.get('REDIS_TTL') || 3600,
+        host: configService.get("REDIS_HOST"),
+        port: configService.get("REDIS_PORT"),
+        password: configService.get("REDIS_PASSWORD"),
+        db: configService.get("REDIS_DB"),
+        ttl: configService.get("REDIS_TTL") || 3600,
       }),
       inject: [ConfigService],
     }),

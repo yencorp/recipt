@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
 
 export class CreateUsersTable1757331860358 implements MigrationInterface {
   name = "CreateUsersTable1757331860358";
@@ -130,37 +130,51 @@ export class CreateUsersTable1757331860358 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "users",
-      new Index("idx_users_email", ["email"], { isUnique: true }),
+      new TableIndex({
+        name: "idx_users_email",
+        columnNames: ["email"],
+        isUnique: true,
+      })
     );
 
     await queryRunner.createIndex(
       "users",
-      new Index("idx_users_name", ["name"]),
+      new TableIndex({
+        name: "idx_users_name",
+        columnNames: ["name"],
+      })
     );
 
     await queryRunner.createIndex(
       "users",
-      new Index("idx_users_phone", ["phone"]),
+      new TableIndex({
+        name: "idx_users_phone",
+        columnNames: ["phone"],
+      })
     );
 
     await queryRunner.createIndex(
       "users",
-      new Index("idx_users_active", ["is_active"], {
+      new TableIndex({
+        name: "idx_users_active",
+        columnNames: ["is_active"],
         where: "is_active = TRUE",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "users",
-      new Index("idx_users_admin", ["is_admin"], {
+      new TableIndex({
+        name: "idx_users_admin",
+        columnNames: ["is_admin"],
         where: "is_admin = TRUE",
-      }),
+      })
     );
 
     // GIN 인덱스 생성 (전문 검색용)
@@ -185,7 +199,7 @@ export class CreateUsersTable1757331860358 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_users_updated_at ON users;`,
+      `DROP TRIGGER IF EXISTS trigger_users_updated_at ON users;`
     );
 
     // 인덱스 삭제

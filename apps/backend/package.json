@@ -2,6 +2,7 @@
   "name": "recipt-backend",
   "version": "1.0.0",
   "description": "광남동성당 청소년위원회 예결산 관리 시스템 - 백엔드 API",
+  "type": "module",
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",

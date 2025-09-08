@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from "typeorm";
+import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
 
 export class CreateOrganizationsTable1757332045857
   implements MigrationInterface
@@ -77,30 +77,43 @@ export class CreateOrganizationsTable1757332045857
           },
         ],
       }),
-      true,
+      true
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "organizations",
-      new Index("idx_organizations_name", ["name"], { isUnique: true }),
+      new TableIndex({
+        name: "idx_organizations_name",
+        columnNames: ["name"],
+        isUnique: true,
+      })
     );
 
     await queryRunner.createIndex(
       "organizations",
-      new Index("idx_organizations_code", ["code"], { isUnique: true }),
+      new TableIndex({
+        name: "idx_organizations_code",
+        columnNames: ["code"],
+        isUnique: true,
+      })
     );
 
     await queryRunner.createIndex(
       "organizations",
-      new Index("idx_organizations_active", ["is_active"], {
+      new TableIndex({
+        name: "idx_organizations_active",
+        columnNames: ["is_active"],
         where: "is_active = TRUE",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "organizations",
-      new Index("idx_organizations_priority", ["order_priority"]),
+      new TableIndex({
+        name: "idx_organizations_priority",
+        columnNames: ["order_priority"],
+      })
     );
 
     // updated_at 자동 업데이트 트리거 생성
@@ -124,7 +137,7 @@ export class CreateOrganizationsTable1757332045857
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_organizations_updated_at ON organizations;`,
+      `DROP TRIGGER IF EXISTS trigger_organizations_updated_at ON organizations;`
     );
 
     // 인덱스 삭제

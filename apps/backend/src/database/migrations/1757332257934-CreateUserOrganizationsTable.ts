@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableForeignKey,
+  TableIndex,
 } from "typeorm";
 
 export class CreateUserOrganizationsTable1757332257934
@@ -76,60 +76,71 @@ export class CreateUserOrganizationsTable1757332257934
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "user_organizations",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["user_id"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "CASCADE",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "user_organizations",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["organization_id"],
         referencedTableName: "organizations",
         referencedColumnNames: ["id"],
         onDelete: "CASCADE",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "user_organizations",
-      new Index(
-        "idx_user_organizations_unique",
-        ["user_id", "organization_id"],
-        { isUnique: true },
-      ),
+      new TableIndex({
+        name: "idx_user_organizations_unique",
+        columnNames: ["user_id", "organization_id"],
+        isUnique: true,
+      })
     );
 
     await queryRunner.createIndex(
       "user_organizations",
-      new Index("idx_user_organizations_user_id", ["user_id"]),
+      new TableIndex({
+        name: "idx_user_organizations_user_id",
+        columnNames: ["user_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "user_organizations",
-      new Index("idx_user_organizations_org_id", ["organization_id"]),
+      new TableIndex({
+        name: "idx_user_organizations_org_id",
+        columnNames: ["organization_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "user_organizations",
-      new Index("idx_user_organizations_role", ["role"]),
+      new TableIndex({
+        name: "idx_user_organizations_role",
+        columnNames: ["role"],
+      })
     );
 
     await queryRunner.createIndex(
       "user_organizations",
-      new Index("idx_user_organizations_active", ["is_active"], {
+      new TableIndex({
+        name: "idx_user_organizations_active",
+        columnNames: ["is_active"],
         where: "is_active = TRUE",
-      }),
+      })
     );
   }
 
@@ -137,23 +148,23 @@ export class CreateUserOrganizationsTable1757332257934
     // 인덱스 삭제
     await queryRunner.dropIndex(
       "user_organizations",
-      "idx_user_organizations_active",
+      "idx_user_organizations_active"
     );
     await queryRunner.dropIndex(
       "user_organizations",
-      "idx_user_organizations_role",
+      "idx_user_organizations_role"
     );
     await queryRunner.dropIndex(
       "user_organizations",
-      "idx_user_organizations_org_id",
+      "idx_user_organizations_org_id"
     );
     await queryRunner.dropIndex(
       "user_organizations",
-      "idx_user_organizations_user_id",
+      "idx_user_organizations_user_id"
     );
     await queryRunner.dropIndex(
       "user_organizations",
-      "idx_user_organizations_unique",
+      "idx_user_organizations_unique"
     );
 
     // 외래키 삭제 (테이블 삭제시 자동으로 삭제되지만 명시적으로)

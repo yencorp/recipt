@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableForeignKey,
+  TableIndex,
 } from "typeorm";
 
 export class CreateBudgetExpensesTable1757332277135
@@ -393,166 +393,182 @@ export class CreateBudgetExpensesTable1757332277135
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "budget_expenses",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["budget_id"],
         referencedTableName: "budgets",
         referencedColumnNames: ["id"],
         onDelete: "CASCADE",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budget_expenses",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["created_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budget_expenses",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["updated_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "budget_expenses",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["approved_by"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_budget_id", ["budget_id"]),
+      new TableIndex({
+        name: "idx_budget_expenses_budget_id",
+        columnNames: ["budget_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_created_by", ["created_by"]),
+      new TableIndex({
+        name: "idx_budget_expenses_created_by",
+        columnNames: ["created_by"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_category", ["category"]),
+      new TableIndex({
+        name: "idx_budget_expenses_category",
+        columnNames: ["category"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_status", ["status"]),
+      new TableIndex({
+        name: "idx_budget_expenses_status",
+        columnNames: ["status"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_priority", ["priority"], {
-        order: { priority: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_priority",
+        columnNames: ["priority"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_planned_date", ["planned_date"], {
-        order: { planned_date: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_planned_date",
+        columnNames: ["planned_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_purchase_date", ["purchase_date"], {
-        order: { purchase_date: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_purchase_date",
+        columnNames: ["purchase_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_payment_date", ["payment_date"], {
-        order: { payment_date: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_payment_date",
+        columnNames: ["payment_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_due_date", ["due_date"], {
-        order: { due_date: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_due_date",
+        columnNames: ["due_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index(
-        "idx_budget_expenses_approval_required",
-        ["approval_required"],
-        {
-          where: "approval_required = TRUE AND approved_by IS NULL",
-        },
-      ),
+      new TableIndex({
+        name: "idx_budget_expenses_approval_required",
+        columnNames: ["approval_required"],
+        where: "approval_required = TRUE AND approved_by IS NULL",
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index(
-        "idx_budget_expenses_receipt_required",
-        ["receipt_required", "receipt_submitted"],
-        {
-          where: "receipt_required = TRUE AND receipt_submitted = FALSE",
-        },
-      ),
+      new TableIndex({
+        name: "idx_budget_expenses_receipt_required",
+        columnNames: ["receipt_required", "receipt_submitted"],
+        where: "receipt_required = TRUE AND receipt_submitted = FALSE",
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_recurring", ["is_recurring"], {
+      new TableIndex({
+        name: "idx_budget_expenses_recurring",
+        columnNames: ["is_recurring"],
         where: "is_recurring = TRUE",
-      }),
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_budget_status", ["budget_id", "status"], {
-        order: { budget_id: "ASC", status: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_budget_status",
+        columnNames: ["budget_id", "status"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index(
-        "idx_budget_expenses_category_date",
-        ["category", "planned_date"],
-        {
-          order: { category: "ASC", planned_date: "ASC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_budget_expenses_category_date",
+        columnNames: ["category", "planned_date"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_status_priority", ["status", "priority"], {
-        order: { status: "ASC", priority: "ASC" },
-      }),
+      new TableIndex({
+        name: "idx_budget_expenses_status_priority",
+        columnNames: ["status", "priority"],
+      })
     );
 
     await queryRunner.createIndex(
       "budget_expenses",
-      new Index("idx_budget_expenses_vendor_name", ["vendor_name"], {
+      new TableIndex({
+        name: "idx_budget_expenses_vendor_name",
+        columnNames: ["vendor_name"],
         where: "vendor_name IS NOT NULL",
-      }),
+      })
     );
 
     // GIN 인덱스 (전문 검색용)
@@ -631,89 +647,89 @@ export class CreateBudgetExpensesTable1757332277135
   public async down(queryRunner: QueryRunner): Promise<void> {
     // 트리거 삭제
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budget_expenses_status_update ON budget_expenses;`,
+      `DROP TRIGGER IF EXISTS trigger_budget_expenses_status_update ON budget_expenses;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budget_expenses_total_amount ON budget_expenses;`,
+      `DROP TRIGGER IF EXISTS trigger_budget_expenses_total_amount ON budget_expenses;`
     );
     await queryRunner.query(
-      `DROP TRIGGER IF EXISTS trigger_budget_expenses_updated_at ON budget_expenses;`,
+      `DROP TRIGGER IF EXISTS trigger_budget_expenses_updated_at ON budget_expenses;`
     );
     await queryRunner.query(`DROP FUNCTION IF EXISTS update_expense_status();`);
     await queryRunner.query(
-      `DROP FUNCTION IF EXISTS update_expense_total_amount();`,
+      `DROP FUNCTION IF EXISTS update_expense_total_amount();`
     );
 
     // 인덱스 삭제
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_budget_expenses_vendor_name_search;`,
+      `DROP INDEX IF EXISTS idx_budget_expenses_vendor_name_search;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_budget_expenses_item_name_search;`,
+      `DROP INDEX IF EXISTS idx_budget_expenses_item_name_search;`
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_vendor_name",
+      "idx_budget_expenses_vendor_name"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_status_priority",
+      "idx_budget_expenses_status_priority"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_category_date",
+      "idx_budget_expenses_category_date"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_budget_status",
+      "idx_budget_expenses_budget_status"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_recurring",
+      "idx_budget_expenses_recurring"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_receipt_required",
+      "idx_budget_expenses_receipt_required"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_approval_required",
+      "idx_budget_expenses_approval_required"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_due_date",
+      "idx_budget_expenses_due_date"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_payment_date",
+      "idx_budget_expenses_payment_date"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_purchase_date",
+      "idx_budget_expenses_purchase_date"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_planned_date",
+      "idx_budget_expenses_planned_date"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_priority",
+      "idx_budget_expenses_priority"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_status",
+      "idx_budget_expenses_status"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_category",
+      "idx_budget_expenses_category"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_created_by",
+      "idx_budget_expenses_created_by"
     );
     await queryRunner.dropIndex(
       "budget_expenses",
-      "idx_budget_expenses_budget_id",
+      "idx_budget_expenses_budget_id"
     );
 
     // 외래키 삭제

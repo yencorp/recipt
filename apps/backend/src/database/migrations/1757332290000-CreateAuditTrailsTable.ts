@@ -2,8 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  Index,
-  ForeignKey,
+  TableIndex,
+  TableForeignKey,
 } from "typeorm";
 
 export class CreateAuditTrailsTable1757332290000 implements MigrationInterface {
@@ -282,173 +282,198 @@ export class CreateAuditTrailsTable1757332290000 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     // 외래키 생성
     await queryRunner.createForeignKey(
       "audit_trails",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["user_id"],
         referencedTableName: "users",
         referencedColumnNames: ["id"],
         onDelete: "RESTRICT",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "audit_trails",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["organization_id"],
         referencedTableName: "organizations",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "audit_trails",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["event_id"],
         referencedTableName: "events",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "audit_trails",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["budget_id"],
         referencedTableName: "budgets",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     await queryRunner.createForeignKey(
       "audit_trails",
-      new ForeignKey({
+      new TableForeignKey({
         columnNames: ["parent_audit_id"],
         referencedTableName: "audit_trails",
         referencedColumnNames: ["id"],
         onDelete: "SET NULL",
-      }),
+      })
     );
 
     // 인덱스 생성
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_table_record", ["table_name", "record_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_table_record",
+        columnNames: ["table_name", "record_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_user_id", ["user_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_user_id",
+        columnNames: ["user_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_action_type", ["action_type"]),
+      new TableIndex({
+        name: "idx_audit_trails_action_type",
+        columnNames: ["action_type"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_severity", ["severity"]),
+      new TableIndex({
+        name: "idx_audit_trails_severity",
+        columnNames: ["severity"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_organization_id", ["organization_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_organization_id",
+        columnNames: ["organization_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_event_id", ["event_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_event_id",
+        columnNames: ["event_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_budget_id", ["budget_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_budget_id",
+        columnNames: ["budget_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_action_timestamp", ["action_timestamp"], {
-        order: { action_timestamp: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_audit_trails_action_timestamp",
+        columnNames: ["action_timestamp"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_created_at", ["created_at"], {
-        order: { created_at: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_audit_trails_created_at",
+        columnNames: ["created_at"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_ip_address", ["ip_address"]),
+      new TableIndex({
+        name: "idx_audit_trails_ip_address",
+        columnNames: ["ip_address"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_session_id", ["session_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_session_id",
+        columnNames: ["session_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_request_id", ["request_id"]),
+      new TableIndex({
+        name: "idx_audit_trails_request_id",
+        columnNames: ["request_id"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_risk_score", ["risk_score"], {
-        order: { risk_score: "DESC" },
+      new TableIndex({
+        name: "idx_audit_trails_risk_score",
+        columnNames: ["risk_score"],
         where: "risk_score IS NOT NULL",
-      }),
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_amount_involved", ["amount_involved"], {
-        order: { amount_involved: "DESC" },
+      new TableIndex({
+        name: "idx_audit_trails_amount_involved",
+        columnNames: ["amount_involved"],
         where: "amount_involved IS NOT NULL",
-      }),
+      })
     );
 
     // 복합 인덱스 (성능 최적화)
     await queryRunner.createIndex(
       "audit_trails",
-      new Index(
-        "idx_audit_trails_table_action_time",
-        ["table_name", "action_type", "action_timestamp"],
-        {
-          order: {
-            table_name: "ASC",
-            action_type: "ASC",
-            action_timestamp: "DESC",
-          },
-        },
-      ),
+      new TableIndex({
+        name: "idx_audit_trails_table_action_time",
+        columnNames: ["table_name", "action_type", "action_timestamp"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index("idx_audit_trails_user_time", ["user_id", "action_timestamp"], {
-        order: { user_id: "ASC", action_timestamp: "DESC" },
-      }),
+      new TableIndex({
+        name: "idx_audit_trails_user_time",
+        columnNames: ["user_id", "action_timestamp"],
+      })
     );
 
     await queryRunner.createIndex(
       "audit_trails",
-      new Index(
-        "idx_audit_trails_severity_time",
-        ["severity", "action_timestamp"],
-        {
-          order: { severity: "ASC", action_timestamp: "DESC" },
-        },
-      ),
+      new TableIndex({
+        name: "idx_audit_trails_severity_time",
+        columnNames: ["severity", "action_timestamp"],
+      })
     );
 
     // JSON 인덱스 (JSONB 검색용)
@@ -557,39 +582,39 @@ export class CreateAuditTrailsTable1757332290000 implements MigrationInterface {
 
     // 인덱스 삭제
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_monthly_partition;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_monthly_partition;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_description_search;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_description_search;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_search_text;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_search_text;`
     );
     await queryRunner.query(`DROP INDEX IF EXISTS idx_audit_trails_tags_gin;`);
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_changed_fields_gin;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_changed_fields_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_field_changes_gin;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_field_changes_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_new_values_gin;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_new_values_gin;`
     );
     await queryRunner.query(
-      `DROP INDEX IF EXISTS idx_audit_trails_old_values_gin;`,
+      `DROP INDEX IF EXISTS idx_audit_trails_old_values_gin;`
     );
     await queryRunner.dropIndex(
       "audit_trails",
-      "idx_audit_trails_severity_time",
+      "idx_audit_trails_severity_time"
     );
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_user_time");
     await queryRunner.dropIndex(
       "audit_trails",
-      "idx_audit_trails_table_action_time",
+      "idx_audit_trails_table_action_time"
     );
     await queryRunner.dropIndex(
       "audit_trails",
-      "idx_audit_trails_amount_involved",
+      "idx_audit_trails_amount_involved"
     );
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_risk_score");
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_request_id");
@@ -598,20 +623,20 @@ export class CreateAuditTrailsTable1757332290000 implements MigrationInterface {
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_created_at");
     await queryRunner.dropIndex(
       "audit_trails",
-      "idx_audit_trails_action_timestamp",
+      "idx_audit_trails_action_timestamp"
     );
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_budget_id");
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_event_id");
     await queryRunner.dropIndex(
       "audit_trails",
-      "idx_audit_trails_organization_id",
+      "idx_audit_trails_organization_id"
     );
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_severity");
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_action_type");
     await queryRunner.dropIndex("audit_trails", "idx_audit_trails_user_id");
     await queryRunner.dropIndex(
       "audit_trails",
-      "idx_audit_trails_table_record",
+      "idx_audit_trails_table_record"
     );
 
     // 외래키 삭제
