@@ -8,36 +8,28 @@ import * as redisStore from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthController } from './health/health.controller';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     // 환경 설정 모듈
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env.development',
+      envFilePath: [
+        `.env.${process.env.NODE_ENV || 'development'}`,
+        '.env'
+      ],
       cache: true,
+      expandVariables: true,
     }),
 
     // 데이터베이스 모듈
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        url: configService.get('DATABASE_URL'),
-        host: configService.get('DATABASE_HOST'),
-        port: configService.get('DATABASE_PORT'),
-        username: configService.get('DATABASE_USER'),
-        password: configService.get('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
-        schema: configService.get('DATABASE_SCHEMA'),
-        synchronize: configService.get('NODE_ENV') === 'development',
-        logging: configService.get('ENABLE_QUERY_LOGGING') === 'true',
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
-        retryAttempts: 3,
-        retryDelay: 3000,
-        autoLoadEntities: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const { createDatabaseConfig } = require('./config/database.config');
+        return createDatabaseConfig(configService);
+      },
       inject: [ConfigService],
     }),
 
@@ -66,6 +58,9 @@ import { HealthController } from './health/health.controller';
 
     // 스케줄러 모듈 (백그라운드 작업용)
     ScheduleModule.forRoot(),
+
+    // 데이터베이스 관리 모듈
+    DatabaseModule,
 
     // 비즈니스 모듈들 (향후 추가 예정)
     // AuthModule,
