@@ -123,7 +123,8 @@ if echo "$COMMIT_MSG" | grep -q "("; then
 fi
 
 # ===== 설명 검증 =====
-DESCRIPTION=$(echo "$COMMIT_MSG" | sed -n 's/^[a-z]*\(\([^)]*\)\)\?:[[:space:]]*\(.*\)/\3/p')
+# 더 간단한 방법으로 설명 추출
+DESCRIPTION=$(echo "$COMMIT_MSG" | sed 's/^[^:]*:[[:space:]]*//')
 if [ -z "$DESCRIPTION" ]; then
     echo -e "${RED}❌ 커밋 설명이 비어있습니다${NC}"
     exit 1
