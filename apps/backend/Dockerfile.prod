@@ -1,0 +1,144 @@
+# =================================================================
+# NestJS Backend - Production Dockerfile (Multi-stage)
+# 프로젝트: 광남동성당 청소년위원회 예결산 관리 시스템
+# 환경: Production
+# =================================================================
+
+# =================================================================
+# Stage 1: Build Stage
+# =================================================================
+FROM node:20-alpine as builder
+
+# 메타데이터 설정
+LABEL maintainer="광남동성당 청소년위원회 개발팀"
+LABEL description="NestJS Backend Production Build Stage"
+
+# 빌드 도구 설치
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/cache/apk/*
+
+# 작업 디렉터리 설정
+WORKDIR /app
+
+# 빌드 사용자 생성
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S builder -u 1001 -G nodejs
+
+# 의존성 파일 복사
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
+
+# 프로덕션 의존성만 설치
+RUN npm ci --only=production --no-audit --no-fund \
+    && npm cache clean --force
+
+# 개발 의존성 설치 (빌드용)
+RUN npm install --only=development --no-audit --no-fund
+
+# 소스 코드 복사
+COPY . .
+
+# 권한 설정
+RUN chown -R builder:nodejs /app
+USER builder
+
+# TypeScript 컴파일 및 빌드
+ENV NODE_ENV=production
+RUN npm run build
+
+# node_modules에서 프로덕션 의존성만 재설치
+USER root
+RUN rm -rf node_modules && npm ci --only=production --no-audit --no-fund
+
+# =================================================================
+# Stage 2: Production Stage
+# =================================================================
+FROM node:20-alpine as production
+
+# 메타데이터 설정
+LABEL maintainer="광남동성당 청소년위원회 개발팀"
+LABEL description="NestJS Backend Production Container"
+LABEL version="1.0.0"
+
+# 프로덕션 런타임 도구 설치
+RUN apk update && apk upgrade \
+    && apk add --no-cache \
+    curl \
+    tzdata \
+    postgresql-client \
+    tini \
+    && rm -rf /var/cache/apk/*
+
+# 시간대 설정
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 작업 디렉터리 설정
+WORKDIR /app
+
+# 프로덕션 사용자 생성
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S nestjs -u 1001 -G nodejs
+
+# 애플리케이션 파일 복사
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
+
+# 필요한 디렉터리 생성
+RUN mkdir -p /app/uploads /app/logs \
+    && chown -R nestjs:nodejs /app \
+    && chmod -R 755 /app
+
+# 사용자 전환
+USER nestjs
+
+# 환경 변수 설정
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+ENV NPM_CONFIG_LOGLEVEL=error
+
+# 포트 설정
+EXPOSE 8000
+
+# 헬스체크 설정
+HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
+    CMD curl -f http://localhost:8000/api/health || exit 1
+
+# Tini 초기화 시스템 사용 (신호 처리 개선)
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# 프로덕션 시작 명령어
+CMD ["node", "dist/main.js"]
+
+# =================================================================
+# 프로덕션 최적화 설정
+# =================================================================
+#
+# 🏗️ 멀티스테이지 빌드:
+#   - Stage 1: TypeScript 컴파일 및 의존성 정리
+#   - Stage 2: 런타임 최적화된 컨테이너
+#   - 최종 이미지 크기 최소화
+#
+# 🚀 성능 최적화:
+#   - 컴파일된 JavaScript: 런타임 오버헤드 제거
+#   - 프로덕션 의존성만: 불필요한 dev dependencies 제외
+#   - 메모리 최적화: 적절한 힙 크기 설정
+#   - Tini 초기화: 좀비 프로세스 방지
+#
+# 🛡️ 보안 설정:
+#   - Non-root 사용자: nestjs 계정으로 실행
+#   - 최소 권한 원칙: 필요한 권한만 부여
+#   - 보안 업데이트: 최신 Alpine 패키지
+#   - 런타임 도구 최소화: 공격 표면 감소
+#
+# 📊 모니터링 및 운영:
+#   - 헬스체크: /api/health 엔드포인트
+#   - 로그 디렉터리: 애플리케이션 로그 저장
+#   - 업로드 디렉터리: 파일 업로드 지원
+#   - 신호 처리: 우아한 종료 지원
+# =================================================================
