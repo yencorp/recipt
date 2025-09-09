@@ -155,55 +155,58 @@
 **담당자**: 백엔드 개발자 2명 (병렬 작업)
 
 **Developer A 담당**:
-- [ ] User Entity 클래스
-- [ ] Organization Entity 클래스
-- [ ] UserOrganization Entity 클래스
+- [x] User Entity 클래스
+- [x] Organization Entity 클래스
+- [x] UserOrganization Entity 클래스
 
 **Developer B 담당**:
-- [ ] Event Entity 클래스
-- [ ] Budget Entity 클래스
-- [ ] BudgetItem Entity 클래스
+- [x] Event Entity 클래스
+- [x] Budget Entity 클래스 (Budget, BudgetIncome, BudgetExpense로 분리)
+- [x] BudgetItem Entity 클래스 (Budget 내 통합)
 
 **세부 작업**:
-- [ ] TypeORM 데코레이터 적용
-- [ ] 관계 매핑 설정 (@OneToMany, @ManyToOne, @ManyToMany)
-- [ ] 유효성 검증 규칙 추가
-- [ ] 가상 컬럼 및 계산 필드 설정
+- [x] TypeORM 데코레이터 적용
+- [x] 관계 매핑 설정 (@OneToMany, @ManyToOne, @ManyToMany)
+- [x] 유효성 검증 규칙 추가
+- [x] 가상 컬럼 및 계산 필드 설정
 
 **완료 기준**:
-- 모든 Entity 클래스 정상 동작
-- 관계 매핑 검증 완료
-- 타입 안정성 확보
+- 모든 Entity 클래스 정상 동작 ✅
+- 관계 매핑 검증 완료 ✅
+- 타입 안정성 확보 ✅
 
 **산출물**:
-- `backend/src/entities/user.entity.ts`
-- `backend/src/entities/organization.entity.ts`
-- `backend/src/entities/user-organization.entity.ts`
-- `backend/src/entities/event.entity.ts`
-- `backend/src/entities/budget.entity.ts`
-- `backend/src/entities/budget-item.entity.ts`
+- `backend/src/entities/user.entity.ts` ✅
+- `backend/src/entities/organization.entity.ts` ✅
+- `backend/src/entities/user-organization.entity.ts` ✅
+- `backend/src/entities/event.entity.ts` ✅
+- `backend/src/entities/budget.entity.ts` ✅
+- `backend/src/entities/budget-income.entity.ts` ✅
+- `backend/src/entities/budget-expense.entity.ts` ✅
 
 #### Task 2.8: 결산/OCR Entity 클래스 작성 (2시간)
 **담당자**: 백엔드 개발자 (시니어)
 
 **세부 작업**:
-- [ ] Settlement Entity 클래스
-- [ ] SettlementItem Entity 클래스  
-- [ ] Receipt Entity 클래스
-- [ ] ReceiptItem Entity 클래스
-- [ ] OCRJob Entity 클래스
+- [x] Settlement Entity 클래스
+- [x] SettlementItem Entity 클래스  
+- [x] Receipt Entity 클래스 (ReceiptScan, ReceiptValidation으로 분리)
+- [x] ReceiptItem Entity 클래스 (Receipt 관련 Entity 내 통합)
+- [x] OCRJob Entity 클래스 (OCRResult로 구현)
+- [x] AuditTrail Entity 클래스 (추가 구현)
 
 **완료 기준**:
-- 복잡한 관계 매핑 완료
-- JSON 필드 처리 구현
-- 파일 경로 및 메타데이터 처리
+- 복잡한 관계 매핑 완료 ✅
+- JSON 필드 처리 구현 ✅
+- 파일 경로 및 메타데이터 처리 ✅
 
 **산출물**:
-- `backend/src/entities/settlement.entity.ts`
-- `backend/src/entities/settlement-item.entity.ts`
-- `backend/src/entities/receipt.entity.ts`
-- `backend/src/entities/receipt-item.entity.ts`
-- `backend/src/entities/ocr-job.entity.ts`
+- `backend/src/entities/settlement.entity.ts` ✅
+- `backend/src/entities/settlement-item.entity.ts` ✅
+- `backend/src/entities/receipt-scan.entity.ts` ✅
+- `backend/src/entities/receipt-validation.entity.ts` ✅
+- `backend/src/entities/ocr-result.entity.ts` ✅
+- `backend/src/entities/audit-trail.entity.ts` ✅
 
 #### Task 2.9: Repository 패턴 구현 (2시간)
 **담당자**: 백엔드 개발자 (시니어)
