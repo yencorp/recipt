@@ -215,21 +215,25 @@
 **담당자**: 백엔드 개발자 (시니어)
 
 **세부 작업**:
-- [ ] 기본 Repository 인터페이스 정의
-- [ ] 커스텀 Repository 메서드 구현
-- [ ] 쿼리 최적화 로직 추가
-- [ ] 트랜잭션 처리 패턴 구현
+- [x] 기본 Repository 인터페이스 정의
+- [x] 커스텀 Repository 메서드 구현
+- [x] 쿼리 최적화 로직 추가
+- [x] 트랜잭션 처리 패턴 구현
 
 **완료 기준**:
-- Repository 패턴 일관성 확보
-- 복잡한 쿼리 메서드 구현
-- 트랜잭션 안전성 보장
+- Repository 패턴 일관성 확보 ✅
+- 복잡한 쿼리 메서드 구현 ✅
+- 트랜잭션 안전성 보장 ✅
 
 **산출물**:
-- `backend/src/repositories/base.repository.ts`
-- `backend/src/repositories/user.repository.ts`
-- `backend/src/repositories/event.repository.ts`
-- `backend/src/repositories/budget.repository.ts`
+- `backend/src/repositories/base.repository.ts` ✅
+- `backend/src/repositories/user.repository.ts` ✅
+- `backend/src/repositories/event.repository.ts` ✅
+- `backend/src/repositories/budget.repository.ts` ✅
+- `backend/src/repositories/query-optimizer.ts` ✅ (추가 구현)
+- `backend/src/repositories/transaction-manager.ts` ✅ (추가 구현)
+- `backend/src/repositories/index.ts` ✅ (추가 구현)
+- `backend/src/repositories/README.md` ✅ (문서화)
 
 ---
 
