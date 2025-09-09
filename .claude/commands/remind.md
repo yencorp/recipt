@@ -4,9 +4,9 @@ argument-hint: [count|docs]
 description: Display recent commit history (default: 50 commits) or read all docs
 ---
 
-If the argument is "docs", then I need to read and understand all documentation files in the docs/ folder completely:
+If the argument is "docs", then I need to read and understand all markdown documentation files in the docs/ folder completely:
 
-1. First, find all documentation files in docs/ folder
+1. First, find all documentation files in docs/ folder except docs/_sample_docs/ folder & docs/_sample_sourcecode/ folder.
 2. For each file, read it entirely from beginning to end 
 3. If a file is large (>1000 lines), read it in chunks of 1000 lines until complete
 4. Analyze and summarize the key information from each document

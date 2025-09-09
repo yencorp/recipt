@@ -24,6 +24,10 @@
     "migration:revert": "typeorm migration:revert -d src/database/data-source.ts",
     "schema:drop": "typeorm schema:drop -d src/database/data-source.ts",
     "schema:sync": "typeorm schema:sync -d src/database/data-source.ts",
+    "seed": "ts-node --esm -r tsconfig-paths/register src/database/seeds/index.ts",
+    "seed:organizations": "ts-node --esm -r tsconfig-paths/register src/database/seeds/index.ts --specific 조직",
+    "seed:users": "ts-node --esm -r tsconfig-paths/register src/database/seeds/index.ts --specific 사용자",
+    "seed:relations": "ts-node --esm -r tsconfig-paths/register src/database/seeds/index.ts --specific 관계",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

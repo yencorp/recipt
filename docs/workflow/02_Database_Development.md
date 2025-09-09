@@ -243,20 +243,22 @@
 **담당자**: 백엔드 개발자 (주니어)
 
 **세부 작업**:
-- [ ] 기본 단체 데이터 (청년회, 자모회, 초등부, 중고등부)
-- [ ] 관리자 사용자 계정
-- [ ] 기본 설정 데이터
-- [ ] 권한 및 역할 데이터
+- [x] 기본 단체 데이터 (청년회, 자모회, 초등부, 중고등부)
+- [x] 관리자 사용자 계정
+- [x] 기본 설정 데이터 (Organization settings 필드에 포함)
+- [x] 권한 및 역할 데이터 (UserOrganization 엔티티로 구현)
 
 **완료 기준**:
-- 시스템 운영에 필요한 최소 데이터 준비
-- 관리자 계정으로 로그인 가능
-- 기본 설정 정상 동작
+- 시스템 운영에 필요한 최소 데이터 준비 ✅
+- 관리자 계정으로 로그인 가능 ✅
+- 기본 설정 정상 동작 ✅
 
 **산출물**:
-- `backend/src/database/seeds/01-organizations.seed.ts`
-- `backend/src/database/seeds/02-admin-user.seed.ts`
-- `backend/src/database/seeds/03-basic-settings.seed.ts`
+- `backend/src/database/seeds/01-organizations.seed.ts` ✅
+- `backend/src/database/seeds/02-admin-users.seed.ts` ✅
+- `backend/src/database/seeds/03-user-organizations.seed.ts` ✅
+- `backend/src/database/seeds/index.ts` ✅
+- Package.json 스크립트 추가 (seed, seed:organizations, seed:users, seed:relations) ✅
 
 #### Task 2.11: 개발용 테스트 데이터 작성 (3시간)
 **담당자**: 백엔드 개발자 2명
