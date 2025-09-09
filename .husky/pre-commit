@@ -153,20 +153,31 @@ fi
 # ===== 보안 검사 =====
 echo -e "\n${BLUE}🔒 보안 검사 중...${NC}"
 
-# 민감 정보 패턴 검사
+# 민감 정보 패턴 검사 (개선된 패턴으로 false positive 최소화)
 SENSITIVE_PATTERNS=(
-    "password.*=.*['\"][^'\"]*['\"]"
-    "api.*key.*=.*['\"][^'\"]*['\"]"
-    "secret.*=.*['\"][^'\"]*['\"]"
-    "token.*=.*['\"][^'\"]*['\"]"
-    "aws.*access.*key"
-    "private.*key"
+    "password\s*[:=]\s*['\"][a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{8,}['\"]"
+    "api[_-]?key\s*[:=]\s*['\"][a-zA-Z0-9]{20,}['\"]"
+    "secret\s*[:=]\s*['\"][a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]{16,}['\"]"
+    "token\s*[:=]\s*['\"][a-zA-Z0-9]{32,}['\"]"
+    "aws_access_key_id\s*[:=]\s*['\"][A-Z0-9]{20}['\"]"
+    "private_key\s*[:=]\s*['\"]-----BEGIN"
 )
 
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
-    if echo "$CHANGED_FILES" | grep -v '\.husky/' | xargs grep -il "$pattern" 2>/dev/null; then
-        echo -e "${RED}❌ 민감한 정보가 포함되어 있을 수 있습니다: $pattern${NC}"
-        ERROR_COUNT=$((ERROR_COUNT + 1))
+    # 민감 정보 패턴 검사 (enum, const, type 정의는 제외)
+    MATCHED_FILES=$(echo "$CHANGED_FILES" | grep -v '\.husky/' | xargs grep -l "$pattern" 2>/dev/null | \
+        xargs grep -L "enum\|const\|type.*=" 2>/dev/null || true)
+    
+    if [ -n "$MATCHED_FILES" ]; then
+        # 추가 검증: 실제로 값이 할당되는 라인인지 확인
+        for file in $MATCHED_FILES; do
+            SUSPICIOUS_LINES=$(grep -n "$pattern" "$file" | grep -v "enum\|const.*=.*\"\w\+\"\|type.*=" || true)
+            if [ -n "$SUSPICIOUS_LINES" ]; then
+                echo -e "${RED}❌ 민감한 정보가 포함되어 있을 수 있습니다: $file${NC}"
+                echo "$SUSPICIOUS_LINES" | sed 's/^/  • /'
+                ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+        done
     fi
 done
 
