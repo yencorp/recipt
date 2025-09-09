@@ -97,55 +97,58 @@
 **담당자**: 백엔드 개발자 2명 (병렬 작업)  
 
 **Developer A 담당 테이블**:
-- [ ] users (사용자)
-- [ ] organizations (단체)  
-- [ ] user_organizations (사용자-단체 관계)
+- [x] users (사용자)
+- [x] organizations (단체)  
+- [x] user_organizations (사용자-단체 관계)
 
 **Developer B 담당 테이블**:
-- [ ] events (행사)
-- [ ] budgets (예산서)
-- [ ] budget_items (예산 항목)
+- [x] events (행사)
+- [x] budgets (예산서)
+- [x] budget_items (예산 항목) - BudgetIncomes, BudgetExpenses로 분리 구현
 
 **세부 작업**:
-- [ ] CREATE TABLE 문 작성
-- [ ] 제약 조건 및 인덱스 설정
-- [ ] 외래키 관계 설정
-- [ ] 기본값 및 체크 제약 조건
+- [x] CREATE TABLE 문 작성
+- [x] 제약 조건 및 인덱스 설정
+- [x] 외래키 관계 설정
+- [x] 기본값 및 체크 제약 조건
 
 **완료 기준**:
-- 모든 테이블 생성 마이그레이션 완료
-- 외래키 관계 정상 설정
-- 제약 조건 정상 동작
+- 모든 테이블 생성 마이그레이션 완료 ✅
+- 외래키 관계 정상 설정 ✅
+- 제약 조건 정상 동작 ✅
 
 **산출물**:
-- `backend/src/database/migrations/001-create-users-table.ts`
-- `backend/src/database/migrations/002-create-organizations-table.ts`
-- `backend/src/database/migrations/003-create-user-organizations-table.ts`
-- `backend/src/database/migrations/004-create-events-table.ts`
-- `backend/src/database/migrations/005-create-budgets-table.ts`
-- `backend/src/database/migrations/006-create-budget-items-table.ts`
+- `apps/backend/src/database/migrations/1757331860358-CreateUsersTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332045857-CreateOrganizationsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332257934-CreateUserOrganizationsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332260435-CreateEventsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332263014-CreateBudgetsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332265611-CreateBudgetIncomesTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332277135-CreateBudgetExpensesTable.ts` ✅
 
 #### Task 2.6: 결산 및 OCR 관련 테이블 마이그레이션 (2시간)
 **담당자**: 백엔드 개발자 (시니어)  
 
 **세부 작업**:
-- [ ] settlements (결산서) 테이블
-- [ ] settlement_items (결산 항목) 테이블
-- [ ] receipts (영수증) 테이블
-- [ ] receipt_items (영수증 항목) 테이블
-- [ ] ocr_jobs (OCR 작업) 테이블
+- [x] settlements (결산서) 테이블
+- [x] settlement_items (결산 항목) 테이블
+- [x] receipts (영수증) 테이블 - ReceiptScans, ReceiptValidations로 분리 구현
+- [x] receipt_items (영수증 항목) 테이블 - Receipt 관련 엔티티에 통합
+- [x] ocr_jobs (OCR 작업) 테이블 - OCRResults로 구현
+- [x] audit_trails (감사 로그) 테이블 - 추가 구현
 
 **완료 기준**:
-- 모든 결산/OCR 테이블 생성 완료
-- 복잡한 관계 정상 설정
-- 성능 고려 인덱스 설정
+- 모든 결산/OCR 테이블 생성 완료 ✅
+- 복잡한 관계 정상 설정 ✅
+- 성능 고려 인덱스 설정 ✅
 
 **산출물**:
-- `backend/src/database/migrations/007-create-settlements-table.ts`
-- `backend/src/database/migrations/008-create-settlement-items-table.ts`  
-- `backend/src/database/migrations/009-create-receipts-table.ts`
-- `backend/src/database/migrations/010-create-receipt-items-table.ts`
-- `backend/src/database/migrations/011-create-ocr-jobs-table.ts`
+- `apps/backend/src/database/migrations/1757332280000-CreateSettlementsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332285000-CreateSettlementItemsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332295000-CreateReceiptScansTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332305000-CreateReceiptValidationsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332300000-CreateOcrResultsTable.ts` ✅
+- `apps/backend/src/database/migrations/1757332290000-CreateAuditTrailsTable.ts` ✅
 
 ---
 
