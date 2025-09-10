@@ -264,40 +264,40 @@
 **담당자**: 백엔드 개발자 2명
 
 **세부 작업**:
-- [ ] 테스트 사용자 계정 (단체별 다양한 역할)
-- [ ] 샘플 행사 데이터
-- [ ] 예산서/결산서 예시 데이터
-- [ ] 영수증 샘플 데이터
+- [x] 테스트 사용자 계정 (단체별 다양한 역할)
+- [x] 샘플 행사 데이터
+- [x] 예산서/결산서 예시 데이터
+- [x] 영수증 샘플 데이터
 
 **완료 기준**:
-- 다양한 시나리오 테스트 가능한 데이터
-- 권한별 테스트 계정 준비
-- 완전한 예결산 플로우 테스트 가능
+- 다양한 시나리오 테스트 가능한 데이터 ✅
+- 권한별 테스트 계정 준비 ✅
+- 완전한 예결산 플로우 테스트 가능 ✅
 
 **산출물**:
-- `backend/src/database/seeds/04-test-users.seed.ts`
-- `backend/src/database/seeds/05-sample-events.seed.ts`
-- `backend/src/database/seeds/06-sample-budgets.seed.ts`
+- `backend/src/database/seeds/04-test-users.seed.ts` ✅
+- `backend/src/database/seeds/05-sample-events.seed.ts` ✅
+- `backend/src/database/seeds/06-sample-budgets.seed.ts` ✅
 
 #### Task 2.12: 데이터 생성 자동화 스크립트 (2시간)
 **담당자**: DevOps 엔지니어 + 백엔드 개발자
 
 **세부 작업**:
-- [ ] 대량 테스트 데이터 생성 스크립트
-- [ ] 데이터베이스 초기화 스크립트
-- [ ] 백업 및 복원 스크립트
-- [ ] 개발환경 리셋 스크립트
+- [x] 대량 테스트 데이터 생성 스크립트
+- [x] 데이터베이스 초기화 스크립트
+- [x] 백업 및 복원 스크립트
+- [x] 개발환경 리셋 스크립트
 
 **완료 기준**:
-- 원클릭으로 데이터베이스 초기화 가능
-- 대량 데이터로 성능 테스트 가능
-- 백업/복원 자동화 완료
+- 원클릭으로 데이터베이스 초기화 가능 ✅
+- 대량 데이터로 성능 테스트 가능 ✅
+- 백업/복원 자동화 완료 ✅
 
 **산출물**:
-- `scripts/generate-test-data.ts`
-- `scripts/db-reset.sh`
-- `scripts/db-backup.sh`
-- `scripts/db-restore.sh`
+- `backend/src/database/scripts/bulk-data-generator.ts` ✅
+- `backend/src/database/scripts/database-utils.ts` ✅  
+- `backend/src/database/scripts/backup-restore.ts` ✅
+- Package.json 스크립트 5개 추가 ✅
 
 ---
 
