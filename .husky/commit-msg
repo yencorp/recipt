@@ -25,7 +25,7 @@ echo -e "${BLUE}메시지: ${COMMIT_MSG}${NC}"
 # Conventional Commits 패턴 정의
 # 형식: type(scope): description
 # type은 필수, scope는 선택, description은 필수
-CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,72}"
+CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+"
 
 # 허용되는 타입들
 VALID_TYPES="feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert"
@@ -42,21 +42,33 @@ SPECIAL_PATTERNS=(
     "^🤖 Generated with.*"
 )
 
-# 길이 제한
-MAX_LENGTH=72
+# 길이 제한 (통상적인 Git 규칙)
+SUBJECT_MAX_LENGTH=72
+SUBJECT_RECOMMENDED_LENGTH=50
 MIN_LENGTH=10
 
 # ===== 길이 검증 =====
-MSG_LENGTH=${#COMMIT_MSG}
-if [ $MSG_LENGTH -lt $MIN_LENGTH ]; then
-    echo -e "${RED}❌ 커밋 메시지가 너무 짧습니다 (최소 $MIN_LENGTH 자)${NC}"
+# 첫 번째 줄 (제목) 추출
+SUBJECT_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+SUBJECT_LENGTH=${#SUBJECT_LINE}
+
+# 제목 길이 검증
+if [ $SUBJECT_LENGTH -lt $MIN_LENGTH ]; then
+    echo -e "${RED}❌ 커밋 메시지 제목이 너무 짧습니다 (최소 $MIN_LENGTH 자)${NC}"
     exit 1
 fi
 
-if [ $MSG_LENGTH -gt $MAX_LENGTH ]; then
-    echo -e "${RED}❌ 커밋 메시지가 너무 깁니다 (최대 $MAX_LENGTH 자)${NC}"
-    echo -e "${YELLOW}💡 현재 길이: $MSG_LENGTH 자${NC}"
+if [ $SUBJECT_LENGTH -gt $SUBJECT_MAX_LENGTH ]; then
+    echo -e "${RED}❌ 커밋 메시지 제목이 너무 깁니다 (최대 $SUBJECT_MAX_LENGTH 자)${NC}"
+    echo -e "${YELLOW}💡 현재 길이: $SUBJECT_LENGTH 자${NC}"
+    echo -e "${YELLOW}💡 권장 길이: $SUBJECT_RECOMMENDED_LENGTH 자 이내${NC}"
     exit 1
+fi
+
+# 제목 권장 길이 경고
+if [ $SUBJECT_LENGTH -gt $SUBJECT_RECOMMENDED_LENGTH ]; then
+    echo -e "${YELLOW}⚠️ 커밋 메시지 제목이 권장 길이를 초과합니다 ($SUBJECT_RECOMMENDED_LENGTH 자 권장)${NC}"
+    echo -e "${YELLOW}💡 현재 길이: $SUBJECT_LENGTH 자${NC}"
 fi
 
 # ===== 특별한 패턴 확인 =====
@@ -97,7 +109,7 @@ if ! echo "$COMMIT_MSG" | grep -qE "$CONVENTIONAL_PATTERN"; then
 fi
 
 # ===== 타입 추출 및 검증 =====
-TYPE=$(echo "$COMMIT_MSG" | sed -n 's/^\([a-z]*\).*/\1/p')
+TYPE=$(echo "$SUBJECT_LINE" | sed -n 's/^\([a-z]*\).*/\1/p')
 if ! echo "$TYPE" | grep -qE "^($VALID_TYPES)$"; then
     echo -e "${RED}❌ 올바르지 않은 커밋 타입: $TYPE${NC}"
     echo -e "${YELLOW}📝 허용되는 타입: $VALID_TYPES${NC}"
@@ -105,8 +117,8 @@ if ! echo "$TYPE" | grep -qE "^($VALID_TYPES)$"; then
 fi
 
 # ===== 스코프 검증 (있는 경우) =====
-if echo "$COMMIT_MSG" | grep -q "("; then
-    SCOPE=$(echo "$COMMIT_MSG" | sed -n 's/^[a-z]*(\([^)]*\)).*/\1/p')
+if echo "$SUBJECT_LINE" | grep -q "("; then
+    SCOPE=$(echo "$SUBJECT_LINE" | sed -n 's/^[a-z]*(\([^)]*\)).*/\1/p')
     if [ -z "$SCOPE" ]; then
         echo -e "${RED}❌ 빈 스코프는 허용되지 않습니다${NC}"
         echo -e "${YELLOW}💡 스코프를 사용하지 않거나 유효한 스코프를 입력하세요${NC}"
@@ -123,8 +135,8 @@ if echo "$COMMIT_MSG" | grep -q "("; then
 fi
 
 # ===== 설명 검증 =====
-# 더 간단한 방법으로 설명 추출
-DESCRIPTION=$(echo "$COMMIT_MSG" | sed 's/^[^:]*:[[:space:]]*//')
+# 제목에서 설명 추출
+DESCRIPTION=$(echo "$SUBJECT_LINE" | sed 's/^[^:]*:[[:space:]]*//')
 if [ -z "$DESCRIPTION" ]; then
     echo -e "${RED}❌ 커밋 설명이 비어있습니다${NC}"
     exit 1
@@ -162,7 +174,7 @@ if [ -n "$SCOPE" ]; then
     echo -e "${BLUE}  • 스코프: $SCOPE${NC}"
 fi
 echo -e "${BLUE}  • 설명: $DESCRIPTION${NC}"
-echo -e "${BLUE}  • 길이: $MSG_LENGTH/$MAX_LENGTH 자${NC}"
+echo -e "${BLUE}  • 제목 길이: $SUBJECT_LENGTH/$SUBJECT_MAX_LENGTH 자${NC}"
 
 # ===== 성공 메시지 =====
 echo -e "\n${GREEN}✅ 커밋 메시지가 Conventional Commits 표준을 준수합니다${NC}"
