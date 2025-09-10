@@ -43,7 +43,12 @@
     "db:validate": "ts-node --esm -r tsconfig-paths/register src/database/scripts/database-utils.ts validate",
     "bulk-data": "ts-node --esm -r tsconfig-paths/register src/database/scripts/bulk-data-generator.ts",
     "bulk-data:small": "ts-node --esm -r tsconfig-paths/register src/database/scripts/bulk-data-generator.ts --users=100 --events=50 --receipts=500",
-    "bulk-data:large": "ts-node --esm -r tsconfig-paths/register src/database/scripts/bulk-data-generator.ts --users=5000 --events=1000 --receipts=25000"
+    "bulk-data:large": "ts-node --esm -r tsconfig-paths/register src/database/scripts/bulk-data-generator.ts --users=5000 --events=1000 --receipts=25000",
+    "db:optimize-indexes": "ts-node --esm -r tsconfig-paths/register src/database/scripts/index-optimization.ts",
+    "db:analyze-performance": "ts-node --esm -r tsconfig-paths/register src/database/scripts/query-analyzer.ts",
+    "db:analyze-slow-queries": "ts-node --esm -r tsconfig-paths/register src/database/scripts/query-analyzer.ts --slow-queries",
+    "db:analyze-indexes": "ts-node --esm -r tsconfig-paths/register src/database/scripts/query-analyzer.ts --index-efficiency",
+    "db:analyze-tables": "ts-node --esm -r tsconfig-paths/register src/database/scripts/query-analyzer.ts --table-stats"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

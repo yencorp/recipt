@@ -10,6 +10,9 @@ src/database/scripts/
 ├── bulk-data-generator.ts     # 대량 테스트 데이터 생성
 ├── backup-restore.ts          # 백업/복원 도구
 ├── database-utils.ts          # 데이터베이스 관리 유틸리티
+├── index-optimization.ts      # 인덱스 최적화 및 생성
+├── query-analyzer.ts          # 쿼리 성능 분석
+├── INDEX_OPTIMIZATION.md      # 인덱스 최적화 가이드
 └── README.md                  # 본 문서
 ```
 
@@ -114,6 +117,37 @@ npm run db:validate
 # 개발 환경 완전 리셋
 npm run db:reset-dev
 ```
+
+### 5. 인덱스 최적화 및 성능 분석
+
+**Task 2.13**에서 개발된 데이터베이스 성능 최적화 도구입니다.
+
+```bash
+# 종합 인덱스 최적화 실행
+npm run db:optimize-indexes
+
+# 종합 성능 분석 리포트 생성  
+npm run db:analyze-performance
+
+# 개별 분석 도구
+npm run db:analyze-slow-queries    # 느린 쿼리 분석
+npm run db:analyze-indexes         # 인덱스 효율성 분석
+npm run db:analyze-tables          # 테이블 통계 분석
+```
+
+**최적화 기능:**
+- **복합 인덱스**: 자주 함께 조회되는 컬럼 조합 최적화
+- **부분 인덱스**: 조건부 인덱스로 저장공간 절약 및 성능 향상
+- **전문 검색 인덱스**: GIN 인덱스를 활용한 텍스트 검색 최적화
+- **인덱스 사용률 분석**: 기존 인덱스의 효율성 평가
+
+**성능 분석:**
+- **느린 쿼리 탐지**: pg_stat_statements 기반 병목 지점 식별
+- **실행 계획 분석**: EXPLAIN ANALYZE를 통한 상세 분석
+- **캐시 히트율 분석**: 메모리 사용 효율성 평가
+- **테이블 최적화**: Dead tuple, VACUUM 상태 모니터링
+
+자세한 내용은 [인덱스 최적화 가이드](./INDEX_OPTIMIZATION.md)를 참고하세요.
 
 ## 📊 기능별 상세 설명
 
@@ -254,5 +288,6 @@ CREATE INDEX idx_events_in_progress ON events(start_date) WHERE status IN ('PLAN
 ---
 
 **개발팀 문의**: 광남동성당 청소년위원회 개발팀  
-**문서 버전**: 1.0.0 (Task 2.12)  
-**최종 업데이트**: 2024년
+**문서 버전**: 1.1.0 (Task 2.12 + Task 2.13)  
+**최종 업데이트**: 2024년 1월  
+**추가 기능**: 인덱스 최적화 및 쿼리 성능 분석 (Task 2.13)

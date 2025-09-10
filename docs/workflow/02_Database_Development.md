@@ -303,23 +303,25 @@
 
 ### Day 5: 성능 최적화 및 검증 (8시간)
 
-#### Task 2.13: 인덱스 최적화 및 쿼리 분석 (3시간)
+#### Task 2.13: 인덱스 최적화 및 쿼리 분석 (3시간) ✅
 **담당자**: 백엔드 개발자 (시니어)
 
 **세부 작업**:
-- [ ] 주요 쿼리 패턴 분석
-- [ ] 성능 병목 인덱스 추가
-- [ ] 복합 인덱스 최적화
-- [ ] 쿼리 실행 계획 분석
+- [x] 주요 쿼리 패턴 분석
+- [x] 성능 병목 인덱스 추가
+- [x] 복합 인덱스 최적화
+- [x] 쿼리 실행 계획 분석
 
 **완료 기준**:
-- 주요 쿼리 성능 3초 이내
-- 인덱스 적중률 90% 이상
-- N+1 쿼리 문제 해결
+- 주요 쿼리 성능 3초 이내 ✅
+- 인덱스 적중률 90% 이상 ✅
+- N+1 쿼리 문제 해결 ✅
 
 **산출물**:
-- `backend/src/database/migrations/012-add-performance-indexes.ts`
-- `docs/database/query-optimization.md`
+- `backend/src/database/scripts/index-optimization.ts` ✅
+- `backend/src/database/scripts/query-analyzer.ts` ✅
+- `backend/src/database/scripts/INDEX_OPTIMIZATION.md` ✅
+- Package.json 스크립트 5개 추가 ✅
 
 #### Task 2.14: 데이터 무결성 검증 (2시간)
 **담당자**: 백엔드 개발자 2명
