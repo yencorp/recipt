@@ -9,7 +9,16 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HealthController } from "./health/health.controller";
 import { DatabaseModule } from "./database/database.module";
+import { CommonModule } from "./common/common.module";
+import { ConfigModule as AppConfigModule } from "./config/config.module";
 import { createDatabaseConfig } from "./config/database.config";
+
+// 비즈니스 모듈 imports
+import { AuthModule } from "./modules/auth/auth.module";
+import { UsersModule } from "./modules/users/users.module";
+import { EventsModule } from "./modules/events/events.module";
+import { BudgetsModule } from "./modules/budgets/budgets.module";
+import { SettlementsModule } from "./modules/settlements/settlements.module";
 
 @Module({
   imports: [
@@ -56,19 +65,24 @@ import { createDatabaseConfig } from "./config/database.config";
     // 스케줄러 모듈 (백그라운드 작업용)
     ScheduleModule.forRoot(),
 
-    // 데이터베이스 관리 모듈
+    // 공통 모듈들
+    CommonModule,
+    AppConfigModule,
     DatabaseModule,
 
-    // 비즈니스 모듈들 (향후 추가 예정)
-    // AuthModule,
-    // UsersModule,
+    // 비즈니스 모듈들
+    AuthModule,
+    UsersModule,
+    EventsModule,
+    BudgetsModule,
+    SettlementsModule,
+
+    // TODO: 향후 추가 예정 모듈들
     // OrganizationsModule,
-    // ProjectsModule,
-    // BudgetsModule,
-    // SettlementsModule,
-    // ReceiptsModule,
-    // DocumentsModule,
-    // BlogModule,
+    // ReceiptScansModule,
+    // OcrModule,
+    // PostsModule,
+    // AdminModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
