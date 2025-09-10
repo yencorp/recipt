@@ -17,20 +17,25 @@
 **담당자**: 백엔드 시니어 개발자  
 
 **세부 작업**:
-- [ ] NestJS CLI를 사용한 프로젝트 초기화
-- [ ] 모듈 구조 설계 (auth, users, events, budgets, settlements)
-- [ ] 공통 모듈 설정 (database, config, common)
-- [ ] 환경 설정 파일 구성
+- [x] NestJS CLI를 사용한 프로젝트 초기화
+- [x] 모듈 구조 설계 (auth, users, events, budgets, settlements)
+- [x] 공통 모듈 설정 (database, config, common)
+- [x] 환경 설정 파일 구성
 
 **완료 기준**:
-- NestJS 애플리케이션 정상 시작
-- 모듈간 의존성 주입 동작
-- 환경별 설정 로드 확인
+- NestJS 애플리케이션 정상 시작 ✅
+- 모듈간 의존성 주입 동작 ✅
+- 환경별 설정 로드 확인 ✅
 
 **산출물**:
-- `backend/src/app.module.ts`
-- `backend/src/config/config.module.ts`
-- `backend/src/common/common.module.ts`
+- `backend/src/app.module.ts` ✅
+- `backend/src/config/config.module.ts` ✅
+- `backend/src/common/common.module.ts` ✅
+- `backend/src/modules/auth/auth.module.ts` ✅
+- `backend/src/modules/users/users.module.ts` ✅
+- `backend/src/modules/events/events.module.ts` ✅
+- `backend/src/modules/budgets/budgets.module.ts` ✅
+- `backend/src/modules/settlements/settlements.module.ts` ✅
 
 #### Task 3.2: 데이터베이스 연동 및 TypeORM 설정 (2시간)
 **담당자**: 백엔드 주니어 개발자  
