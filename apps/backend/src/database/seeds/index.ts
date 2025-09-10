@@ -4,6 +4,10 @@ import { initializeDatabase } from "../data-source";
 import { seedOrganizations } from "./01-organizations.seed";
 import { seedAdminUsers } from "./02-admin-users.seed";
 import { seedUserOrganizations } from "./03-user-organizations.seed";
+// Task 2.11 시드 함수들은 별도로 실행
+// import { seedTestUsers } from "./04-test-users.seed";
+// import { seedSampleEvents } from "./05-sample-events.seed";
+// import { seedSampleBudgets } from "./06-sample-budgets.seed";
 
 /**
  * 전체 시드 데이터 실행

@@ -709,3 +709,5 @@ CREATE TABLE receipts (
 ---
 
 *본 문서는 프로젝트 진행 상황에 따라 지속적으로 업데이트됩니다.*
+
+/sc:index docs/SummeryService.md 에 서비스에 대한 요구사항을 정리해봤어. docs/폴더에 PRD.md를 작성해줘. --persona-mentor --persona-scribe --persona-analyzer --think-hard  
