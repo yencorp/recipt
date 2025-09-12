@@ -12,7 +12,7 @@ export class EventsService {
 
   async findAll() {
     return this.eventRepository.find({
-      relations: ["organization", "budget", "settlement"],
+      relations: ["organization", "budgets", "settlements"],
       order: { startDate: "DESC" },
     });
   }
@@ -20,7 +20,7 @@ export class EventsService {
   async findOne(id: string) {
     const event = await this.eventRepository.findOne({
       where: { id },
-      relations: ["organization", "budget", "settlement"],
+      relations: ["organization", "budgets", "settlements"],
     });
 
     if (!event) {
