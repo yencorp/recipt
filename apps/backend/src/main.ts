@@ -2,9 +2,17 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { LoggerMiddleware } from "./common/middlewares/logger.middleware";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // 글로벌 예외 필터 설정
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // 로거 미들웨어 설정
+  app.use(new LoggerMiddleware().use.bind(new LoggerMiddleware()));
 
   // 글로벌 프리픽스 설정
   app.setGlobalPrefix(process.env.API_PREFIX || "api");

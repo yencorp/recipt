@@ -56,27 +56,26 @@
 - `backend/src/database/database.service.ts` ✅ (추가 구현)
 - Entity 관계 매핑 수정 완료 ✅
 
-#### Task 3.3: 기본 미들웨어 및 글로벌 설정 (3시간)
+#### Task 3.3: 기본 미들웨어 및 글로벌 설정 (3시간) ✅
 **담당자**: 백엔드 시니어 개발자  
 
 **세부 작업**:
-- [ ] CORS 설정
-- [ ] 요청 로깅 미들웨어
-- [ ] 에러 핸들링 미들웨어
-- [ ] 유효성 검증 파이프 설정
-- [ ] Swagger API 문서 설정
+- [x] CORS 설정 ✅ (기존 구현 확인)
+- [x] 요청 로깅 미들웨어 ✅ (LoggerMiddleware 구현)
+- [x] 에러 핸들링 미들웨어 ✅ (HttpExceptionFilter 구현)
+- [x] 유효성 검증 파이프 설정 ✅ (기존 구현 확인)
+- [x] Swagger API 문서 설정 ✅ (기존 구현 확인)
 
 **완료 기준**:
-- API 엔드포인트 CORS 정상 동작
-- 모든 요청/응답 로그 기록
-- 에러 응답 표준화 완료
-- Swagger UI 접근 가능
+- API 엔드포인트 CORS 정상 동작 ✅
+- 모든 요청/응답 로그 기록 ✅
+- 에러 응답 표준화 완료 ✅
+- Swagger UI 접근 가능 ✅
 
 **산출물**:
-- `backend/src/common/middlewares/logger.middleware.ts`
-- `backend/src/common/filters/http-exception.filter.ts`
-- `backend/src/common/pipes/validation.pipe.ts`
-- `backend/src/main.ts`
+- `backend/src/common/middlewares/logger.middleware.ts` ✅ (구현 완료)
+- `backend/src/common/filters/http-exception.filter.ts` ✅ (구현 완료)
+- `backend/src/main.ts` ✅ (미들웨어 통합 완료)
 
 ---
 
