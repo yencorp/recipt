@@ -31,6 +31,19 @@ export class UsersService {
     return user;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ["userOrganizations", "userOrganizations.organization"],
+    });
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await this.userRepository.update(id, {
+      lastLoginAt: new Date(),
+    });
+  }
+
   async update(id: string, updateUserDto: any) {
     // TODO: DTO 유효성 검증 구현
     await this.findOne(id);

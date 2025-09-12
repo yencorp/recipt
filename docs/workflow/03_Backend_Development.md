@@ -81,24 +81,26 @@
 
 ### Day 2: 사용자 인증 시스템 구현 (8시간)
 
-#### Task 3.4: JWT 인증 전략 구현 (4시간)
+#### Task 3.4: JWT 인증 전략 구현 (4시간) ✅
 **담당자**: 백엔드 시니어 개발자  
 
 **세부 작업**:
-- [ ] JWT 모듈 설정 및 토큰 생성/검증 로직
-- [ ] Access Token & Refresh Token 관리
-- [ ] Passport JWT 전략 구현
-- [ ] 인증 가드(Guard) 구현
+- [x] JWT 모듈 설정 및 토큰 생성/검증 로직 ✅
+- [x] Access Token & Refresh Token 관리 ✅
+- [x] Passport JWT 전략 구현 ✅
+- [x] 인증 가드(Guard) 구현 ✅
 
 **완료 기준**:
-- JWT 토큰 생성/검증 정상 동작
-- Access/Refresh 토큰 순환 메커니즘 구현
-- 보호된 라우트 접근 제어 확인
+- JWT 토큰 생성/검증 정상 동작 ✅
+- Access/Refresh 토큰 순환 메커니즘 구현 ✅
+- 보호된 라우트 접근 제어 확인 ✅
 
 **산출물**:
-- `backend/src/auth/jwt.strategy.ts`
-- `backend/src/auth/jwt-auth.guard.ts`
-- `backend/src/auth/auth.service.ts`
+- `backend/src/modules/auth/jwt.strategy.ts` ✅
+- `backend/src/modules/auth/jwt-auth.guard.ts` ✅
+- `backend/src/modules/auth/auth.service.ts` ✅
+- `backend/src/common/decorators/public.decorator.ts` ✅
+- `backend/src/modules/auth/auth.controller.ts` ✅ (토큰 갱신 엔드포인트 추가)
 
 #### Task 3.5: 사용자 등록/로그인 API 구현 (4시간)
 **담당자**: 백엔드 주니어 개발자  
