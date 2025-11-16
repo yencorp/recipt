@@ -172,14 +172,15 @@
 
 ### Day 4: 단체 및 행사 관리 모듈 (8시간)
 
-#### Task 3.8: 단체 관리 API 구현 (3시간)
-**담당자**: 백엔드 주니어 개발자  
+#### Task 3.8: 단체 관리 API 구현 (3시간) ✅
+**담당자**: 백엔드 주니어 개발자
+**완료일**: 2025-11-16
 
 **세부 작업**:
-- [ ] 단체 목록 조회 API
-- [ ] 단체 상세 정보 조회 API
-- [ ] 단체 구성원 관리 API (관리자 전용)
-- [ ] 사용자-단체 연결 관리
+- [x] 단체 목록 조회 API
+- [x] 단체 상세 정보 조회 API
+- [x] 단체 구성원 관리 API (관리자 전용)
+- [x] 사용자-단체 연결 관리
 
 **완료 기준**:
 - 단체 정보 CRUD 완전 구현
@@ -187,8 +188,10 @@
 - 권한별 접근 제어 적용
 
 **산출물**:
-- `backend/src/organizations/organizations.controller.ts`
-- `backend/src/organizations/organizations.service.ts`
+- `backend/src/modules/organizations/organizations.controller.ts`
+- `backend/src/modules/organizations/organizations.service.ts`
+- `backend/src/modules/organizations/organizations.module.ts`
+- `backend/src/modules/organizations/dto/*.ts`
 
 #### Task 3.9: 행사 관리 API 구현 (5시간)
 **담당자**: 백엔드 개발자 2명 (병렬 작업)

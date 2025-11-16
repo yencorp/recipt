@@ -16,6 +16,7 @@ import { createDatabaseConfig } from "./config/database.config";
 // 비즈니스 모듈 imports
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
+import { OrganizationsModule } from "./modules/organizations/organizations.module";
 import { EventsModule } from "./modules/events/events.module";
 import { BudgetsModule } from "./modules/budgets/budgets.module";
 import { SettlementsModule } from "./modules/settlements/settlements.module";
@@ -73,12 +74,12 @@ import { SettlementsModule } from "./modules/settlements/settlements.module";
     // 비즈니스 모듈들
     AuthModule,
     UsersModule,
+    OrganizationsModule,
     EventsModule,
     BudgetsModule,
     SettlementsModule,
 
     // TODO: 향후 추가 예정 모듈들
-    // OrganizationsModule,
     // ReceiptScansModule,
     // OcrModule,
     // PostsModule,
