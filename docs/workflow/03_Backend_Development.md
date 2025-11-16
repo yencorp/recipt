@@ -313,23 +313,25 @@
 
 ### Day 7: 결산서 관리 API (8시간)
 
-#### Task 3.14: 결산서 기본 CRUD API (4시간)
-**담당자**: 백엔드 주니어 개발자  
+#### Task 3.14: 결산서 기본 CRUD API (4시간) ✅
+**담당자**: 백엔드 주니어 개발자
 
 **세부 작업**:
-- [ ] 결산서 생성 API (행사 및 예산서 연결)
-- [ ] 결산서 조회 API
-- [ ] 결산서 수정/삭제 API
-- [ ] 예산서 대비 결산 비교 로직
+- [x] 결산서 생성 API (행사 및 예산서 연결)
+- [x] 결산서 조회 API
+- [x] 결산서 수정/삭제 API
+- [x] 예산서 대비 결산 비교 로직
 
 **완료 기준**:
-- 예산서 기반 결산서 생성
-- 예산 vs 실제 비교 데이터 제공
-- 결산 승인 프로세스 구현
+- 예산서 기반 결산서 생성 ✅
+- 예산 vs 실제 비교 데이터 제공 ✅
+- 결산 승인 프로세스 구현 ✅
 
 **산출물**:
-- `backend/src/settlements/settlements.controller.ts`
-- `backend/src/settlements/settlements.service.ts`
+- `backend/src/settlements/settlements.controller.ts` ✅
+- `backend/src/settlements/settlements.service.ts` ✅
+- `backend/src/settlements/dto/create-settlement.dto.ts` ✅
+- `backend/src/settlements/dto/update-settlement.dto.ts` ✅
 
 #### Task 3.15: 결산 항목 및 영수증 연동 API (4시간)
 **담당자**: 백엔드 시니어 개발자  
