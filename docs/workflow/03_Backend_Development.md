@@ -360,23 +360,26 @@
 
 ### Day 8: 블로그 및 알림 시스템 (8시간)
 
-#### Task 3.16: 블로그 포스트 관리 API (4시간)
-**담당자**: 백엔드 주니어 개발자  
+#### Task 3.16: 블로그 포스트 관리 API (4시간) ✅
+**담당자**: 백엔드 주니어 개발자
 
 **세부 작업**:
-- [ ] 블로그 포스트 CRUD API
-- [ ] 포스트 카테고리 관리
-- [ ] 포스트 공개/비공개 설정
-- [ ] 관리자 전용 포스트 작성 권한
+- [x] 블로그 포스트 CRUD API
+- [x] 포스트 카테고리 관리
+- [x] 포스트 공개/비공개 설정
+- [x] 관리자 전용 포스트 작성 권한
 
 **완료 기준**:
-- 관리자만 포스트 작성/수정 가능
-- 모든 사용자 포스트 조회 가능
-- 포스트 목록 페이징 처리
+- 관리자만 포스트 작성/수정 가능 ✅
+- 모든 사용자 포스트 조회 가능 ✅
+- 포스트 목록 페이징 처리 ✅
 
 **산출물**:
-- `backend/src/posts/posts.controller.ts`
-- `backend/src/posts/posts.service.ts`
+- `backend/src/posts/posts.controller.ts` ✅
+- `backend/src/posts/posts.service.ts` ✅
+- `backend/src/posts/dto/create-post.dto.ts` ✅
+- `backend/src/posts/dto/update-post.dto.ts` ✅
+- `backend/src/entities/post.entity.ts` ✅
 
 #### Task 3.17: 알림 시스템 기반 구조 (4시간)
 **담당자**: 백엔드 시니어 개발자  

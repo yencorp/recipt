@@ -23,6 +23,7 @@ import { BudgetItemsModule } from "./modules/budget-items/budget-items.module";
 import { SettlementsModule } from "./modules/settlements/settlements.module";
 import { SettlementItemsModule } from "./modules/settlement-items/settlement-items.module";
 import { ReceiptsModule } from "./modules/receipts/receipts.module";
+import { PostsModule } from "./modules/posts/posts.module";
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { ReceiptsModule } from "./modules/receipts/receipts.module";
     SettlementsModule,
     SettlementItemsModule,
     ReceiptsModule,
+    PostsModule,
 
     // TODO: 향후 추가 예정 모듈들
     // ReceiptScansModule,
