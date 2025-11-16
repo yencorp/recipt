@@ -1,6 +1,7 @@
 import { Module, Global } from "@nestjs/common";
 import { APP_PIPE } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
+import { OwnershipGuard } from "./guards/ownership.guard";
 
 @Global()
 @Module({
@@ -10,6 +11,8 @@ import { ValidationPipe } from "@nestjs/common";
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
+    // Ownership Guard
+    OwnershipGuard,
     // TODO: 추가 글로벌 프로바이더들
     // {
     //   provide: APP_FILTER,
@@ -20,6 +23,6 @@ import { ValidationPipe } from "@nestjs/common";
     //   useClass: LoggingInterceptor,
     // },
   ],
-  exports: [],
+  exports: [OwnershipGuard],
 })
 export class CommonModule {}

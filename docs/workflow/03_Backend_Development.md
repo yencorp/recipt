@@ -148,14 +148,15 @@
 - `backend/src/users/users.service.ts`
 - `backend/src/users/dto/update-user.dto.ts`
 
-#### Task 3.7: 권한 및 역할 기반 접근 제어 (RBAC) (4시간)
-**담당자**: 백엔드 시니어 개발자  
+#### Task 3.7: 권한 및 역할 기반 접근 제어 (RBAC) (4시간) ✅
+**담당자**: 백엔드 시니어 개발자
+**완료일**: 2025-11-16
 
 **세부 작업**:
-- [ ] 역할 기반 가드 구현
-- [ ] 단체별 권한 관리 로직
-- [ ] 관리자 권한 체크 데코레이터
-- [ ] 리소스 소유권 검증 로직
+- [x] 역할 기반 가드 구현
+- [x] 단체별 권한 관리 로직
+- [x] 관리자 권한 체크 데코레이터
+- [x] 리소스 소유권 검증 로직
 
 **완료 기준**:
 - 단체별 데이터 접근 제어 확인
@@ -163,8 +164,8 @@
 - 본인 데이터만 수정 가능 확인
 
 **산출물**:
-- `backend/src/auth/roles.guard.ts`
-- `backend/src/auth/roles.decorator.ts`
+- `backend/src/modules/auth/roles.guard.ts`
+- `backend/src/modules/auth/roles.decorator.ts`
 - `backend/src/common/guards/ownership.guard.ts`
 
 ---
