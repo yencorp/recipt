@@ -1,13 +1,24 @@
-import { Injectable, ConflictException } from "@nestjs/common";
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+  BadRequestException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ConfigService } from "@nestjs/config";
 import { Repository } from "typeorm";
 import { User, UserRole, UserStatus } from "../../entities/user.entity";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { ChangePasswordDto } from "./dto/change-password.dto";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly configService: ConfigService
   ) {}
 
   async findAll() {
@@ -25,7 +36,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error("사용자를 찾을 수 없습니다.");
+      throw new NotFoundException("사용자를 찾을 수 없습니다.");
     }
 
     return user;
@@ -72,11 +83,82 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateUserDto: any) {
-    // TODO: DTO 유효성 검증 구현
+  async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
 
     await this.userRepository.update(id, updateUserDto);
     return this.findOne(id);
+  }
+
+  async changePassword(id: string, changePasswordDto: ChangePasswordDto) {
+    // 1. 비밀번호 확인 검증
+    if (
+      changePasswordDto.newPassword !== changePasswordDto.newPasswordConfirm
+    ) {
+      throw new BadRequestException("새 비밀번호가 일치하지 않습니다.");
+    }
+
+    // 2. 현재 비밀번호가 새 비밀번호와 동일한지 확인
+    if (changePasswordDto.currentPassword === changePasswordDto.newPassword) {
+      throw new BadRequestException(
+        "새 비밀번호는 현재 비밀번호와 달라야 합니다."
+      );
+    }
+
+    // 3. 사용자 조회
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ["id", "email", "passwordHash"],
+    });
+
+    if (!user) {
+      throw new NotFoundException("사용자를 찾을 수 없습니다.");
+    }
+
+    // 4. 현재 비밀번호 검증
+    const isPasswordValid = await bcrypt.compare(
+      changePasswordDto.currentPassword,
+      user.passwordHash
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("현재 비밀번호가 올바르지 않습니다.");
+    }
+
+    // 5. 새 비밀번호 해싱
+    const saltRounds = parseInt(
+      this.configService.get<string>("BCRYPT_SALT_ROUNDS", "10"),
+      10
+    );
+    const newPasswordHash = await bcrypt.hash(
+      changePasswordDto.newPassword,
+      saltRounds
+    );
+
+    // 6. 비밀번호 업데이트
+    await this.userRepository.update(id, {
+      passwordHash: newPasswordHash,
+    });
+
+    return { message: "비밀번호가 성공적으로 변경되었습니다." };
+  }
+
+  async getUserOrganizations(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ["userOrganizations", "userOrganizations.organization"],
+    });
+
+    if (!user) {
+      throw new NotFoundException("사용자를 찾을 수 없습니다.");
+    }
+
+    return user.userOrganizations.map((uo) => ({
+      organizationId: uo.organization.id,
+      organizationName: uo.organization.name,
+      organizationType: uo.organization.type,
+      joinedAt: uo.joinedAt,
+      approve: uo.approve,
+    }));
   }
 }

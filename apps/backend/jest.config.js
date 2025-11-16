@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = {
   moduleFileExtensions: ["js", "json", "ts"],
   rootDir: "src",
@@ -14,7 +15,7 @@ module.exports = {
   ],
   coverageDirectory: "../coverage",
   coverageReporters: ["text", "lcov", "json", "html"],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 70,
       functions: 70,
@@ -23,7 +24,7 @@ module.exports = {
     },
   },
   testEnvironment: "node",
-  moduleNameMapping: {
+  moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
