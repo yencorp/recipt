@@ -24,6 +24,7 @@ import { SettlementsModule } from "./modules/settlements/settlements.module";
 import { SettlementItemsModule } from "./modules/settlement-items/settlement-items.module";
 import { ReceiptsModule } from "./modules/receipts/receipts.module";
 import { PostsModule } from "./modules/posts/posts.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { PostsModule } from "./modules/posts/posts.module";
     SettlementItemsModule,
     ReceiptsModule,
     PostsModule,
+    NotificationsModule,
 
     // TODO: 향후 추가 예정 모듈들
     // ReceiptScansModule,
