@@ -72,7 +72,12 @@ Docker 환경에서 Backend API의 전체적인 기능을 테스트하였습니�
 | `/api/events` | GET | ✅ | 행사 목록 조회 성공 (페이징) |
 | `/api/posts` | GET | ✅ | 게시물 목록 조회 성공 (페이징) |
 | `/api/notifications` | GET | ✅ | 알림 목록 조회 성공 (페이징) |
-| `/api/files` | GET | ✅ | 파일 목록 조회 성공 (빈 배열) |
+| `/api/files` | GET | ✅ | 파일 목록 조회 성공 |
+| `/api/files/upload` | POST | ✅ | 단일 파일 업로드 성공 (70 bytes PNG) |
+| `/api/files/upload/multiple` | POST | ✅ | 다중 파일 업로드 성공 (2개 파일) |
+| `/api/files/stats` | GET | ✅ | 파일 통계 조회 성공 (총 파일 수, 총 용량, MIME 타입별 통계) |
+| `/api/files/:id` | GET | ✅ | 파일 메타데이터 조회 성공 |
+| `/api/files/:id` | DELETE | ✅ | 파일 삭제 성공 (메타데이터 + 물리적 파일) |
 
 ### ⚠️ 권한 에러 (정상 동작)
 
@@ -133,7 +138,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 7. ✅ ~~Redis 캐시 설정 완료 (cache-manager-redis-yet 패키지로 교체)~~
 8. ✅ ~~NotificationsGateway 활성화 (`@nestjs/websockets`, `socket.io` 설치) (완료)~~
 9. ✅ ~~EmailService 활성화 (`nodemailer` 설치) (완료)~~
-10. File upload 기능 테스트
+10. ✅ ~~File upload 기능 테스트 (완료)~~
 
 ### 우선순위 LOW
 11. Admin API 엔드포인트 테스트
@@ -191,6 +196,29 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 - AdminDashboardController에 `/api/admin/dashboard/statistics` 엔드포인트 추가
 - AdminDashboardService에 `getAllStatistics()` 메서드 추가
 
+### ✅ File Upload API
+
+| 작업 | 엔드포인트 | 상태 | 결과 |
+|-----|----------|------|------|
+| **단일 업로드** | `POST /api/files/upload` | ✅ | 70 bytes PNG 파일 업로드 성공 |
+| **다중 업로드** | `POST /api/files/upload/multiple` | ✅ | 2개 파일 동시 업로드 성공 |
+| **파일 목록** | `GET /api/files` | ✅ | 업로드된 파일 목록 조회 성공 |
+| **파일 통계** | `GET /api/files/stats` | ✅ | 총 파일 수, 총 용량, MIME 타입별 통계 조회 성공 |
+| **메타데이터** | `GET /api/files/:id` | ✅ | 파일 메타데이터 조회 성공 |
+| **파일 삭제** | `DELETE /api/files/:id` | ✅ | 메타데이터 삭제 + 물리적 파일 삭제 성공 |
+
+**파일 업로드 설정 검증**:
+- ✅ 허용 파일 형식: image/jpeg, image/jpg, image/png, image/gif, image/webp, application/pdf
+- ✅ 파일 크기 제한: 10MB
+- ✅ 동시 업로드 제한: 최대 10개
+- ✅ 파일 분류 저장: 이미지 → `uploads/images/`, PDF → `uploads/documents/`, 기타 → `uploads/others/`
+- ✅ 파일명 자동 생성: `timestamp_randomstring.확장자` 형식
+
+**테스트 결과**:
+- 총 3개 파일 업로드 → 210 bytes
+- 1개 파일 삭제 → 2개 파일 140 bytes 남음
+- MIME 타입별 통계: image/png = 2개
+
 ### 권한 시스템 종합 검증
 
 **✅ 권한 검증 정상 작동**:
@@ -211,13 +239,14 @@ Backend API는 **전반적으로 정상 작동**하고 있으며, Docker 환경�
 - ✅ **실행**: Docker 컨테이너 정상 실행
 - ✅ **인증**: JWT 인증 시스템 정상 작동
 - ✅ **권한**: 역할 기반 권한 시스템 정상 작동
-- ✅ **API**: 25개 이상 엔드포인트 테스트 완료, 모두 정상 응답
+- ✅ **API**: 30개 이상 엔드포인트 테스트 완료, 모두 정상 응답
 - ✅ **CRUD**: 생성/조회/수정/삭제 작업 모두 정상
 - ✅ **Admin**: 관리자 API 및 권한 시스템 정상 (Dashboard 포함)
 - ✅ **보안**: CRITICAL 보안 이슈 수정 완료 (passwordHash 제거)
 - ✅ **캐시**: Redis 캐시 시스템 정상 작동
 - ✅ **WebSocket**: NotificationsGateway 실시간 알림 시스템 활성화
 - ✅ **Email**: EmailService 이메일 큐 시스템 활성화
+- ✅ **File Upload**: 단일/다중 파일 업로드, 조회, 삭제 기능 정상 작동
 
 **수정 완료**:
 - ✅ TypeScript 컴파일 에러 48개 → 0개
