@@ -1,7 +1,6 @@
 import { Module, Global } from "@nestjs/common";
 import { APP_PIPE, APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
-import { CacheModule } from "@nestjs/cache-manager";
 import { OwnershipGuard } from "./guards/ownership.guard";
 import { CacheInvalidationService } from "./services/cache-invalidation.service";
 import { HttpExceptionFilter } from "./filters/http-exception.filter";
@@ -10,7 +9,7 @@ import { ResponseTransformInterceptor } from "./interceptors/response-transform.
 
 @Global()
 @Module({
-  imports: [CacheModule],
+  imports: [],
   providers: [
     // 글로벌 Validation Pipe 등록
     {

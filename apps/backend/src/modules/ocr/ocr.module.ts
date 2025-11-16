@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { HttpModule } from "@nestjs/axios";
 import { OcrJobsService } from "./ocr-jobs.service";
 import { OcrClientService } from "./ocr-client.service";
 import { OcrQueueService } from "./ocr-queue.service";
@@ -10,10 +9,6 @@ import { OcrResult } from "../../entities/ocr-result.entity";
 @Module({
   imports: [
     TypeOrmModule.forFeature([ReceiptScan, OcrResult]),
-    HttpModule.register({
-      timeout: 30000,
-      maxRedirects: 5,
-    }),
   ],
   providers: [OcrJobsService, OcrClientService, OcrQueueService],
   exports: [OcrJobsService, OcrClientService, OcrQueueService],

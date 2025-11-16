@@ -17,6 +17,7 @@ import {
 import { Exclude } from "class-transformer";
 import { UserOrganization } from "./user-organization.entity";
 import { ReceiptScan } from "./receipt-scan.entity";
+import { Post } from "./post.entity";
 
 export enum UserStatus {
   ACTIVE = "ACTIVE",
@@ -142,6 +143,9 @@ export class User {
 
   @OneToMany(() => ReceiptScan, (receiptScan) => receiptScan.uploader)
   receiptScans: ReceiptScan[];
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
 
   // 가상 속성
   get isEmailVerified(): boolean {

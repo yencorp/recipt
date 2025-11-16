@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ReceiptScan } from "../../entities/receipt-scan.entity";
+import { ReceiptScan, UploadStatus } from "../../entities/receipt-scan.entity";
 
 export interface OcrJob {
   id: string;
@@ -52,7 +52,7 @@ export class OcrJobsService {
       this.jobQueue.set(jobId, job);
 
       await this.receiptScanRepository.update(job.receiptScanId, {
-        uploadStatus: "PROCESSING",
+        uploadStatus: UploadStatus.UPLOADING,
       });
 
       console.log(`OCR processing started: ${jobId}`);
@@ -69,7 +69,7 @@ export class OcrJobsService {
       this.jobQueue.set(jobId, job);
 
       await this.receiptScanRepository.update(job.receiptScanId, {
-        uploadStatus: "COMPLETED",
+        uploadStatus: UploadStatus.UPLOADED,
       });
 
       console.log(`OCR processing completed: ${jobId}`);
@@ -81,7 +81,7 @@ export class OcrJobsService {
       this.jobQueue.set(jobId, job);
 
       await this.receiptScanRepository.update(job.receiptScanId, {
-        uploadStatus: "FAILED",
+        uploadStatus: UploadStatus.FAILED,
       });
 
       console.error(`OCR processing failed: ${jobId}`, error);

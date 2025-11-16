@@ -14,7 +14,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
     const { method, originalUrl, ip, headers } = req;
 
     // 사용자 식별 (인증된 경우)
-    const userId = req["user"]?.id || "anonymous";
+    const userId = (req as any)["user"]?.id || "anonymous";
 
     // 요청 시작 로그
     this.logger.log(`[${method}] ${originalUrl} - User: ${userId} - IP: ${ip}`);

@@ -16,6 +16,7 @@ import { AdminUpdateOrganizationDto } from "./dto/admin-update-organization.dto"
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 import { RolesGuard } from "../../auth/roles.guard";
 import { AdminOnly } from "../../auth/roles.decorator";
+import { OrganizationType, OrganizationStatus } from "../../../entities/organization.entity";
 
 @ApiTags("Admin - Organizations")
 @Controller("admin/organizations")
@@ -36,8 +37,8 @@ export class AdminOrganizationsController {
   @ApiResponse({ status: 200, description: "단체 목록 조회 성공" })
   async findAll(
     @Query("search") search?: string,
-    @Query("type") type?: string,
-    @Query("status") status?: string,
+    @Query("type") type?: OrganizationType,
+    @Query("status") status?: OrganizationStatus,
     @Query("page") page?: number,
     @Query("limit") limit?: number
   ) {

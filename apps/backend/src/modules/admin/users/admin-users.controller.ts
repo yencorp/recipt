@@ -17,6 +17,7 @@ import { AssignOrganizationDto } from "./dto/assign-organization.dto";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 import { RolesGuard } from "../../auth/roles.guard";
 import { AdminOnly } from "../../auth/roles.decorator";
+import { UserRole, UserStatus } from "../../../entities/user.entity";
 
 @ApiTags("Admin - Users")
 @Controller("admin/users")
@@ -52,8 +53,8 @@ export class AdminUsersController {
   @ApiResponse({ status: 200, description: "사용자 목록 조회 성공" })
   async findAll(
     @Query("search") search?: string,
-    @Query("role") role?: string,
-    @Query("status") status?: string,
+    @Query("role") role?: UserRole,
+    @Query("status") status?: UserStatus,
     @Query("organizationId") organizationId?: string,
     @Query("page") page?: number,
     @Query("limit") limit?: number

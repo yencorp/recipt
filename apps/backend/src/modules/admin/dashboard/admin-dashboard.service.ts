@@ -9,7 +9,7 @@ import {
 import { Event, EventStatus } from "../../../entities/event.entity";
 import { Budget } from "../../../entities/budget.entity";
 import { Settlement } from "../../../entities/settlement.entity";
-import { Notification } from "../../../entities/notification.entity";
+import { Notification, NotificationStatus } from "../../../entities/notification.entity";
 
 @Injectable()
 export class AdminDashboardService {
@@ -215,10 +215,10 @@ export class AdminDashboardService {
   async getNotificationStats() {
     const total = await this.notificationRepository.count();
     const unread = await this.notificationRepository.count({
-      where: { status: "UNREAD" },
+      where: { status: NotificationStatus.UNREAD },
     });
     const read = await this.notificationRepository.count({
-      where: { status: "READ" },
+      where: { status: NotificationStatus.READ },
     });
 
     return {

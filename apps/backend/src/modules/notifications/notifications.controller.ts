@@ -18,6 +18,7 @@ import { CreateNotificationDto } from "./dto/create-notification.dto";
 import { UpdateNotificationSettingDto } from "./dto/update-notification-setting.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
+import { NotificationType, NotificationStatus } from "../../entities/notification.entity";
 import { AdminOnly } from "../auth/roles.decorator";
 
 @ApiTags("Notifications")
@@ -43,8 +44,8 @@ export class NotificationsController {
   @ApiResponse({ status: 200, description: "알림 목록 조회 성공" })
   async findAll(
     @Request() req,
-    @Query("type") type?: string,
-    @Query("status") status?: string,
+    @Query("type") type?: NotificationType,
+    @Query("status") status?: NotificationStatus,
     @Query("page") page?: number,
     @Query("limit") limit?: number
   ) {

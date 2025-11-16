@@ -358,6 +358,7 @@ export class EventRepository extends BaseRepository<Event> {
           [EventStatus.DRAFT]: 0,
           [EventStatus.PLANNED]: 0,
           [EventStatus.APPROVED]: 0,
+          [EventStatus.UPCOMING]: 0,
           [EventStatus.IN_PROGRESS]: 0,
           [EventStatus.COMPLETED]: 0,
           [EventStatus.CANCELLED]: 0,

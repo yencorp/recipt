@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ReceiptScan } from "../../entities/receipt-scan.entity";
+import { ReceiptScan, UploadStatus, FileFormat } from "../../entities/receipt-scan.entity";
 import { UploadReceiptDto } from "./dto/upload-receipt.dto";
 
 @Injectable()
@@ -44,8 +44,14 @@ export class ReceiptsService {
     // 현재는 메타데이터만 저장하는 준비 단계
 
     const receipt = this.receiptScanRepository.create({
-      ...uploadDto,
-      uploadStatus: "UPLOADED",
+      uploadedBy: uploadDto.uploadedBy,
+      organizationId: uploadDto.organizationId,
+      originalFileName: uploadDto.originalFilename,
+      filePath: uploadDto.imagePath,
+      thumbnailPath: uploadDto.thumbnailPath,
+      fileFormat: FileFormat.JPEG,
+      fileSize: 0,
+      uploadStatus: UploadStatus.UPLOADED,
       // 실제 파일 정보는 multer 통합 후 추가
     });
 
@@ -57,7 +63,7 @@ export class ReceiptsService {
     // 현재는 상태만 업데이트
 
     await this.receiptScanRepository.update(id, {
-      uploadStatus: "PROCESSING",
+      uploadStatus: UploadStatus.UPLOADING,
     });
 
     return {

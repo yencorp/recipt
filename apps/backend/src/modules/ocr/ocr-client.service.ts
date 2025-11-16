@@ -1,7 +1,6 @@
 import { Injectable, HttpException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { HttpService } from "@nestjs/axios";
-import { firstValueFrom } from "rxjs";
+import axios from "axios";
 
 export interface OcrRequest {
   imagePath: string;
@@ -36,10 +35,7 @@ export class OcrClientService {
   private readonly timeout: number;
   private readonly maxRetries: number;
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.ocrServiceUrl =
       this.configService.get<string>("OCR_SERVICE_URL") ||
       "http://localhost:5000";
@@ -58,21 +54,19 @@ export class OcrClientService {
           request.imagePath
         );
 
-        const response = await firstValueFrom(
-          this.httpService.post<OcrResult>(
-            `${this.ocrServiceUrl}/api/ocr/process`,
-            {
-              imagePath: request.imagePath,
-              language: request.language || "kor+eng",
-              preprocessOptions: request.preprocessOptions || {},
+        const response = await axios.post<OcrResult>(
+          `${this.ocrServiceUrl}/api/ocr/process`,
+          {
+            imagePath: request.imagePath,
+            language: request.language || "kor+eng",
+            preprocessOptions: request.preprocessOptions || {},
+          },
+          {
+            timeout: this.timeout,
+            headers: {
+              "Content-Type": "application/json",
             },
-            {
-              timeout: this.timeout,
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
+          }
         );
 
         console.log("OCR processing successful:", response.data);
@@ -103,11 +97,9 @@ export class OcrClientService {
   // OCR 서비스 헬스 체크
   async checkHealth(): Promise<boolean> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get(`${this.ocrServiceUrl}/health`, {
-          timeout: 5000,
-        })
-      );
+      const response = await axios.get(`${this.ocrServiceUrl}/health`, {
+        timeout: 5000,
+      });
 
       return response.status === 200;
     } catch (error) {

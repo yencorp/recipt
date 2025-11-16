@@ -24,7 +24,7 @@ export class AdminCreateOrganizationDto {
   @ApiProperty({
     description: "단체 유형",
     enum: OrganizationType,
-    example: OrganizationType.UNIVERSITY,
+    example: OrganizationType.YOUTH_GROUP,
   })
   @IsEnum(OrganizationType)
   @IsNotEmpty()

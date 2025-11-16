@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ReceiptScan } from "../../entities/receipt-scan.entity";
+import { ReceiptScan, UploadStatus } from "../../entities/receipt-scan.entity";
 import { OcrResult as OcrResultEntity } from "../../entities/ocr-result.entity";
 import { OcrClientService, OcrRequest, OcrResult } from "./ocr-client.service";
 
@@ -115,7 +115,7 @@ export class OcrQueueService {
     try {
       // 영수증 스캔 상태 업데이트
       await this.receiptScanRepository.update(item.receiptScanId, {
-        uploadStatus: "PROCESSING",
+        uploadStatus: UploadStatus.UPLOADING,
       });
 
       // OCR 서비스 호출
@@ -138,7 +138,7 @@ export class OcrQueueService {
 
         // 영수증 스캔 상태 업데이트
         await this.receiptScanRepository.update(item.receiptScanId, {
-          uploadStatus: "COMPLETED",
+          uploadStatus: UploadStatus.UPLOADED,
         });
 
         // 큐 아이템 완료 처리
@@ -170,7 +170,7 @@ export class OcrQueueService {
 
         // 영수증 스캔 상태 업데이트
         await this.receiptScanRepository.update(item.receiptScanId, {
-          uploadStatus: "FAILED",
+          uploadStatus: UploadStatus.FAILED,
         });
 
         console.error(`OCR processing permanently failed: ${item.id}`);
@@ -186,13 +186,14 @@ export class OcrQueueService {
     const result = this.ocrResultRepository.create({
       receiptScanId,
       rawText: ocrResult.text || "",
-      confidence: ocrResult.confidence || 0,
-      parsedData: ocrResult.metadata || {},
+      overallConfidence: ocrResult.confidence || 0,
+      structuredData: {},
+      extractedFields: {},
       totalAmount: ocrResult.metadata?.totalAmount || null,
-      transactionDate: ocrResult.metadata?.date
+      receiptDate: ocrResult.metadata?.date
         ? new Date(ocrResult.metadata.date)
         : null,
-      merchantName: ocrResult.metadata?.merchantName || null,
+      vendorName: ocrResult.metadata?.merchantName || null,
     });
 
     await this.ocrResultRepository.save(result);

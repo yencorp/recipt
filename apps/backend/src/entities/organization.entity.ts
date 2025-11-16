@@ -20,6 +20,7 @@ import { Event } from "./event.entity";
 import { Budget } from "./budget.entity";
 import { Settlement } from "./settlement.entity";
 import { ReceiptScan } from "./receipt-scan.entity";
+import { Post } from "./post.entity";
 
 export enum OrganizationType {
   YOUTH_GROUP = "YOUTH_GROUP", // 청년회
@@ -196,6 +197,9 @@ export class Organization {
 
   @OneToMany(() => ReceiptScan, (receiptScan) => receiptScan.organization)
   receiptScans: ReceiptScan[];
+
+  @OneToMany(() => Post, (post) => post.organization)
+  posts: Post[];
 
   // 가상 속성
   get isYouthGroup(): boolean {

@@ -66,8 +66,8 @@ export class RateLimitMiddleware implements NestMiddleware {
    */
   private getIdentifier(req: Request): string {
     // 인증된 사용자가 있으면 사용자 ID 사용
-    if (req["user"] && req["user"].id) {
-      return `user:${req["user"].id}`;
+    if ((req as any)["user"]?.id) {
+      return `user:${(req as any)["user"].id}`;
     }
 
     // 프록시 뒤에 있을 경우 실제 IP 추출

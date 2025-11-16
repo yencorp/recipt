@@ -18,7 +18,7 @@ import { UpdatePostDto } from "./dto/update-post.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
 import { AdminOnly } from "../auth/roles.decorator";
-import { Public } from "../auth/public.decorator";
+import { Public } from "../../common/decorators/public.decorator";
 
 @ApiTags("Posts")
 @Controller("posts")

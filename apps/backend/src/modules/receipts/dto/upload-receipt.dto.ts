@@ -8,9 +8,28 @@ import {
 import { Type } from "class-transformer";
 
 export class UploadReceiptDto {
+  @ApiProperty({ description: "업로드한 사용자 ID" })
+  @IsNotEmpty()
+  uploadedBy: string;
+
   @ApiProperty({ description: "조직 ID" })
   @IsNotEmpty()
   organizationId: string;
+
+  @ApiProperty({ description: "원본 파일명" })
+  @IsNotEmpty()
+  @IsString()
+  originalFilename: string;
+
+  @ApiProperty({ description: "파일 저장 경로" })
+  @IsNotEmpty()
+  @IsString()
+  imagePath: string;
+
+  @ApiProperty({ description: "썸네일 경로", required: false })
+  @IsOptional()
+  @IsString()
+  thumbnailPath?: string;
 
   @ApiProperty({ description: "결산서 ID (선택)", required: false })
   @IsOptional()
@@ -20,10 +39,10 @@ export class UploadReceiptDto {
   @IsOptional()
   eventId?: string;
 
-  @ApiProperty({ description: "영수증 제목", example: "회의실 대여 영수증" })
-  @IsNotEmpty()
+  @ApiProperty({ description: "영수증 제목", required: false })
+  @IsOptional()
   @IsString()
-  title: string;
+  title?: string;
 
   @ApiProperty({ description: "설명", required: false })
   @IsOptional()

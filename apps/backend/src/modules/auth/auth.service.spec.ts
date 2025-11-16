@@ -87,7 +87,7 @@ describe("AuthService", () => {
       jest.spyOn(usersService, "findByEmail").mockResolvedValue(mockUser as any);
       jest.spyOn(jwtService, "sign").mockReturnValue("mock-token");
 
-      const result = await service.login(loginDto);
+      const result = await service.login(loginDto.email, loginDto.password);
 
       expect(result).toHaveProperty("accessToken");
       expect(result).toHaveProperty("refreshToken");

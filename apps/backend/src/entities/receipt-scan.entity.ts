@@ -66,6 +66,12 @@ export enum ProcessingStatus {
   CANCELLED = "CANCELLED", // 취소됨
 }
 
+export enum UploadStatus {
+  UPLOADING = "UPLOADING", // 업로드 중
+  UPLOADED = "UPLOADED", // 업로드 완료
+  FAILED = "FAILED", // 업로드 실패
+}
+
 @Entity("receipt_scans")
 @Index("idx_receipt_scans_user", ["uploadedBy"])
 @Index("idx_receipt_scans_organization", ["organizationId"])
@@ -179,6 +185,15 @@ export class ReceiptScan {
   })
   @IsEnum(ProcessingStatus, { message: "유효한 처리 상태를 선택해주세요." })
   processingStatus: ProcessingStatus;
+
+  @Column({
+    type: "enum",
+    enum: UploadStatus,
+    default: UploadStatus.UPLOADED,
+    comment: "업로드 상태",
+  })
+  @IsEnum(UploadStatus, { message: "유효한 업로드 상태를 선택해주세요." })
+  uploadStatus: UploadStatus;
 
   @Column({ type: "integer", nullable: true, comment: "이미지 너비 (픽셀)" })
   @IsOptional()

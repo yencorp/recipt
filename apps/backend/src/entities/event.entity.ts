@@ -41,6 +41,7 @@ export enum EventStatus {
   DRAFT = "DRAFT", // 초안
   PLANNED = "PLANNED", // 계획됨
   APPROVED = "APPROVED", // 승인됨
+  UPCOMING = "UPCOMING", // 예정됨
   IN_PROGRESS = "IN_PROGRESS", // 진행중
   COMPLETED = "COMPLETED", // 완료
   CANCELLED = "CANCELLED", // 취소
@@ -397,6 +398,7 @@ export class Event {
       [EventStatus.DRAFT]: "초안",
       [EventStatus.PLANNED]: "계획됨",
       [EventStatus.APPROVED]: "승인됨",
+      [EventStatus.UPCOMING]: "예정됨",
       [EventStatus.IN_PROGRESS]: "진행중",
       [EventStatus.COMPLETED]: "완료",
       [EventStatus.CANCELLED]: "취소",
