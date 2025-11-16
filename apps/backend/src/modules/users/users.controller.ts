@@ -7,6 +7,7 @@ import {
 } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { CurrentUser } from "../auth/current-user.decorator";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 
@@ -22,6 +23,14 @@ export class UsersController {
   @ApiResponse({ status: 200, description: "사용자 목록 조회 성공" })
   async findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get("profile")
+  @ApiOperation({ summary: "내 프로필 조회 (현재 로그인한 사용자)" })
+  @ApiResponse({ status: 200, description: "프로필 조회 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getProfile(@CurrentUser() user: any) {
+    return this.usersService.findOne(user.sub);
   }
 
   @Get(":id")

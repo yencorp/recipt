@@ -64,6 +64,7 @@ Docker 환경에서 Backend API의 전체적인 기능을 테스트하였습니�
 | `/api/auth/register` | POST | ✅ | 사용자 등록 성공 |
 | `/api/auth/login` | POST | ✅ | JWT 토큰 발급 성공 |
 | `/api/users/:id` | GET | ✅ | 사용자 정보 조회 성공 |
+| `/api/users/profile` | GET | ✅ | 내 프로필 조회 성공 (현재 로그인 사용자) |
 | `/api/organizations` | GET | ✅ | 단체 목록 조회 성공 (빈 배열) |
 | `/api/budgets` | GET | ✅ | 예산 목록 조회 성공 (빈 배열) |
 | `/api/settlements` | GET | ✅ | 결산 목록 조회 성공 (빈 배열) |
@@ -128,7 +129,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 5. ✅ ~~Admin Dashboard 라우트 수정 (완료)~~
 
 ### 우선순위 MEDIUM
-6. 🟡 Profile endpoint 라우팅 수정
+6. ✅ ~~Profile endpoint 라우팅 수정 (완료)~~
 7. Redis 캐시 설정 (`cache-manager-redis-yet` 패키지로 교체)
 8. NotificationsGateway 활성화 (`@nestjs/websockets`, `socket.io` 설치)
 9. EmailService 활성화 (`nodemailer` 설치)
@@ -224,6 +225,7 @@ Backend API는 **전반적으로 정상 작동**하고 있으며, Docker 환경�
 **추천 사항**:
 1. ~~**즉시**: passwordHash 보안 이슈 수정~~ ✅ **완료**
 2. ~~**우선**: Admin Dashboard 라우트 수정~~ ✅ **완료**
-3. **이후**: Profile endpoint 라우팅, Redis 캐시, WebSocket/Email 서비스 활성화
+3. ~~**우선**: Profile endpoint 라우팅 수정~~ ✅ **완료**
+4. **이후**: Redis 캐시, WebSocket/Email 서비스 활성화
 
 **프로덕션 배포 가능 여부**: ✅ **배포 가능** (CRITICAL 이슈 모두 해결됨)
