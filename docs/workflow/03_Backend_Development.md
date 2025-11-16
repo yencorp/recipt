@@ -266,24 +266,25 @@
 
 ### Day 6: 예산서 관리 API (8시간)
 
-#### Task 3.12: 예산서 기본 CRUD API (4시간)
-**담당자**: 백엔드 주니어 개발자  
+#### Task 3.12: 예산서 기본 CRUD API (4시간) ✅
+**담당자**: 백엔드 주니어 개발자
 
 **세부 작업**:
-- [ ] 예산서 생성 API (행사 연결)
-- [ ] 예산서 조회 API
-- [ ] 예산서 수정 API
-- [ ] 예산서 삭제 API
+- [x] 예산서 생성 API (행사 연결)
+- [x] 예산서 조회 API
+- [x] 예산서 수정 API
+- [x] 예산서 삭제 API
 
 **완료 기준**:
-- 행사당 하나의 예산서만 생성 가능
-- 예산서 상태 관리 (작성중, 완료, 승인)
-- 권한 기반 접근 제어 적용
+- 행사당 하나의 예산서만 생성 가능 ✅
+- 예산서 상태 관리 (작성중, 완료, 승인) ✅
+- 권한 기반 접근 제어 적용 ✅
 
 **산출물**:
-- `backend/src/budgets/budgets.controller.ts`
-- `backend/src/budgets/budgets.service.ts`
-- `backend/src/budgets/dto/create-budget.dto.ts`
+- `backend/src/budgets/budgets.controller.ts` ✅
+- `backend/src/budgets/budgets.service.ts` ✅
+- `backend/src/budgets/dto/create-budget.dto.ts` ✅
+- `backend/src/budgets/dto/update-budget.dto.ts` ✅
 
 #### Task 3.13: 예산 항목 관리 API (4시간)
 **담당자**: 백엔드 시니어 개발자  
