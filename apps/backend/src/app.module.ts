@@ -4,7 +4,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CacheModule } from "@nestjs/cache-manager";
 // import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from "@nestjs/schedule";
-import * as redisStore from "cache-manager-redis-store";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HealthController } from "./health/health.controller";
@@ -53,12 +52,26 @@ import { OcrModule } from "./modules/ocr/ocr.module";
       inject: [ConfigService],
     }),
 
-    // Redis 캐시 모듈 (임시로 메모리 캐시 사용)
-    // TODO: cache-manager-redis-yet 패키지로 교체 필요
-    CacheModule.register({
+    // Redis 캐시 모듈
+    CacheModule.registerAsync({
       isGlobal: true,
-      ttl: 3600, // 1시간
-      max: 100, // 최대 100개 항목
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        // @ts-ignore - cache-manager-redis-yet 타입 정의 이슈 우회
+        const { redisStore } = await import("cache-manager-redis-yet");
+        return {
+          // @ts-ignore
+          store: await redisStore({
+            socket: {
+              host: configService.get("REDIS_HOST") || "redis",
+              port: configService.get("REDIS_PORT") || 6379,
+            },
+            password: configService.get("REDIS_PASSWORD"),
+            ttl: 3600 * 1000, // 1시간 (밀리초)
+          }),
+        };
+      },
+      inject: [ConfigService],
     }),
 
     // Rate Limiting 모듈 (임시 주석 처리)

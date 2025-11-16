@@ -130,7 +130,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 
 ### 우선순위 MEDIUM
 6. ✅ ~~Profile endpoint 라우팅 수정 (완료)~~
-7. Redis 캐시 설정 (`cache-manager-redis-yet` 패키지로 교체)
+7. ✅ ~~Redis 캐시 설정 완료 (cache-manager-redis-yet 패키지로 교체)~~
 8. NotificationsGateway 활성화 (`@nestjs/websockets`, `socket.io` 설치)
 9. EmailService 활성화 (`nodemailer` 설치)
 10. File upload 기능 테스트
