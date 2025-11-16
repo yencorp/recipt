@@ -125,14 +125,14 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 2. ✅ ~~Entity relation 에러 수정 (완료)~~
 3. ✅ ~~CacheInterceptor 에러 수정 (완료)~~
 4. ✅ ~~Users API passwordHash 보안 이슈 수정 (완료)~~
-5. 🟡 Profile endpoint 라우팅 수정
+5. ✅ ~~Admin Dashboard 라우트 수정 (완료)~~
 
 ### 우선순위 MEDIUM
-6. Redis 캐시 설정 (`cache-manager-redis-yet` 패키지로 교체)
-7. NotificationsGateway 활성화 (`@nestjs/websockets`, `socket.io` 설치)
-8. EmailService 활성화 (`nodemailer` 설치)
-9. File upload 기능 테스트
-10. PUT/DELETE API 테스트
+6. 🟡 Profile endpoint 라우팅 수정
+7. Redis 캐시 설정 (`cache-manager-redis-yet` 패키지로 교체)
+8. NotificationsGateway 활성화 (`@nestjs/websockets`, `socket.io` 설치)
+9. EmailService 활성화 (`nodemailer` 설치)
+10. File upload 기능 테스트
 
 ### 우선순위 LOW
 11. Admin API 엔드포인트 테스트
@@ -173,14 +173,22 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 | **UPDATE** | `PUT /api/posts/:id` | ✅ | 게시물 수정 성공 (제목, isPinned) |
 | **DELETE** | `DELETE /api/posts/:id` | ✅ | 게시물 삭제 성공 (soft delete) |
 
-### ❌ Admin Dashboard API
+### ✅ Admin Dashboard API
 
 | 엔드포인트 | 메서드 | 상태 | 설명 |
 |----------|------|------|------|
-| `/api/admin/dashboard` | GET | ❌ 404 | 라우트가 등록되지 않음 |
-| `/api/admin/dashboard/statistics` | GET | ❌ 404 | 라우트가 등록되지 않음 |
+| `/api/admin/dashboard` | GET | ✅ | 대시보드 메인 조회 성공 (사용자, 단체, 행사, 재무 요약) |
+| `/api/admin/dashboard/statistics` | GET | ✅ | 통합 통계 조회 성공 (사용, 재무, 알림 통계) |
+| `/api/admin/dashboard/overview` | GET | ✅ | 대시보드 개요 조회 성공 |
+| `/api/admin/dashboard/recent-activities` | GET | ✅ | 최근 활동 조회 성공 |
+| `/api/admin/dashboard/usage-stats` | GET | ✅ | 사용 통계 조회 성공 |
+| `/api/admin/dashboard/finance-stats` | GET | ✅ | 재무 통계 조회 성공 |
+| `/api/admin/dashboard/notification-stats` | GET | ✅ | 알림 통계 조회 성공 |
 
-**권장 조치**: AdminDashboardController의 라우트 경로 확인 필요
+**수정 내용**:
+- AdminDashboardController에 루트 경로 `/api/admin/dashboard` GET 핸들러 추가
+- AdminDashboardController에 `/api/admin/dashboard/statistics` 엔드포인트 추가
+- AdminDashboardService에 `getAllStatistics()` 메서드 추가
 
 ### 권한 시스템 종합 검증
 
@@ -202,11 +210,10 @@ Backend API는 **전반적으로 정상 작동**하고 있으며, Docker 환경�
 - ✅ **실행**: Docker 컨테이너 정상 실행
 - ✅ **인증**: JWT 인증 시스템 정상 작동
 - ✅ **권한**: 역할 기반 권한 시스템 정상 작동
-- ✅ **API**: 20개 이상 엔드포인트 테스트 완료, 대부분 정상 응답
+- ✅ **API**: 25개 이상 엔드포인트 테스트 완료, 모두 정상 응답
 - ✅ **CRUD**: 생성/조회/수정/삭제 작업 모두 정상
-- ✅ **Admin**: 관리자 API 및 권한 시스템 정상
+- ✅ **Admin**: 관리자 API 및 권한 시스템 정상 (Dashboard 포함)
 - ✅ **보안**: CRITICAL 보안 이슈 수정 완료 (passwordHash 제거)
-- ⚠️ **라우팅**: Admin Dashboard 라우트 404 에러 (MEDIUM)
 
 **수정 완료**:
 - ✅ TypeScript 컴파일 에러 48개 → 0개
@@ -216,7 +223,7 @@ Backend API는 **전반적으로 정상 작동**하고 있으며, Docker 환경�
 
 **추천 사항**:
 1. ~~**즉시**: passwordHash 보안 이슈 수정~~ ✅ **완료**
-2. **우선**: Admin Dashboard 라우트 수정 (MEDIUM)
+2. ~~**우선**: Admin Dashboard 라우트 수정~~ ✅ **완료**
 3. **이후**: Profile endpoint 라우팅, Redis 캐시, WebSocket/Email 서비스 활성화
 
 **프로덕션 배포 가능 여부**: ✅ **배포 가능** (CRITICAL 이슈 모두 해결됨)

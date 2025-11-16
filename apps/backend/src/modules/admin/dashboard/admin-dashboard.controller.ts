@@ -14,6 +14,20 @@ export class AdminDashboardController {
     private readonly adminDashboardService: AdminDashboardService
   ) {}
 
+  @Get()
+  @ApiOperation({ summary: "대시보드 메인 조회 (관리자 전용)" })
+  @ApiResponse({ status: 200, description: "대시보드 메인 조회 성공" })
+  async getDashboard() {
+    return this.adminDashboardService.getOverview();
+  }
+
+  @Get("statistics")
+  @ApiOperation({ summary: "통합 통계 조회 (관리자 전용)" })
+  @ApiResponse({ status: 200, description: "통합 통계 조회 성공" })
+  async getAllStatistics() {
+    return this.adminDashboardService.getAllStatistics();
+  }
+
   @Get("overview")
   @ApiOperation({ summary: "대시보드 개요 조회 (관리자 전용)" })
   @ApiResponse({ status: 200, description: "대시보드 개요 조회 성공" })

@@ -228,4 +228,19 @@ export class AdminDashboardService {
       readRate: total > 0 ? Math.round((read / total) * 100) : 0,
     };
   }
+
+  // 모든 통계 통합 조회
+  async getAllStatistics() {
+    const [usageStats, financeStats, notificationStats] = await Promise.all([
+      this.getUsageStats(30),
+      this.getFinanceStats(),
+      this.getNotificationStats(),
+    ]);
+
+    return {
+      usage: usageStats,
+      finance: financeStats,
+      notifications: notificationStats,
+    };
+  }
 }
