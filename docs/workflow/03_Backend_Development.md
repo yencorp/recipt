@@ -333,23 +333,28 @@
 - `backend/src/settlements/dto/create-settlement.dto.ts` ✅
 - `backend/src/settlements/dto/update-settlement.dto.ts` ✅
 
-#### Task 3.15: 결산 항목 및 영수증 연동 API (4시간)
-**담당자**: 백엔드 시니어 개발자  
+#### Task 3.15: 결산 항목 및 영수증 연동 API (4시간) ✅
+**담당자**: 백엔드 시니어 개발자
 
 **세부 작업**:
-- [ ] 결산 항목 관리 API
-- [ ] 영수증 업로드 준비 API
-- [ ] OCR 작업 연동 인터페이스
-- [ ] 영수증 데이터 결산 항목 매핑
+- [x] 결산 항목 관리 API
+- [x] 영수증 업로드 준비 API
+- [x] OCR 작업 연동 인터페이스
+- [x] 영수증 데이터 결산 항목 매핑
 
 **완료 기준**:
-- 영수증 데이터 결산 항목 자동 반영
-- OCR 서비스와 통신 인터페이스 준비
-- 수동 입력과 OCR 입력 구분 관리
+- 영수증 데이터 결산 항목 자동 반영 ✅
+- OCR 서비스와 통신 인터페이스 준비 ✅
+- 수동 입력과 OCR 입력 구분 관리 ✅
 
 **산출물**:
-- `backend/src/settlement-items/settlement-items.controller.ts`
-- `backend/src/receipts/receipts.controller.ts`
+- `backend/src/settlement-items/settlement-items.controller.ts` ✅
+- `backend/src/settlement-items/settlement-items.service.ts` ✅
+- `backend/src/settlement-items/dto/create-settlement-item.dto.ts` ✅
+- `backend/src/settlement-items/dto/update-settlement-item.dto.ts` ✅
+- `backend/src/receipts/receipts.controller.ts` ✅
+- `backend/src/receipts/receipts.service.ts` ✅
+- `backend/src/receipts/dto/upload-receipt.dto.ts` ✅
 
 ---
 

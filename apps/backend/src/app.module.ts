@@ -21,6 +21,8 @@ import { EventsModule } from "./modules/events/events.module";
 import { BudgetsModule } from "./modules/budgets/budgets.module";
 import { BudgetItemsModule } from "./modules/budget-items/budget-items.module";
 import { SettlementsModule } from "./modules/settlements/settlements.module";
+import { SettlementItemsModule } from "./modules/settlement-items/settlement-items.module";
+import { ReceiptsModule } from "./modules/receipts/receipts.module";
 
 @Module({
   imports: [
@@ -80,6 +82,8 @@ import { SettlementsModule } from "./modules/settlements/settlements.module";
     BudgetsModule,
     BudgetItemsModule,
     SettlementsModule,
+    SettlementItemsModule,
+    ReceiptsModule,
 
     // TODO: 향후 추가 예정 모듈들
     // ReceiptScansModule,
