@@ -26,6 +26,7 @@ import { ReceiptsModule } from "./modules/receipts/receipts.module";
 import { PostsModule } from "./modules/posts/posts.module";
 import { NotificationsModule } from "./modules/notifications/notifications.module";
 import { AdminModule } from "./modules/admin/admin.module";
+import { FilesModule } from "./modules/files/files.module";
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { AdminModule } from "./modules/admin/admin.module";
     PostsModule,
     NotificationsModule,
     AdminModule,
+    FilesModule,
 
     // TODO: 향후 추가 예정 모듈들
     // ReceiptScansModule,
