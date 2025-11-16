@@ -1,9 +1,14 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
 import { User, UserStatus } from "../../entities/user.entity";
 import { JwtPayload } from "./jwt.strategy";
+import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from "bcrypt";
 
 export interface AuthTokens {
@@ -45,13 +50,43 @@ export class AuthService {
     };
   }
 
-  async register(_registerDto: any) {
-    // TODO: Task 3.5에서 구현 예정
-    // 1. 이메일 중복 확인
+  async register(registerDto: RegisterDto): Promise<LoginResponse> {
+    // 1. 비밀번호 확인 검증
+    if (registerDto.password !== registerDto.passwordConfirm) {
+      throw new BadRequestException("비밀번호가 일치하지 않습니다.");
+    }
+
     // 2. 비밀번호 해싱
-    // 3. 사용자 생성
-    // 4. 이메일 인증 발송
-    throw new Error("Method not implemented.");
+    const saltRounds = parseInt(
+      this.configService.get<string>("BCRYPT_SALT_ROUNDS", "10"),
+      10
+    );
+    const passwordHash = await bcrypt.hash(registerDto.password, saltRounds);
+
+    // 3. 사용자 생성 (이메일 중복 확인은 UsersService에서 처리)
+    const user = await this.usersService.create({
+      email: registerDto.email,
+      passwordHash,
+      name: registerDto.name,
+      phone: registerDto.phone,
+      role: registerDto.role,
+    });
+
+    // 4. TODO: 이메일 인증 토큰 생성 및 발송 (추후 구현)
+    // const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+    // await this.emailService.sendVerificationEmail(user.email, emailVerificationToken);
+
+    // 5. JWT 토큰 생성
+    const tokens = await this.generateTokens(user);
+
+    // 비밀번호 제외하고 사용자 정보 반환
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash: _, ...userWithoutPassword } = user;
+
+    return {
+      user: userWithoutPassword,
+      tokens,
+    };
   }
 
   async validateUser(email: string, password: string): Promise<User> {

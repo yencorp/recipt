@@ -102,25 +102,28 @@
 - `backend/src/common/decorators/public.decorator.ts` ✅
 - `backend/src/modules/auth/auth.controller.ts` ✅ (토큰 갱신 엔드포인트 추가)
 
-#### Task 3.5: 사용자 등록/로그인 API 구현 (4시간)
-**담당자**: 백엔드 주니어 개발자  
+#### Task 3.5: 사용자 등록/로그인 API 구현 (4시간) ✅
+**담당자**: 백엔드 주니어 개발자
 
 **세부 작업**:
-- [ ] 회원가입 엔드포인트 구현
-- [ ] 로그인/로그아웃 엔드포인트 구현
-- [ ] 패스워드 해싱 (bcrypt) 적용
-- [ ] 토큰 갱신 엔드포인트 구현
-- [ ] 입력 유효성 검증 DTO 작성
+- [x] 회원가입 엔드포인트 구현 ✅
+- [x] 로그인/로그아웃 엔드포인트 구현 ✅
+- [x] 패스워드 해싱 (bcrypt) 적용 ✅
+- [x] 토큰 갱신 엔드포인트 구현 ✅
+- [x] 입력 유효성 검증 DTO 작성 ✅
 
 **완료 기준**:
-- 회원가입/로그인 정상 동작
-- 패스워드 안전하게 암호화 저장
-- 토큰 갱신 메커니즘 동작
+- 회원가입/로그인 정상 동작 ✅
+- 패스워드 안전하게 암호화 저장 ✅
+- 토큰 갱신 메커니즘 동작 ✅
 
 **산출물**:
-- `backend/src/auth/auth.controller.ts`
-- `backend/src/auth/dto/register.dto.ts`
-- `backend/src/auth/dto/login.dto.ts`
+- `backend/src/modules/auth/auth.controller.ts` ✅
+- `backend/src/modules/auth/dto/register.dto.ts` ✅
+- `backend/src/modules/auth/dto/login.dto.ts` ✅
+- `backend/src/modules/auth/dto/refresh-token.dto.ts` ✅
+- `backend/src/modules/users/users.service.ts` ✅ (create 메서드 구현)
+- `backend/src/modules/auth/auth.service.ts` ✅ (register 메서드 구현)
 
 ---
 

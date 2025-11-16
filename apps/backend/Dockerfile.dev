@@ -18,6 +18,9 @@ RUN apk add --no-cache \
     bash \
     vim \
     postgresql-client \
+    python3 \
+    make \
+    g++ \
     && rm -rf /var/cache/apk/*
 
 # 작업 디렉터리 설정
@@ -41,6 +44,9 @@ RUN npm install -g @nestjs/cli nodemon
 
 # 애플리케이션 코드 복사
 COPY . .
+
+# bcrypt 네이티브 모듈 재빌드 (플랫폼 호환성)
+RUN npm rebuild bcrypt --build-from-source
 
 # 디렉터리 권한 설정
 RUN mkdir -p /app/uploads /app/logs \

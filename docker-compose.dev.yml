@@ -132,7 +132,10 @@ services:
       # JWT Configuration
       JWT_SECRET: dev-jwt-secret-key-change-in-production
       JWT_EXPIRES_IN: 7d
-      
+
+      # Bcrypt Configuration
+      BCRYPT_SALT_ROUNDS: 10
+
       # OCR Service Configuration
       OCR_SERVICE_URL: http://ocr-service:8001
       

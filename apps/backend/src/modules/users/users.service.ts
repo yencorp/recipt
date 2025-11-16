@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { User } from "../../entities/user.entity";
+import { User, UserRole, UserStatus } from "../../entities/user.entity";
 
 @Injectable()
 export class UsersService {
@@ -36,6 +36,34 @@ export class UsersService {
       where: { email },
       relations: ["userOrganizations", "userOrganizations.organization"],
     });
+  }
+
+  async create(userData: {
+    email: string;
+    passwordHash: string;
+    name: string;
+    phone?: string;
+    role?: UserRole;
+  }): Promise<User> {
+    // 이메일 중복 확인
+    const existingUser = await this.findByEmail(userData.email);
+    if (existingUser) {
+      throw new ConflictException("이미 사용 중인 이메일 주소입니다.");
+    }
+
+    // 사용자 생성
+    const user = this.userRepository.create({
+      email: userData.email,
+      passwordHash: userData.passwordHash,
+      name: userData.name,
+      phone: userData.phone,
+      role: userData.role || UserRole.MEMBER,
+      status: UserStatus.PENDING_VERIFICATION,
+      isActive: true,
+      failedLoginAttempts: 0,
+    });
+
+    return this.userRepository.save(user);
   }
 
   async updateLastLogin(id: string): Promise<void> {
