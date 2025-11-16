@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CacheModule } from "@nestjs/cache-manager";
@@ -11,6 +11,11 @@ import { HealthController } from "./health/health.controller";
 import { DatabaseModule } from "./database/database.module";
 import { CommonModule } from "./common/common.module";
 import { ConfigModule as AppConfigModule } from "./config/config.module";
+
+// 보안 미들웨어 imports
+import { RateLimitMiddleware } from "./common/middlewares/rate-limit.middleware";
+import { SecurityMiddleware } from "./common/middlewares/security.middleware";
+import { RequestLoggingMiddleware } from "./common/middlewares/request-logging.middleware";
 import { createDatabaseConfig } from "./config/database.config";
 
 // 비즈니스 모듈 imports
@@ -104,4 +109,15 @@ import { OcrModule } from "./modules/ocr/ocr.module";
   controllers: [AppController, HealthController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // 보안 헤더 미들웨어 (모든 라우트에 적용)
+    consumer.apply(SecurityMiddleware).forRoutes("*");
+
+    // 요청 로깅 미들웨어 (모든 라우트에 적용)
+    consumer.apply(RequestLoggingMiddleware).forRoutes("*");
+
+    // Rate Limiting 미들웨어 (API 라우트에만 적용)
+    consumer.apply(RateLimitMiddleware).forRoutes("/api/*");
+  }
+}
