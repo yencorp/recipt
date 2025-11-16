@@ -1,9 +1,12 @@
 import { Module, Global } from "@nestjs/common";
-import { APP_PIPE } from "@nestjs/core";
+import { APP_PIPE, APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { CacheModule } from "@nestjs/cache-manager";
 import { OwnershipGuard } from "./guards/ownership.guard";
 import { CacheInvalidationService } from "./services/cache-invalidation.service";
+import { HttpExceptionFilter } from "./filters/http-exception.filter";
+import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
+import { ResponseTransformInterceptor } from "./interceptors/response-transform.interceptor";
 
 @Global()
 @Module({
@@ -14,19 +17,24 @@ import { CacheInvalidationService } from "./services/cache-invalidation.service"
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
+    // 글로벌 예외 필터
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    // 글로벌 응답 변환 인터셉터
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseTransformInterceptor,
+    },
     // Ownership Guard
     OwnershipGuard,
     // Cache Invalidation Service
     CacheInvalidationService,
-    // TODO: 추가 글로벌 프로바이더들
-    // {
-    //   provide: APP_FILTER,
-    //   useClass: HttpExceptionFilter,
-    // },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggingInterceptor,
-    // },
   ],
   exports: [OwnershipGuard, CacheInvalidationService],
 })
