@@ -114,26 +114,6 @@
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapping": {
-      "^@/(.*)$": "<rootDir>/$1"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/your-org/recipt-management.git"
