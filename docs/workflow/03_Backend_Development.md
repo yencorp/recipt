@@ -193,18 +193,19 @@
 - `backend/src/modules/organizations/organizations.module.ts`
 - `backend/src/modules/organizations/dto/*.ts`
 
-#### Task 3.9: 행사 관리 API 구현 (5시간)
+#### Task 3.9: 행사 관리 API 구현 (5시간) ✅
 **담당자**: 백엔드 개발자 2명 (병렬 작업)
+**완료일**: 2025-11-16
 
 **Developer A: 기본 CRUD (2.5시간)**:
-- [ ] 행사 생성 API
-- [ ] 행사 목록 조회 API (필터링, 페이징)
-- [ ] 행사 상세 조회 API
+- [x] 행사 생성 API
+- [x] 행사 목록 조회 API (필터링, 페이징)
+- [x] 행사 상세 조회 API
 
 **Developer B: 고급 기능 (2.5시간)**:
-- [ ] 행사 수정/삭제 API
-- [ ] 행사 상태 관리 (진행중, 완료, 취소)
-- [ ] 행사별 권한 관리 (작성자, 관리자)
+- [x] 행사 수정/삭제 API
+- [x] 행사 상태 관리 (진행중, 완료, 취소)
+- [x] 행사별 권한 관리 (작성자, 관리자)
 
 **완료 기준**:
 - 행사 전체 라이프사이클 관리 가능
@@ -212,10 +213,11 @@
 - 작성자/관리자 권한 제어 확인
 
 **산출물**:
-- `backend/src/events/events.controller.ts`
-- `backend/src/events/events.service.ts`
-- `backend/src/events/dto/create-event.dto.ts`
-- `backend/src/events/dto/update-event.dto.ts`
+- `backend/src/modules/events/events.controller.ts`
+- `backend/src/modules/events/events.service.ts`
+- `backend/src/modules/events/dto/create-event.dto.ts`
+- `backend/src/modules/events/dto/update-event.dto.ts`
+- `backend/src/modules/events/dto/event-filter.dto.ts`
 
 ---
 
