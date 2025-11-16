@@ -19,6 +19,7 @@ import { UsersModule } from "./modules/users/users.module";
 import { OrganizationsModule } from "./modules/organizations/organizations.module";
 import { EventsModule } from "./modules/events/events.module";
 import { BudgetsModule } from "./modules/budgets/budgets.module";
+import { BudgetItemsModule } from "./modules/budget-items/budget-items.module";
 import { SettlementsModule } from "./modules/settlements/settlements.module";
 
 @Module({
@@ -77,6 +78,7 @@ import { SettlementsModule } from "./modules/settlements/settlements.module";
     OrganizationsModule,
     EventsModule,
     BudgetsModule,
+    BudgetItemsModule,
     SettlementsModule,
 
     // TODO: 향후 추가 예정 모듈들

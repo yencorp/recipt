@@ -286,23 +286,28 @@
 - `backend/src/budgets/dto/create-budget.dto.ts` ✅
 - `backend/src/budgets/dto/update-budget.dto.ts` ✅
 
-#### Task 3.13: 예산 항목 관리 API (4시간)
-**담당자**: 백엔드 시니어 개발자  
+#### Task 3.13: 예산 항목 관리 API (4시간) ✅
+**담당자**: 백엔드 시니어 개발자
 
 **세부 작업**:
-- [ ] 예산 항목 추가/수정/삭제 API
-- [ ] 예산 카테고리 관리
-- [ ] 예산 집계 및 계산 로직
-- [ ] 예산 승인 워크플로우
+- [x] 예산 항목 추가/수정/삭제 API
+- [x] 예산 카테고리 관리
+- [x] 예산 집계 및 계산 로직
+- [x] 예산 승인 워크플로우
 
 **완료 기준**:
-- 예산 항목 동적 관리 가능
-- 수입/지출 자동 집계 정확성
-- 예산 초과 알림 기능
+- 예산 항목 동적 관리 가능 ✅
+- 수입/지출 자동 집계 정확성 ✅
+- 예산 초과 알림 기능 ✅
 
 **산출물**:
-- `backend/src/budget-items/budget-items.controller.ts`
-- `backend/src/budget-items/budget-items.service.ts`
+- `backend/src/budget-items/budget-items.controller.ts` ✅
+- `backend/src/budget-items/budget-items.service.ts` ✅
+- `backend/src/budget-items/dto/create-budget-income.dto.ts` ✅
+- `backend/src/budget-items/dto/update-budget-income.dto.ts` ✅
+- `backend/src/budget-items/dto/create-budget-expense.dto.ts` ✅
+- `backend/src/budget-items/dto/update-budget-expense.dto.ts` ✅
+- `backend/src/budget-items/budget-items.module.ts` ✅
 
 ---
 
