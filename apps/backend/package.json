@@ -116,7 +116,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/recipt-management.git"
+    "url": "http://feelinglucky.synology.me:3052/jopark/recipt.git"
   },
   "author": "광남동성당 청소년위원회 개발팀",
   "license": "MIT"
