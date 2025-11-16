@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Request,
+  UseInterceptors,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -24,11 +25,14 @@ import { OrgAdminOnly } from "../auth/roles.decorator";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { UpdateEventDto } from "./dto/update-event.dto";
 import { EventFilterDto } from "./dto/event-filter.dto";
+import { CacheInterceptor } from "../../common/interceptors/cache.interceptor";
+import { CacheKey, CacheTTL } from "../../common/decorators/cache.decorator";
 
 @ApiTags("Events")
 @Controller("events")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth("JWT")
+@UseInterceptors(CacheInterceptor)
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
@@ -41,6 +45,8 @@ export class EventsController {
   }
 
   @Get()
+  @CacheKey("events:list")
+  @CacheTTL(300) // 5분 캐시
   @ApiOperation({ summary: "행사 목록 조회 (필터링, 페이징)" })
   @ApiResponse({ status: 200, description: "행사 목록 조회 성공" })
   @ApiQuery({ name: "organizationId", required: false })
@@ -54,6 +60,8 @@ export class EventsController {
   }
 
   @Get(":id")
+  @CacheKey("events:detail")
+  @CacheTTL(600) // 10분 캐시
   @ApiOperation({ summary: "행사 상세 조회" })
   @ApiResponse({ status: 200, description: "행사 상세 조회 성공" })
   @ApiResponse({ status: 404, description: "행사를 찾을 수 없음" })

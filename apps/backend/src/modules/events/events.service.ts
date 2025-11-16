@@ -9,12 +9,14 @@ import { Event, EventStatus } from "../../entities/event.entity";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { UpdateEventDto } from "./dto/update-event.dto";
 import { EventFilterDto } from "./dto/event-filter.dto";
+import { CacheInvalidationService } from "../../common/services/cache-invalidation.service";
 
 @Injectable()
 export class EventsService {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
+    private readonly cacheInvalidationService: CacheInvalidationService,
   ) {}
 
   async create(createEventDto: CreateEventDto, userId: string) {
@@ -27,7 +29,12 @@ export class EventsService {
       isCancelled: false,
     });
 
-    return this.eventRepository.save(event);
+    const savedEvent = await this.eventRepository.save(event);
+
+    // 캐시 무효화
+    await this.cacheInvalidationService.invalidateEvents();
+
+    return savedEvent;
   }
 
   async findAll(filterDto?: EventFilterDto) {
@@ -119,6 +126,10 @@ export class EventsService {
     // 여기서는 서비스 레벨 검증
 
     await this.eventRepository.update(id, updateEventDto);
+
+    // 캐시 무효화
+    await this.cacheInvalidationService.invalidateEvents();
+
     return this.findOne(id);
   }
 
@@ -133,6 +144,10 @@ export class EventsService {
     }
 
     await this.eventRepository.remove(event);
+
+    // 캐시 무효화
+    await this.cacheInvalidationService.invalidateEvents();
+
     return { message: "행사가 삭제되었습니다." };
   }
 
