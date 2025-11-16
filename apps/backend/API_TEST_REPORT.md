@@ -80,12 +80,17 @@ Docker 환경에서 Backend API의 전체적인 기능을 테스트하였습니�
 | `/api/organizations` | POST | ⚠️ 403 | MEMBER 역할로는 단체 생성 불가 (SUPER_ADMIN 또는 ORGANIZATION_ADMIN 필요) |
 | `/api/posts` | POST | ⚠️ 403 | MEMBER 역할로는 게시물 생성 불가 (SUPER_ADMIN 또는 ORGANIZATION_ADMIN 필요) |
 
-### 🔒 보안 이슈 발견
+### 🔒 보안 이슈 발견 및 해결
 
-| 이슈 | 심각도 | 설명 | 권장 조치 |
+| 이슈 | 심각도 | 상태 | 해결 방법 |
 |-----|-------|------|---------|
-| Users API passwordHash 노출 | 🔴 HIGH | `/api/users/:id` 응답에 `passwordHash` 필드 포함됨 | 응답 DTO에서 passwordHash 제외 필요 |
-| Profile endpoint 라우팅 | 🟡 MEDIUM | `/api/users/profile` 엔드포인트 not found (UUID로 파싱됨) | 라우팅 순서 조정 필요 |
+| Users API passwordHash 노출 | 🔴 CRITICAL | ✅ **해결됨** | ClassSerializerInterceptor 활성화로 @Exclude 데코레이터 적용 |
+| Profile endpoint 라우팅 | 🟡 MEDIUM | ⚠️ 미해결 | `/api/users/profile` 엔드포인트 not found (UUID로 파싱됨) |
+
+**보안 수정 사항**:
+- `ClassSerializerInterceptor`를 글로벌 인터셉터로 등록
+- `passwordHash`, `emailVerificationToken`, `passwordResetToken` 등 민감 정보 자동 제외
+- 모든 사용자 관련 API에서 민감 정보 완전 제거 확인
 
 ## 테스트된 사용자 계정
 
@@ -119,7 +124,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 1. ✅ ~~TypeScript 컴파일 에러 수정 (완료)~~
 2. ✅ ~~Entity relation 에러 수정 (완료)~~
 3. ✅ ~~CacheInterceptor 에러 수정 (완료)~~
-4. 🔴 **Users API passwordHash 보안 이슈 수정**
+4. ✅ ~~Users API passwordHash 보안 이슈 수정 (완료)~~
 5. 🟡 Profile endpoint 라우팅 수정
 
 ### 우선순위 MEDIUM
@@ -200,12 +205,18 @@ Backend API는 **전반적으로 정상 작동**하고 있으며, Docker 환경�
 - ✅ **API**: 20개 이상 엔드포인트 테스트 완료, 대부분 정상 응답
 - ✅ **CRUD**: 생성/조회/수정/삭제 작업 모두 정상
 - ✅ **Admin**: 관리자 API 및 권한 시스템 정상
-- 🔴 **보안**: 1개 CRITICAL 보안 이슈 발견 (passwordHash 노출)
-- ⚠️ **라우팅**: Admin Dashboard 라우트 404 에러
+- ✅ **보안**: CRITICAL 보안 이슈 수정 완료 (passwordHash 제거)
+- ⚠️ **라우팅**: Admin Dashboard 라우트 404 에러 (MEDIUM)
+
+**수정 완료**:
+- ✅ TypeScript 컴파일 에러 48개 → 0개
+- ✅ Entity relation 에러 수정
+- ✅ CacheInterceptor 에러 수정
+- ✅ **passwordHash 보안 이슈 수정 (ClassSerializerInterceptor 활성화)**
 
 **추천 사항**:
-1. **즉시**: passwordHash 보안 이슈 수정 (CRITICAL)
+1. ~~**즉시**: passwordHash 보안 이슈 수정~~ ✅ **완료**
 2. **우선**: Admin Dashboard 라우트 수정 (MEDIUM)
 3. **이후**: Profile endpoint 라우팅, Redis 캐시, WebSocket/Email 서비스 활성화
 
-**프로덕션 배포 가능 여부**: passwordHash 이슈만 수정하면 배포 가능
+**프로덕션 배포 가능 여부**: ✅ **배포 가능** (CRITICAL 이슈 모두 해결됨)

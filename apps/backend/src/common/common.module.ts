@@ -1,4 +1,4 @@
-import { Module, Global } from "@nestjs/common";
+import { Module, Global, ClassSerializerInterceptor } from "@nestjs/common";
 import { APP_PIPE, APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { OwnershipGuard } from "./guards/ownership.guard";
@@ -24,6 +24,11 @@ import { ResponseTransformInterceptor } from "./interceptors/response-transform.
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    // 글로벌 Class Serializer (passwordHash 등 민감정보 제외)
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
     },
     // 글로벌 응답 변환 인터셉터
     {
