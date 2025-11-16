@@ -53,19 +53,12 @@ import { OcrModule } from "./modules/ocr/ocr.module";
       inject: [ConfigService],
     }),
 
-    // Redis 캐시 모듈
-    CacheModule.registerAsync({
+    // Redis 캐시 모듈 (임시로 메모리 캐시 사용)
+    // TODO: cache-manager-redis-yet 패키지로 교체 필요
+    CacheModule.register({
       isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        store: redisStore as any,
-        host: configService.get("REDIS_HOST"),
-        port: configService.get("REDIS_PORT"),
-        password: configService.get("REDIS_PASSWORD"),
-        db: configService.get("REDIS_DB"),
-        ttl: configService.get("REDIS_TTL") || 3600,
-      }),
-      inject: [ConfigService],
+      ttl: 3600, // 1시간
+      max: 100, // 최대 100개 항목
     }),
 
     // Rate Limiting 모듈 (임시 주석 처리)

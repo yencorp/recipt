@@ -26,8 +26,8 @@ export class BudgetsService {
     const query = this.budgetRepository
       .createQueryBuilder("budget")
       .leftJoinAndSelect("budget.event", "event")
-      .leftJoinAndSelect("budget.budgetIncomes", "budgetIncomes")
-      .leftJoinAndSelect("budget.budgetExpenses", "budgetExpenses")
+      .leftJoinAndSelect("budget.incomes", "incomes")
+      .leftJoinAndSelect("budget.expenses", "expenses")
       .orderBy("budget.createdAt", "DESC");
 
     if (organizationId) {
@@ -42,7 +42,7 @@ export class BudgetsService {
   async findOne(id: string) {
     const budget = await this.budgetRepository.findOne({
       where: { id },
-      relations: ["event", "budgetIncomes", "budgetExpenses"],
+      relations: ["event", "incomes", "expenses"],
     });
 
     if (!budget) {

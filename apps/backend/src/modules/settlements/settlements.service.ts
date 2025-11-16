@@ -23,7 +23,7 @@ export class SettlementsService {
       .createQueryBuilder("settlement")
       .leftJoinAndSelect("settlement.event", "event")
       .leftJoinAndSelect("settlement.budget", "budget")
-      .leftJoinAndSelect("settlement.settlementItems", "settlementItems")
+      .leftJoinAndSelect("settlement.items", "items")
       .orderBy("settlement.createdAt", "DESC");
 
     if (organizationId) {
@@ -38,7 +38,7 @@ export class SettlementsService {
   async findOne(id: string) {
     const settlement = await this.settlementRepository.findOne({
       where: { id },
-      relations: ["event", "budget", "settlementItems"],
+      relations: ["event", "budget", "items"],
     });
 
     if (!settlement) {
@@ -121,7 +121,7 @@ export class SettlementsService {
 
     const budget = await this.budgetRepository.findOne({
       where: { id: settlement.budgetId },
-      relations: ["budgetIncomes", "budgetExpenses"],
+      relations: ["incomes", "expenses"],
     });
 
     if (!budget) {
