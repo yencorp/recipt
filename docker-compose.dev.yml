@@ -313,12 +313,8 @@ services:
         condition: service_healthy
     
     # healthcheck 비활성화 (개발 환경에서 불필요)
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
-    #   interval: 5m
-    #   timeout: 15s
-    #   retries: 3
-    #   start_period: 90s
+    healthcheck:
+      disable: true
     
     deploy:
       resources:
