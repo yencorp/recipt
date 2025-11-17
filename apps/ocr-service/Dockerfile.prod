@@ -138,7 +138,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 \
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # 프로덕션 시작 명령어 (Gunicorn 사용)
-CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8001", "--workers", "4", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info"]
+CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8001", "--workers", "4", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info"]
 
 # =================================================================
 # 프로덕션 최적화 설정
