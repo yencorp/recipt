@@ -58,7 +58,7 @@ export const EventCard: React.FC<EventCardProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-2">
-              <h3 className="text-lg font-semibold">{event.name}</h3>
+              <h3 className="text-lg font-semibold">{event.title}</h3>
               <Badge variant={getStatusVariant(event.status)}>
                 {getStatusLabel(event.status)}
               </Badge>
@@ -85,11 +85,11 @@ export const EventCard: React.FC<EventCardProps> = ({
               <p className="mt-1 font-medium">{event.location}</p>
             </div>
           )}
-          {event.allocatedBudget && (
+          {event.estimatedCost && (
             <div>
-              <p className="text-muted-foreground">배정 예산</p>
+              <p className="text-muted-foreground">예상 비용</p>
               <p className="mt-1 font-medium">
-                {event.allocatedBudget.toLocaleString()}원
+                {event.estimatedCost.toLocaleString()}원
               </p>
             </div>
           )}

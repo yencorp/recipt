@@ -154,7 +154,7 @@ export const BudgetWizard: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold">예산서 작성</h1>
         <p className="text-muted-foreground mt-1">
-          {event.name} - 예산서 작성 마법사
+          {event.title} - 예산서 작성 마법사
         </p>
       </div>
 

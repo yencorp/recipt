@@ -32,7 +32,7 @@ export const EventListPage: React.FC = () => {
     // 검색 필터
     if (searchQuery) {
       result = result.filter((event) =>
-        event.name.toLowerCase().includes(searchQuery.toLowerCase())
+        event.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -47,7 +47,7 @@ export const EventListPage: React.FC = () => {
         case 'startDate':
           return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
         case 'name':
-          return a.name.localeCompare(b.name, 'ko');
+          return a.title.localeCompare(b.title, 'ko');
         case 'createdAt':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         default:
@@ -65,7 +65,7 @@ export const EventListPage: React.FC = () => {
   };
 
   const handleDelete = async (event: Event) => {
-    if (confirm(`"${event.name}" 행사를 삭제하시겠습니까?`)) {
+    if (confirm(`"${event.title}" 행사를 삭제하시겠습니까?`)) {
       try {
         await deleteEvent(event.id).unwrap();
       } catch (error) {
