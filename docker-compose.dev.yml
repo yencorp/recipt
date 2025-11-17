@@ -167,17 +167,8 @@ services:
       - recipt-network
     
     depends_on:
-      database:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      - database
+      - redis
     
     deploy:
       resources:
@@ -211,26 +202,18 @@ services:
       - ./apps/frontend:/app
       - /app/node_modules
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     networks:
       - recipt-network
-    
+
     # React + VITE 개발 환경 설정
     environment:
       NODE_ENV: development
       VITE_API_URL: http://backend:8000/api
       VITE_OCR_URL: http://ocr-service:8001/api
-      
+
       # Timezone
       TZ: Asia/Seoul
-    
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
     
     deploy:
       resources:
