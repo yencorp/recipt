@@ -30,7 +30,27 @@ export class UsersController {
   @ApiResponse({ status: 200, description: "프로필 조회 성공" })
   @ApiResponse({ status: 401, description: "인증 실패" })
   async getProfile(@CurrentUser() user: any) {
-    return this.usersService.findOne(user.sub);
+    return this.usersService.findOne(user.id);
+  }
+
+  @Put("profile")
+  @ApiOperation({ summary: "내 프로필 수정 (현재 로그인한 사용자)" })
+  @ApiResponse({ status: 200, description: "프로필 수정 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  @ApiResponse({ status: 404, description: "사용자를 찾을 수 없음" })
+  async updateProfile(
+    @CurrentUser() user: any,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    return this.usersService.update(user.id, updateUserDto);
+  }
+
+  @Get("organizations")
+  @ApiOperation({ summary: "내 소속 단체 조회 (현재 로그인한 사용자)" })
+  @ApiResponse({ status: 200, description: "소속 단체 조회 성공" })
+  @ApiResponse({ status: 401, description: "인증 실패" })
+  async getMyOrganizations(@CurrentUser() user: any) {
+    return this.usersService.getUserOrganizations(user.id);
   }
 
   @Get(":id")

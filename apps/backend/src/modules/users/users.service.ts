@@ -86,6 +86,15 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
 
+    // 실제 업데이트할 필드가 있는지 확인
+    const fieldsToUpdate = Object.keys(updateUserDto).filter(
+      (key) => updateUserDto[key] !== undefined
+    );
+
+    if (fieldsToUpdate.length === 0) {
+      throw new BadRequestException("수정할 필드가 없습니다.");
+    }
+
     await this.userRepository.update(id, updateUserDto);
     return this.findOne(id);
   }
