@@ -11,9 +11,9 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  accessToken: localStorage.getItem('accessToken'),
-  refreshToken: localStorage.getItem('refreshToken'),
-  isAuthenticated: !!localStorage.getItem('accessToken'),
+  accessToken: sessionStorage.getItem('accessToken'),
+  refreshToken: sessionStorage.getItem('refreshToken'),
+  isAuthenticated: !!sessionStorage.getItem('accessToken'),
   loading: false,
 };
 
@@ -30,8 +30,8 @@ const authSlice = createSlice({
       state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
       state.loading = false;
-      localStorage.setItem('accessToken', action.payload.accessToken);
-      localStorage.setItem('refreshToken', action.payload.refreshToken);
+      sessionStorage.setItem('accessToken', action.payload.accessToken);
+      sessionStorage.setItem('refreshToken', action.payload.refreshToken);
     },
     logout: (state) => {
       state.user = null;
@@ -39,8 +39,8 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.isAuthenticated = false;
       state.loading = false;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
     },
     setLoading: (state, action: { payload: boolean }) => {
       state.loading = action.payload;
