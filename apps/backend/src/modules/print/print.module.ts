@@ -8,8 +8,7 @@ import { Settlement } from "../../entities/settlement.entity";
 import { Organization } from "../../entities/organization.entity";
 import { BudgetIncome } from "../../entities/budget-income.entity";
 import { BudgetExpense } from "../../entities/budget-expense.entity";
-import { SettlementIncome } from "../../entities/settlement-income.entity";
-import { SettlementExpense } from "../../entities/settlement-expense.entity";
+import { SettlementItem } from "../../entities/settlement-item.entity";
 
 @Module({
   imports: [
@@ -20,8 +19,7 @@ import { SettlementExpense } from "../../entities/settlement-expense.entity";
       Organization,
       BudgetIncome,
       BudgetExpense,
-      SettlementIncome,
-      SettlementExpense,
+      SettlementItem,
     ]),
   ],
   controllers: [PrintController],

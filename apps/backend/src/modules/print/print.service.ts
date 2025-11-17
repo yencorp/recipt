@@ -7,8 +7,7 @@ import { Settlement } from "../../entities/settlement.entity";
 import { Organization } from "../../entities/organization.entity";
 import { BudgetIncome } from "../../entities/budget-income.entity";
 import { BudgetExpense } from "../../entities/budget-expense.entity";
-import { SettlementIncome } from "../../entities/settlement-income.entity";
-import { SettlementExpense } from "../../entities/settlement-expense.entity";
+import { SettlementItem, SettlementItemType } from "../../entities/settlement-item.entity";
 import { GeneratePDFDto, PDFType } from "./dto/generate-pdf.dto";
 
 @Injectable()
@@ -26,10 +25,8 @@ export class PrintService {
     private budgetIncomesRepository: Repository<BudgetIncome>,
     @InjectRepository(BudgetExpense)
     private budgetExpensesRepository: Repository<BudgetExpense>,
-    @InjectRepository(SettlementIncome)
-    private settlementIncomesRepository: Repository<SettlementIncome>,
-    @InjectRepository(SettlementExpense)
-    private settlementExpensesRepository: Repository<SettlementExpense>,
+    @InjectRepository(SettlementItem)
+    private settlementItemsRepository: Repository<SettlementItem>,
   ) {}
 
   async getPrintBudgetData(eventId: string, user: any) {
@@ -55,20 +52,20 @@ export class PrintService {
 
     const incomes = await this.budgetIncomesRepository.find({
       where: { budget: { id: budget.id } },
-      order: { order: "ASC" },
+      order: { displayOrder: "ASC" },
     });
 
     const expenses = await this.budgetExpensesRepository.find({
       where: { budget: { id: budget.id } },
-      order: { order: "ASC" },
+      order: { displayOrder: "ASC" },
     });
 
     const totalIncome = incomes.reduce(
-      (sum, income) => sum + Number(income.amount),
+      (sum, income) => sum + Number(income.budgetAmount),
       0,
     );
     const totalExpense = expenses.reduce(
-      (sum, expense) => sum + Number(expense.amount),
+      (sum, expense) => sum + Number(expense.budgetAmount),
       0,
     );
     const balance = totalIncome - totalExpense;
@@ -117,22 +114,20 @@ export class PrintService {
       );
     }
 
-    const incomes = await this.settlementIncomesRepository.find({
+    const items = await this.settlementItemsRepository.find({
       where: { settlement: { id: settlement.id } },
-      order: { order: "ASC" },
+      order: { createdAt: "ASC" },
     });
 
-    const expenses = await this.settlementExpensesRepository.find({
-      where: { settlement: { id: settlement.id } },
-      order: { order: "ASC" },
-    });
+    const incomes = items.filter((item) => item.type === SettlementItemType.INCOME);
+    const expenses = items.filter((item) => item.type === SettlementItemType.EXPENSE);
 
     const totalIncome = incomes.reduce(
-      (sum, income) => sum + Number(income.amount),
+      (sum, income) => sum + Number(income.actualAmount),
       0,
     );
     const totalExpense = expenses.reduce(
-      (sum, expense) => sum + Number(expense.amount),
+      (sum, expense) => sum + Number(expense.actualAmount),
       0,
     );
     const balance = totalIncome - totalExpense;
