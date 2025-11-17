@@ -22,7 +22,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   onCreateBudget,
   onCreateSettlement,
 }) => {
-  const { isAdmin, isOrgAdmin } = useAuth();
+  const { isAdmin, isOrgAdmin, user } = useAuth();
 
   const getStatusVariant = (status: Event['status']) => {
     switch (status) {
@@ -50,7 +50,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     }
   };
 
-  const canEdit = isAdmin || isOrgAdmin;
+  const canEdit = isAdmin || isOrgAdmin || event.createdBy.id === user?.id;
 
   return (
     <Card className="hover:shadow-md transition-shadow">

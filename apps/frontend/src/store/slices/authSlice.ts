@@ -9,8 +9,17 @@ interface AuthState {
   loading: boolean;
 }
 
+const getUserFromStorage = (): User | null => {
+  try {
+    const userStr = sessionStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  } catch {
+    return null;
+  }
+};
+
 const initialState: AuthState = {
-  user: null,
+  user: getUserFromStorage(),
   accessToken: sessionStorage.getItem('accessToken'),
   refreshToken: sessionStorage.getItem('refreshToken'),
   isAuthenticated: !!sessionStorage.getItem('accessToken'),
@@ -30,6 +39,7 @@ const authSlice = createSlice({
       state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
       state.loading = false;
+      sessionStorage.setItem('user', JSON.stringify(action.payload.user));
       sessionStorage.setItem('accessToken', action.payload.accessToken);
       sessionStorage.setItem('refreshToken', action.payload.refreshToken);
     },
@@ -39,6 +49,7 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.isAuthenticated = false;
       state.loading = false;
+      sessionStorage.removeItem('user');
       sessionStorage.removeItem('accessToken');
       sessionStorage.removeItem('refreshToken');
     },
