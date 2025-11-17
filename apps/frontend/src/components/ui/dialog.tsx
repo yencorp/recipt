@@ -79,7 +79,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
         <div
           ref={ref}
           className={cn(
-            'relative z-50 w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg',
+            'relative z-50 w-full max-w-lg rounded-lg border bg-white p-6 shadow-lg',
             className
           )}
           {...props}
