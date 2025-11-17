@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { User } from '@/types';
 
 interface AuthState {
@@ -23,7 +23,7 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: User; accessToken: string; refreshToken: string }>
+      action: { payload: { user: User; accessToken: string; refreshToken: string } }
     ) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
@@ -42,7 +42,7 @@ const authSlice = createSlice({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     },
-    setLoading: (state, action: PayloadAction<boolean>) => {
+    setLoading: (state, action: { payload: boolean }) => {
       state.loading = action.payload;
     },
   },
