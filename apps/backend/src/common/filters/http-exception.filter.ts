@@ -7,6 +7,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request, Response } from "express";
+import { EmailNotVerifiedException } from "../../modules/auth/exceptions/email-not-verified.exception";
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -16,6 +17,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+
+    // EmailNotVerifiedException은 원래 응답 구조를 그대로 사용
+    if (exception instanceof EmailNotVerifiedException) {
+      const status = exception.getStatus();
+      const exceptionResponse = exception.getResponse();
+
+      // 로깅
+      this.logException(request, status, exceptionResponse, undefined);
+
+      // 원래 응답 구조 그대로 반환
+      return response.status(status).json(exceptionResponse);
+    }
 
     const status = this.getStatus(exception);
     const message = this.getMessage(exception);

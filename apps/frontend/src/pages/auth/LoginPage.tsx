@@ -62,7 +62,7 @@ export const LoginPage: React.FC = () => {
       setResendLoading(true);
       setResendSuccess(false);
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/resend-verification`,
+        `${import.meta.env.VITE_API_BASE_URL}/auth/resend-verification`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

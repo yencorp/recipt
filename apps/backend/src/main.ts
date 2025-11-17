@@ -4,12 +4,16 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { LoggerMiddleware } from "./common/middlewares/logger.middleware";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
+import { EmailNotVerifiedExceptionFilter } from "./common/filters/email-not-verified.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 글로벌 예외 필터 설정
-  app.useGlobalFilters(new HttpExceptionFilter());
+  // 글로벌 예외 필터 설정 (구체적인 예외 필터를 먼저 등록)
+  app.useGlobalFilters(
+    new EmailNotVerifiedExceptionFilter(),
+    new HttpExceptionFilter()
+  );
 
   // 로거 미들웨어 설정
   app.use(new LoggerMiddleware().use.bind(new LoggerMiddleware()));
