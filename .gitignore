@@ -181,3 +181,6 @@ backup/
 
 # Serena MCP memory
 .serena/
+
+# Playwright MCP screenshots
+.playwright-mcp/
