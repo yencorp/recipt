@@ -1,14 +1,11 @@
+import { Outlet } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
 import { cn } from '@/utils/cn';
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-}
-
-export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+export const MainLayout: React.FC = () => {
   const { sidebarOpen } = useAppSelector((state) => state.ui);
 
   return (
@@ -22,7 +19,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             sidebarOpen ? 'ml-64' : 'ml-0'
           )}
         >
-          <div className="container mx-auto p-6">{children}</div>
+          <div className="container mx-auto p-6">
+            <Outlet />
+          </div>
         </main>
       </div>
       <Footer />

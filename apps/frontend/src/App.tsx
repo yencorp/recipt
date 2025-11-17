@@ -53,47 +53,36 @@ function App() {
 
       {/* Protected Routes */}
       <Route
-        path="/"
+        path="/*"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <Routes>
-                <Route index element={<Navigate to="/dashboard" replace />} />
-                <Route path="dashboard" element={<DashboardPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-
-                {/* Events */}
-                <Route path="events" element={<EventListPage />} />
-                <Route path="events/:id" element={<EventDetailPage />} />
-                <Route path="events/:id/budget" element={<BudgetWizard />} />
-                <Route path="events/:id/settlement" element={<SettlementWizard />} />
-
-                {/* OCR */}
-                <Route path="ocr/:settlementId" element={<OCRPage />} />
-
-                {/* Blog */}
-                <Route path="blog" element={<BlogPage />} />
-
-                {/* Admin */}
-                <Route path="admin/*" element={
-                  <ProtectedRoute requiredRole="ADMIN">
-                    <Routes>
-                      <Route index element={<SystemDashboard />} />
-                      <Route path="users" element={<UsersPage />} />
-                      <Route path="organizations" element={<OrganizationsPage />} />
-                    </Routes>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="unauthorized" element={<UnauthorizedPage />} />
-              </Routes>
-            </MainLayout>
+            <MainLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="profile" element={<ProfilePage />} />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Events */}
+        <Route path="events" element={<EventListPage />} />
+        <Route path="events/:id" element={<EventDetailPage />} />
+        <Route path="events/:id/budget" element={<BudgetWizard />} />
+        <Route path="events/:id/settlement" element={<SettlementWizard />} />
+
+        {/* OCR */}
+        <Route path="ocr/:settlementId" element={<OCRPage />} />
+
+        {/* Blog */}
+        <Route path="blog" element={<BlogPage />} />
+
+        {/* Admin */}
+        <Route path="admin" element={<ProtectedRoute requiredRole="ADMIN"><SystemDashboard /></ProtectedRoute>} />
+        <Route path="admin/users" element={<ProtectedRoute requiredRole="ADMIN"><UsersPage /></ProtectedRoute>} />
+        <Route path="admin/organizations" element={<ProtectedRoute requiredRole="ADMIN"><OrganizationsPage /></ProtectedRoute>} />
+
+        <Route path="unauthorized" element={<UnauthorizedPage />} />
+      </Route>
     </Routes>
   );
 }
