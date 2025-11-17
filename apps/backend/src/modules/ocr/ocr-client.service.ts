@@ -1,134 +1,188 @@
-import { Injectable, HttpException } from "@nestjs/common";
+import { Injectable, HttpException, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
+import FormData from "form-data";
 
-export interface OcrRequest {
-  imagePath: string;
-  language?: string;
-  preprocessOptions?: {
-    denoise?: boolean;
-    deskew?: boolean;
-    contrast?: boolean;
-  };
+// TSD 명세에 따른 OCR 응답 타입 정의
+export enum ProcessingStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  COMPLETED = "COMPLETED",
+  PARTIAL = "PARTIAL",
+  FAILED = "FAILED",
 }
 
-export interface OcrResult {
+export interface ReceiptData {
+  date?: string;
+  merchantName?: string;
+  businessNumber?: string;
+  totalAmount?: number;
+  items?: any[];
+  rawText?: string;
+}
+
+export interface OcrResultItem {
+  filename: string;
   success: boolean;
-  text?: string;
-  confidence?: number;
-  metadata?: {
-    totalAmount?: number;
-    date?: string;
-    merchantName?: string;
-    items?: Array<{
-      name: string;
-      quantity?: number;
-      price?: number;
-    }>;
-  };
+  confidence: number;
+  engineUsed?: string;
+  extractedData?: ReceiptData;
+  processingTime: number;
   error?: string;
+}
+
+export interface OcrJobResponse {
+  jobId: string;
+  status: ProcessingStatus;
+  totalFiles: number;
+  processedFiles: number;
+  message?: string;
+}
+
+export interface OcrResultResponse {
+  jobId: string;
+  settlementId?: string;
+  status: ProcessingStatus;
+  totalFiles: number;
+  processedFiles: number;
+  successFiles: number;
+  failedFiles: number;
+  results: OcrResultItem[];
+  errorMessage?: string;
+  createdAt?: string;
 }
 
 @Injectable()
 export class OcrClientService {
+  private readonly logger = new Logger(OcrClientService.name);
   private readonly ocrServiceUrl: string;
   private readonly timeout: number;
-  private readonly maxRetries: number;
 
   constructor(private readonly configService: ConfigService) {
     this.ocrServiceUrl =
       this.configService.get<string>("OCR_SERVICE_URL") ||
-      "http://localhost:5000";
+      "http://ocr-service:8001";
     this.timeout = this.configService.get<number>("OCR_TIMEOUT") || 30000;
-    this.maxRetries = this.configService.get<number>("OCR_MAX_RETRIES") || 3;
   }
 
-  // OCR 서비스에 이미지 처리 요청
-  async processImage(request: OcrRequest): Promise<OcrResult> {
-    let lastError: Error;
-
-    for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
-      try {
-        console.log(
-          `OCR request attempt ${attempt}/${this.maxRetries}:`,
-          request.imagePath
-        );
-
-        const response = await axios.post<OcrResult>(
-          `${this.ocrServiceUrl}/api/ocr/process`,
-          {
-            imagePath: request.imagePath,
-            language: request.language || "kor+eng",
-            preprocessOptions: request.preprocessOptions || {},
-          },
-          {
-            timeout: this.timeout,
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        console.log("OCR processing successful:", response.data);
-        return response.data;
-      } catch (error) {
-        lastError = error;
-        console.error(
-          `OCR request failed (attempt ${attempt}/${this.maxRetries}):`,
-          error.message
-        );
-
-        // 마지막 시도가 아니면 재시도 대기
-        if (attempt < this.maxRetries) {
-          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
-          console.log(`Retrying in ${delay}ms...`);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-      }
-    }
-
-    // 모든 재시도 실패
-    throw new HttpException(
-      `OCR 서비스 호출 실패 (${this.maxRetries}회 재시도): ${lastError.message}`,
-      503
-    );
-  }
-
-  // OCR 서비스 헬스 체크
-  async checkHealth(): Promise<boolean> {
+  /**
+   * 영수증 이미지 OCR 처리 요청 (TSD 명세)
+   * @param files - 업로드할 파일들
+   * @param settlementId - 정산 ID (선택)
+   * @returns OCR Job 정보
+   */
+  async processReceipts(
+    files: Express.Multer.File[],
+    settlementId?: string
+  ): Promise<OcrJobResponse> {
     try {
-      const response = await axios.get(`${this.ocrServiceUrl}/health`, {
-        timeout: 5000,
+      const formData = new FormData();
+
+      // 파일 추가
+      files.forEach((file) => {
+        formData.append("files", file.buffer, {
+          filename: file.originalname,
+          contentType: file.mimetype,
+        });
       });
 
-      return response.status === 200;
+      // Settlement ID 추가 (선택)
+      if (settlementId) {
+        formData.append("settlement_id", settlementId);
+      }
+
+      this.logger.log(
+        `OCR 처리 요청: ${files.length}개 파일, Settlement ID: ${settlementId || "N/A"}`
+      );
+
+      const response = await axios.post<OcrJobResponse>(
+        `${this.ocrServiceUrl}/api/v1/ocr/process`,
+        formData,
+        {
+          headers: formData.getHeaders(),
+          timeout: this.timeout,
+        }
+      );
+
+      this.logger.log(`OCR Job 생성 완료: ${response.data.jobId}`);
+      return response.data;
     } catch (error) {
-      console.error("OCR service health check failed:", error.message);
-      return false;
+      this.logger.error(`OCR 처리 요청 실패: ${error.message}`, error.stack);
+      throw new HttpException(
+        `OCR 서비스 통신 오류: ${error.message}`,
+        503
+      );
     }
   }
 
-  // 일괄 처리 요청
-  async processBatch(requests: OcrRequest[]): Promise<OcrResult[]> {
-    console.log(`Processing batch of ${requests.length} images`);
+  /**
+   * OCR Job 상태 및 결과 조회 (TSD 명세)
+   * @param jobId - Job ID
+   * @returns OCR 처리 결과
+   */
+  async getJobStatus(jobId: string): Promise<OcrResultResponse> {
+    try {
+      this.logger.log(`OCR Job 상태 조회: ${jobId}`);
 
-    const results = await Promise.allSettled(
-      requests.map((request) => this.processImage(request))
-    );
+      const response = await axios.get<OcrResultResponse>(
+        `${this.ocrServiceUrl}/api/v1/ocr/jobs/${jobId}`,
+        {
+          timeout: 10000,
+        }
+      );
 
-    return results.map((result, index) => {
-      if (result.status === "fulfilled") {
-        return result.value;
-      } else {
-        console.error(
-          `Batch item ${index} failed:`,
-          result.reason.message
-        );
-        return {
-          success: false,
-          error: result.reason.message,
-        };
-      }
-    });
+      this.logger.log(
+        `OCR Job 상태: ${response.data.status}, 진행률: ${response.data.processedFiles}/${response.data.totalFiles}`
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error(`OCR Job 조회 실패: ${error.message}`, error.stack);
+      throw new HttpException(`OCR Job 조회 오류: ${error.message}`, 503);
+    }
+  }
+
+  /**
+   * OCR Job 취소 (TSD 명세)
+   * @param jobId - Job ID
+   */
+  async cancelJob(jobId: string): Promise<void> {
+    try {
+      this.logger.log(`OCR Job 취소 요청: ${jobId}`);
+
+      await axios.delete(
+        `${this.ocrServiceUrl}/api/v1/ocr/jobs/${jobId}`,
+        {
+          timeout: 10000,
+        }
+      );
+
+      this.logger.log(`OCR Job 취소 완료: ${jobId}`);
+    } catch (error) {
+      this.logger.error(`OCR Job 취소 실패: ${error.message}`, error.stack);
+      throw new HttpException(`OCR Job 취소 오류: ${error.message}`, 503);
+    }
+  }
+
+  /**
+   * OCR 서비스 Health Check
+   * @returns 서비스 상태
+   */
+  async checkHealth(): Promise<{ status: string; service: string }> {
+    try {
+      const response = await axios.get<{ status: string; service: string }>(
+        `${this.ocrServiceUrl}/health`,
+        {
+          timeout: 5000,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      this.logger.error(
+        `OCR 서비스 Health Check 실패: ${error.message}`,
+        error.stack
+      );
+      throw new HttpException("OCR 서비스가 응답하지 않습니다", 503);
+    }
   }
 }
