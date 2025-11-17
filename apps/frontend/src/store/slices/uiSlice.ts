@@ -3,10 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 interface UIState {
   sidebarOpen: boolean;
   theme: 'light' | 'dark';
-  notifications: Notification[];
+  notifications: UINotification[];
 }
 
-interface Notification {
+export interface UINotification {
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
   message: string;
@@ -32,8 +32,8 @@ const uiSlice = createSlice({
     setTheme: (state, action: { payload: 'light' | 'dark' }) => {
       state.theme = action.payload;
     },
-    addNotification: (state, action: { payload: Omit<Notification, 'id' | 'timestamp'> }) => {
-      const notification: Notification = {
+    addNotification: (state, action: { payload: Omit<UINotification, 'id' | 'timestamp'> }) => {
+      const notification: UINotification = {
         ...action.payload,
         id: Date.now().toString(),
         timestamp: Date.now(),

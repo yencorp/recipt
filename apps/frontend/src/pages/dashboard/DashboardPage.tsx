@@ -1,8 +1,10 @@
 import { useAuth } from '@/hooks/useAuth';
-import { DashboardWidget, StatCard } from '@/components/dashboard/DashboardWidget';
-import { QuickActions, QuickAction } from '@/components/dashboard/QuickActions';
+import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
+import type { StatCard } from '@/components/dashboard/DashboardWidget';
+import { QuickActions } from '@/components/dashboard/QuickActions';
+import type { QuickAction } from '@/components/dashboard/QuickActions';
 import { RecentActivities } from '@/components/dashboard/RecentActivities';
-import { RecentActivity } from '@/types';
+import type { RecentActivity } from '@/types';
 
 export const DashboardPage: React.FC = () => {
   const { user, isAdmin, isOrgAdmin } = useAuth();

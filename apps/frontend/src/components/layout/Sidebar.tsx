@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useAppSelector } from '@/store/hooks';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/utils/cn';
 
@@ -21,7 +20,7 @@ const navItems: NavItem[] = [
 
 export const Sidebar: React.FC = () => {
   const location = useLocation();
-  const { sidebarOpen } = useSelector((state: RootState) => state.ui);
+  const { sidebarOpen } = useAppSelector((state) => state.ui);
   const { isAdmin } = useAuth();
 
   const filteredNavItems = navItems.filter(

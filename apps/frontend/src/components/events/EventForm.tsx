@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Event } from '@/types';
+import type { Event } from '@/types';
 
 interface EventFormProps {
   event?: Event;

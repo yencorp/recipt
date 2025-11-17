@@ -5,7 +5,8 @@ import { EventCard } from '@/components/events/EventCard';
 import { EventFilters } from '@/components/events/EventFilters';
 import { EventModal } from '@/components/events/EventModal';
 import { Button } from '@/components/ui/button';
-import { Event, EventStatus } from '@/types';
+import type { Event } from '@/types';
+import { EventStatus } from '@/types';
 import { Skeleton } from '@/components/common/Loading';
 
 export const EventListPage: React.FC = () => {

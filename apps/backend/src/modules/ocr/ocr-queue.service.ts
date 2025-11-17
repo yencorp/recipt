@@ -148,9 +148,9 @@ export class OcrQueueService {
       //   this.queue.set(item.id, item);
 
       //   console.log(`OCR processing completed: ${item.id}`);
-      } else {
-        throw new Error(ocrResult.error || "OCR processing failed");
-      }
+      // } else {
+      //   throw new Error(ocrResult.error || "OCR processing failed");
+      // }
     } catch (error) {
       console.error(`OCR processing failed for ${item.id}:`, error.message);
 

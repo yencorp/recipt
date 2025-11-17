@@ -1,4 +1,4 @@
-import { BlogPost } from '@/types';
+import type { BlogPost } from '@/types';
 import { Modal } from '@/components/common/Modal';
 import { Button } from '@/components/common/Form';
 import { formatDistanceToNow } from 'date-fns';

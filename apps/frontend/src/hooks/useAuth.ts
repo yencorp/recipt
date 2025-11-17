@@ -1,7 +1,7 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { RootState } from '@/store';
+import { useAppSelector } from '@/store/hooks';
 import { useLogoutMutation } from '@/store/api/authApi';
 import { logout as logoutAction } from '@/store/slices/authSlice';
 import { UserRole } from '@/types';
@@ -14,8 +14,8 @@ import {
 export const useAuth = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isAuthenticated, loading, accessToken } = useSelector(
-    (state: RootState) => state.auth
+  const { user, isAuthenticated, loading, accessToken } = useAppSelector(
+    (state) => state.auth
   );
   const [logoutMutation] = useLogoutMutation();
 
@@ -63,7 +63,7 @@ export const useAuth = () => {
     isAuthenticated,
     loading,
     accessToken,
-    refreshToken: useSelector((state: RootState) => state.auth.refreshToken),
+    refreshToken: useAppSelector((state) => state.auth.refreshToken),
     isAdmin: user?.role === UserRole.ADMIN,
     isOrgAdmin:
       user?.role === UserRole.ORG_ADMIN || user?.role === UserRole.ADMIN,

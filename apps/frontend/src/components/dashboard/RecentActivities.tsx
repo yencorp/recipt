@@ -1,4 +1,4 @@
-import { RecentActivity } from '@/types';
+import type { RecentActivity } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 

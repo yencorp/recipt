@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Notification } from '@/types';
+import type { Notification } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/utils/cn';

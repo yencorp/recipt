@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { EventForm } from './EventForm';
-import { Event } from '@/types';
+import type { Event } from '@/types';
 
 interface EventModalProps {
   open: boolean;

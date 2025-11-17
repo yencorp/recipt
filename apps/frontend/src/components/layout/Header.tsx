@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDispatch } from 'react-redux';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
-import { Notification } from '@/types';
+import type { Notification } from '@/types';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();

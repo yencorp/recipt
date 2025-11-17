@@ -1,5 +1,4 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useAppSelector } from '@/store/hooks';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
@@ -10,7 +9,7 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const { sidebarOpen } = useSelector((state: RootState) => state.ui);
+  const { sidebarOpen } = useAppSelector((state) => state.ui);
 
   return (
     <div className="min-h-screen flex flex-col">

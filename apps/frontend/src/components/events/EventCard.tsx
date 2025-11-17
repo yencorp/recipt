@@ -1,4 +1,4 @@
-import { Event } from '@/types';
+import type { Event } from '@/types';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/utils/cn';

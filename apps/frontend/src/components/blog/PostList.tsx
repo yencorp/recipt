@@ -1,4 +1,4 @@
-import { BlogPost } from '@/types';
+import type { BlogPost } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/utils/cn';
