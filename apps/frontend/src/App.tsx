@@ -7,17 +7,17 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
-import { EventListPage } from './pages/events/EventListPage';
-import { BudgetWizard } from './pages/budgets/BudgetWizard';
-import { SettlementWizard } from './pages/settlements/SettlementWizard';
-import { UsersPage } from './pages/admin/UsersPage';
-import { OrganizationsPage } from './pages/admin/OrganizationsPage';
-import { SystemDashboard } from './pages/admin/SystemDashboard';
 
 // Placeholder Pages (아직 구현되지 않은 페이지들)
+const EventListPage = () => <div className="text-center p-8">행사 목록 (준비 중)</div>;
 const EventDetailPage = () => <div className="text-center p-8">행사 상세 페이지 (준비 중)</div>;
+const BudgetWizard = () => <div className="text-center p-8">예산서 작성 (준비 중)</div>;
+const SettlementWizard = () => <div className="text-center p-8">결산서 작성 (준비 중)</div>;
 const OCRPage = () => <div className="text-center p-8">OCR 관리 (준비 중)</div>;
 const BlogPage = () => <div className="text-center p-8">블로그 (준비 중)</div>;
+const SystemDashboard = () => <div className="text-center p-8">시스템 대시보드 (준비 중)</div>;
+const UsersPage = () => <div className="text-center p-8">사용자 관리 (준비 중)</div>;
+const OrganizationsPage = () => <div className="text-center p-8">조직 관리 (준비 중)</div>;
 const UnauthorizedPage = () => (
   <div className="text-center p-8 text-destructive">접근 권한이 없습니다</div>
 );
