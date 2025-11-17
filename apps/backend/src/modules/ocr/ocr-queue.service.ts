@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ReceiptScan, UploadStatus } from "../../entities/receipt-scan.entity";
 import { OcrResult as OcrResultEntity } from "../../entities/ocr-result.entity";
-import { OcrClientService, OcrRequest, OcrResult } from "./ocr-client.service";
+import { OcrClientService } from "./ocr-client.service";
 
 export interface QueueItem {
   id: string;
@@ -119,34 +119,35 @@ export class OcrQueueService {
       });
 
       // OCR 서비스 호출
-      const ocrRequest: OcrRequest = {
-        imagePath: item.imagePath,
-        language: "kor+eng",
-        preprocessOptions: {
-          denoise: true,
-          deskew: true,
-          contrast: true,
-        },
-      };
+      // TODO: processImage는 더 이상 사용되지 않음. processReceipts 사용
+      // const ocrRequest = {
+      //   imagePath: item.imagePath,
+      //   language: "kor+eng",
+      //   preprocessOptions: {
+      //     denoise: true,
+      //     deskew: true,
+      //     contrast: true,
+      //   },
+      // };
 
-      const ocrResult: OcrResult =
-        await this.ocrClientService.processImage(ocrRequest);
+      // const ocrResult = await this.ocrClientService.processImage(ocrRequest);
+      throw new Error("OcrQueueService는 더 이상 사용되지 않습니다. OcrJobsService를 사용하세요.");
 
-      if (ocrResult.success) {
-        // OCR 결과 저장
-        await this.saveOcrResult(item.receiptScanId, ocrResult);
+      // if (ocrResult.success) {
+      //   // OCR 결과 저장
+      //   await this.saveOcrResult(item.receiptScanId, ocrResult);
 
-        // 영수증 스캔 상태 업데이트
-        await this.receiptScanRepository.update(item.receiptScanId, {
-          uploadStatus: UploadStatus.UPLOADED,
-        });
+      //   // 영수증 스캔 상태 업데이트
+      //   await this.receiptScanRepository.update(item.receiptScanId, {
+      //     uploadStatus: UploadStatus.UPLOADED,
+      //   });
 
-        // 큐 아이템 완료 처리
-        item.status = "COMPLETED";
-        item.processedAt = new Date();
-        this.queue.set(item.id, item);
+      //   // 큐 아이템 완료 처리
+      //   item.status = "COMPLETED";
+      //   item.processedAt = new Date();
+      //   this.queue.set(item.id, item);
 
-        console.log(`OCR processing completed: ${item.id}`);
+      //   console.log(`OCR processing completed: ${item.id}`);
       } else {
         throw new Error(ocrResult.error || "OCR processing failed");
       }

@@ -107,7 +107,7 @@ export class OcrJobsService {
 
       const ocrJobResponse = await this.ocrClientService.processReceipts(
         files,
-        receiptScans[0].settlementId || undefined
+        undefined // settlementId는 ReceiptScan에 없음
       );
 
       // FastAPI에서 받은 Job ID로 업데이트
@@ -150,14 +150,14 @@ export class OcrJobsService {
     const path = await import("path");
 
     return receiptScans.map((scan) => {
-      const buffer = fs.readFileSync(scan.imagePath);
-      const filename = path.basename(scan.imagePath);
+      const buffer = fs.readFileSync(scan.filePath);
+      const filename = path.basename(scan.filePath);
 
       return {
         buffer,
-        originalname: scan.originalFilename || filename,
+        originalname: scan.originalFileName || filename,
         mimetype: "image/jpeg", // 실제로는 파일 확장자에서 추론
-        path: scan.imagePath,
+        path: scan.filePath,
         size: buffer.length,
       } as Express.Multer.File;
     });
