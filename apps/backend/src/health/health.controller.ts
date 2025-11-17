@@ -162,7 +162,7 @@ export class HealthController {
       const startTime = Date.now();
       const ocrServiceUrl = this.configService.get("OCR_SERVICE_URL");
 
-      await axios.get(`${ocrServiceUrl}/api/health`, {
+      await axios.get(`${ocrServiceUrl}/health`, {
         timeout: 5000,
       });
 
