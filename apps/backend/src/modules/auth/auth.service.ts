@@ -12,6 +12,7 @@ import * as crypto from "crypto";
 import { JwtPayload } from "./jwt.strategy";
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from "bcrypt";
+import { EmailNotVerifiedException } from "./exceptions/email-not-verified.exception";
 
 export interface AuthTokens {
   accessToken: string;
@@ -53,7 +54,9 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: RegisterDto): Promise<LoginResponse> {
+  async register(
+    registerDto: RegisterDto
+  ): Promise<{ message: string; email: string }> {
     // 1. 비밀번호 확인 검증
     if (registerDto.password !== registerDto.passwordConfirm) {
       throw new BadRequestException("비밀번호가 일치하지 않습니다.");
@@ -66,7 +69,22 @@ export class AuthService {
     );
     const passwordHash = await bcrypt.hash(registerDto.password, saltRounds);
 
-    // 3. 사용자 생성 (이메일 중복 확인은 UsersService에서 처리)
+    // 3. 이메일 인증 토큰 생성 및 이메일 발송 먼저 시도
+    const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+    const emailSent = await this.emailService.sendVerificationEmail(
+      registerDto.email,
+      registerDto.name,
+      emailVerificationToken
+    );
+
+    // 4. 이메일 발송 실패 시 계정 생성하지 않음
+    if (!emailSent) {
+      throw new BadRequestException(
+        "인증 이메일 발송에 실패했습니다. 이메일 주소를 확인하거나 잠시 후 다시 시도해주세요."
+      );
+    }
+
+    // 5. 이메일 발송 성공 시에만 사용자 생성 (이메일 중복 확인은 UsersService에서 처리)
     const user = await this.usersService.create({
       email: registerDto.email,
       passwordHash,
@@ -75,30 +93,17 @@ export class AuthService {
       role: registerDto.role,
     });
 
-    // 4. 이메일 인증 토큰 생성 및 발송
-    const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+    // 6. 생성된 사용자에 이메일 인증 토큰 저장
     user.emailVerificationToken = emailVerificationToken;
     await this.usersService.update(user.id, {
       emailVerificationToken,
     });
 
-    // 5. 이메일 인증 메일 발송
-    await this.emailService.sendVerificationEmail(
-      user.email,
-      user.name,
-      emailVerificationToken
-    );
-
-    // 6. JWT 토큰 생성
-    const tokens = await this.generateTokens(user);
-
-    // 비밀번호 제외하고 사용자 정보 반환
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash: _, ...userWithoutPassword } = user;
-
+    // 7. 가입 완료 메시지 반환 (JWT 토큰은 이메일 인증 후 로그인 시 발급)
     return {
-      user: userWithoutPassword,
-      tokens,
+      message:
+        "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료해 주세요.",
+      email: user.email,
     };
   }
 
@@ -112,8 +117,24 @@ export class AuthService {
     }
 
     // 사용자 상태 확인
+    if (user.status === UserStatus.PENDING_VERIFICATION) {
+      throw new EmailNotVerifiedException(user.email);
+    }
+
+    if (user.status === UserStatus.INACTIVE) {
+      throw new UnauthorizedException(
+        "비활성화된 계정입니다. 관리자에게 문의해 주세요."
+      );
+    }
+
+    if (user.status === UserStatus.SUSPENDED) {
+      throw new UnauthorizedException(
+        "정지된 계정입니다. 관리자에게 문의해 주세요."
+      );
+    }
+
     if (user.status !== UserStatus.ACTIVE) {
-      throw new UnauthorizedException("계정이 활성화되지 않았습니다.");
+      throw new UnauthorizedException("로그인할 수 없는 계정 상태입니다.");
     }
 
     // 비밀번호 검증

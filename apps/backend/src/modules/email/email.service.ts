@@ -29,6 +29,9 @@ export class EmailService {
           user: this.configService.get<string>("SMTP_USER"),
           pass: this.configService.get<string>("SMTP_PASSWORD"),
         },
+        tls: {
+          rejectUnauthorized: false,
+        },
       });
 
       this.logger.log("Email transporter created successfully");

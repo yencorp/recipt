@@ -109,7 +109,10 @@ services:
       context: ./apps/backend
       dockerfile: Dockerfile.dev
     restart: unless-stopped
-    
+
+    env_file:
+      - ./apps/backend/.env.development
+
     environment:
       # Database Configuration
       DATABASE_URL: postgresql://recipt:recipt123@database:5432/recipt_db
