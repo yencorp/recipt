@@ -22,7 +22,7 @@ export class EventsService {
   async create(createEventDto: CreateEventDto, userId: string) {
     const event = this.eventRepository.create({
       ...createEventDto,
-      createdBy: userId,
+      createdById: userId,
       status: createEventDto.status || EventStatus.DRAFT,
       currentParticipants: 0,
       isActive: true,
@@ -52,7 +52,8 @@ export class EventsService {
 
     const query = this.eventRepository
       .createQueryBuilder("event")
-      .leftJoinAndSelect("event.organization", "organization");
+      .leftJoinAndSelect("event.organization", "organization")
+      .leftJoinAndSelect("event.createdBy", "createdBy");
 
     // 필터링 조건 적용
     if (organizationId) {

@@ -80,7 +80,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
       const youthEvents = [
         {
           organizationId: youthGroup.id,
-          createdBy: youthCreator.id,
+          createdById: youthCreator.id,
           title: "2024년 청년 수련회",
           description:
             "매년 열리는 청년회 대표 행사로, 영성 성장과 친교를 통해 청년들의 신앙 성숙을 도모합니다.",
@@ -130,7 +130,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: youthGroup.id,
-          createdBy: youthCreator.id,
+          createdById: youthCreator.id,
           title: "청년 정기 모임",
           description: "매월 첫째 주 토요일에 진행되는 청년회 정기 모임입니다.",
           type: EventType.REGULAR,
@@ -173,7 +173,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: youthGroup.id,
-          createdBy: youthCreator.id,
+          createdById: youthCreator.id,
           title: "독거노인 봉사활동",
           description: "지역 독거노인 분들을 위한 봉사활동을 진행합니다.",
           type: EventType.SERVICE,
@@ -202,7 +202,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: youthGroup.id,
-          createdBy: youthCreator.id,
+          createdById: youthCreator.id,
           title: "청년 송년회",
           description:
             "2024년을 마무리하고 2025년을 준비하는 청년회 송년 모임입니다.",
@@ -241,7 +241,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
       const mothersEvents = [
         {
           organizationId: mothersGroup.id,
-          createdBy: mothersCreator.id,
+          createdById: mothersCreator.id,
           title: "새벽 기도회",
           description: "매주 수요일 새벽에 진행되는 자모회 기도 모임입니다.",
           type: EventType.WORSHIP,
@@ -267,7 +267,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: mothersGroup.id,
-          createdBy: mothersCreator.id,
+          createdById: mothersCreator.id,
           title: "자모회 친교 모임",
           description: "자모회 회원들 간의 친목을 도모하는 월례 모임입니다.",
           type: EventType.FELLOWSHIP,
@@ -294,7 +294,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: mothersGroup.id,
-          createdBy: mothersCreator.id,
+          createdById: mothersCreator.id,
           title: "김장 나눔 봉사",
           description: "어려운 이웃을 위한 김장 담그기 봉사활동입니다.",
           type: EventType.SERVICE,
@@ -332,7 +332,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
       const elementaryEvents = [
         {
           organizationId: elementarySchool.id,
-          createdBy: elementaryCreator.id,
+          createdById: elementaryCreator.id,
           title: "여름 성경학교",
           description: "초등학생들을 위한 여름 성경학교 프로그램입니다.",
           type: EventType.EDUCATION,
@@ -360,7 +360,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: elementarySchool.id,
-          createdBy: elementaryCreator.id,
+          createdById: elementaryCreator.id,
           title: "체험학습 - 자연 속에서 하나님 만나기",
           description: "자연 속에서 하나님의 창조를 체험하는 야외 학습입니다.",
           type: EventType.EDUCATION,
@@ -389,7 +389,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: elementarySchool.id,
-          createdBy: elementaryCreator.id,
+          createdById: elementaryCreator.id,
           title: "초등부 크리스마스 발표회",
           description: "아이들이 준비한 크리스마스 특별 발표회입니다.",
           type: EventType.SPECIAL,
@@ -427,7 +427,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
       const youthSchoolEvents = [
         {
           organizationId: youthSchool.id,
-          createdBy: youthSchoolCreator.id,
+          createdById: youthSchoolCreator.id,
           title: "중고등부 겨울 수련회",
           description: "청소년들의 신앙 성장을 위한 겨울 수련회입니다.",
           type: EventType.RETREAT,
@@ -456,7 +456,7 @@ export async function seedSampleEvents(dataSource: DataSource): Promise<void> {
         },
         {
           organizationId: youthSchool.id,
-          createdBy: youthSchoolCreator.id,
+          createdById: youthSchoolCreator.id,
           title: "진로 멘토링 프로그램",
           description: "중고등학생들의 진로 탐색을 위한 멘토링 프로그램입니다.",
           type: EventType.EDUCATION,

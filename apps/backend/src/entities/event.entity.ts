@@ -22,6 +22,7 @@ import {
 import { Organization } from "./organization.entity";
 import { Budget } from "./budget.entity";
 import { Settlement } from "./settlement.entity";
+import { User } from "./user.entity";
 
 export enum EventType {
   REGULAR = "REGULAR", // 정기 행사
@@ -76,7 +77,7 @@ export class Event {
     name: "created_by",
     comment: "생성자 ID",
   })
-  createdBy?: string;
+  createdById?: string;
 
   @Column({
     type: "uuid",
@@ -266,6 +267,10 @@ export class Event {
   })
   @JoinColumn({ name: "organization_id" })
   organization: Organization;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: "created_by" })
+  createdBy?: User;
 
   @OneToMany(() => Budget, (budget) => budget.event)
   budgets: Budget[];
