@@ -189,3 +189,70 @@ export interface BlogPost {
   isPinned: boolean;
   viewCount: number;
 }
+
+// Budget Types
+export enum BudgetType {
+  ANNUAL = 'ANNUAL',
+  EVENT = 'EVENT',
+  PROJECT = 'PROJECT',
+  SPECIAL = 'SPECIAL',
+  EMERGENCY = 'EMERGENCY',
+  MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+}
+
+export enum BudgetStatus {
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  COMPLETED = 'COMPLETED',
+}
+
+export interface BudgetItem {
+  id?: string;
+  category: string;
+  description?: string;
+  amount: number;
+  unit?: string;
+  quantity?: number;
+  unitPrice?: number;
+}
+
+export interface Budget {
+  id: string;
+  organizationId: string;
+  eventId?: string;
+  title: string;
+  description?: string;
+  type: BudgetType;
+  status: BudgetStatus;
+  budgetYear: number;
+  budgetPeriod?: number;
+  periodStartDate: string;
+  periodEndDate: string;
+  totalIncomeAmount: number;
+  totalExpenseAmount: number;
+  incomeItems?: BudgetItem[];
+  expenseItems?: BudgetItem[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBudgetDto {
+  organizationId: string;
+  eventId?: string;
+  title: string;
+  description?: string;
+  type: BudgetType;
+  budgetYear: number;
+  budgetPeriod?: number;
+  periodStartDate: string;
+  periodEndDate: string;
+  totalIncomeAmount?: number;
+  totalExpenseAmount?: number;
+  incomeItems?: BudgetItem[];
+  expenseItems?: BudgetItem[];
+  notes?: string;
+}

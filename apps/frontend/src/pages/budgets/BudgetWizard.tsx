@@ -65,17 +65,27 @@ export const BudgetWizard: React.FC = () => {
   };
 
   const handleSaveDraft = async () => {
-    if (!eventId) return;
+    if (!eventId || !event) return;
 
     try {
+      const draftData = {
+        organizationId: event.organization.id,
+        eventId,
+        title: `${event.title} 예산서 (임시저장)`,
+        type: 'EVENT' as const,
+        budgetYear: new Date(event.startDate).getFullYear(),
+        periodStartDate: event.startDate,
+        periodEndDate: event.endDate,
+        totalIncomeAmount: totalIncome,
+        totalExpenseAmount: totalExpense,
+        incomeItems,
+        expenseItems,
+        notes,
+      };
+
       await saveDraft({
         id: existingBudget?.id,
-        budget: {
-          eventId,
-          incomeItems,
-          expenseItems,
-          notes,
-        },
+        budget: draftData,
       }).unwrap();
       alert('임시 저장되었습니다.');
     } catch (error) {
@@ -85,7 +95,7 @@ export const BudgetWizard: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!eventId) return;
+    if (!eventId || !event) return;
 
     if (incomeItems.length === 0) {
       alert('최소 1개의 수입 항목이 필요합니다.');
@@ -103,12 +113,23 @@ export const BudgetWizard: React.FC = () => {
     }
 
     try {
-      await createBudget({
+      // Event의 조직 ID와 날짜를 사용하여 필수 필드 채우기
+      const budgetData = {
+        organizationId: event.organization.id,
         eventId,
+        title: `${event.title} 예산서`,
+        type: 'EVENT' as const,
+        budgetYear: new Date(event.startDate).getFullYear(),
+        periodStartDate: event.startDate,
+        periodEndDate: event.endDate,
+        totalIncomeAmount: totalIncome,
+        totalExpenseAmount: totalExpense,
         incomeItems,
         expenseItems,
         notes,
-      }).unwrap();
+      };
+
+      await createBudget(budgetData).unwrap();
       alert('예산서가 성공적으로 작성되었습니다.');
       navigate('/events');
     } catch (error) {
