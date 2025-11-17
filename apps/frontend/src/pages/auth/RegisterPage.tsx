@@ -24,8 +24,12 @@ export const RegisterPage: React.FC = () => {
       setApiError('');
       setSuccessMessage('');
 
-      // confirmPassword는 API 요청에서 제외
-      const { confirmPassword, ...registerData } = data;
+      // 백엔드 API 형식에 맞게 데이터 변환
+      const { confirmPassword, baptismalName, position, ...rest } = data;
+      const registerData = {
+        ...rest,
+        passwordConfirm: confirmPassword, // 백엔드는 passwordConfirm을 기대함
+      };
 
       await registerUser(registerData).unwrap();
 
