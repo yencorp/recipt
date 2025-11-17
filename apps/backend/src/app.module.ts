@@ -32,6 +32,7 @@ import { NotificationsModule } from "./modules/notifications/notifications.modul
 import { AdminModule } from "./modules/admin/admin.module";
 import { FilesModule } from "./modules/files/files.module";
 import { OcrModule } from "./modules/ocr/ocr.module";
+import { PrintModule } from "./modules/print/print.module";
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { OcrModule } from "./modules/ocr/ocr.module";
     AdminModule,
     FilesModule,
     OcrModule,
+    PrintModule,
 
     // TODO: 향후 추가 예정 모듈들
     // ReceiptScansModule,
