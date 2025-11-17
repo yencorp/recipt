@@ -177,3 +177,6 @@ project_data/
 receipts/
 user_uploads/
 backup/
+
+# Serena MCP memory
+.serena/

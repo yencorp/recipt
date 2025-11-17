@@ -10,9 +10,13 @@ gunicorn==21.2.0
 
 # OCR Engine
 pytesseract==0.3.10
+easyocr==1.7.1
+google-cloud-vision==3.7.0
 opencv-python==4.9.0.80
 pillow==10.2.0
 numpy==1.26.4
+torch==2.2.0
+torchvision==0.17.0
 
 # File Handling
 python-multipart==0.0.9
