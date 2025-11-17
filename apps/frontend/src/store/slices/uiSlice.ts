@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface UIState {
   sidebarOpen: boolean;
@@ -26,13 +26,13 @@ const uiSlice = createSlice({
     toggleSidebar: (state) => {
       state.sidebarOpen = !state.sidebarOpen;
     },
-    setSidebarOpen: (state, action: PayloadAction<boolean>) => {
+    setSidebarOpen: (state, action: { payload: boolean }) => {
       state.sidebarOpen = action.payload;
     },
-    setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
+    setTheme: (state, action: { payload: 'light' | 'dark' }) => {
       state.theme = action.payload;
     },
-    addNotification: (state, action: PayloadAction<Omit<Notification, 'id' | 'timestamp'>>) => {
+    addNotification: (state, action: { payload: Omit<Notification, 'id' | 'timestamp'> }) => {
       const notification: Notification = {
         ...action.payload,
         id: Date.now().toString(),
@@ -40,7 +40,7 @@ const uiSlice = createSlice({
       };
       state.notifications.push(notification);
     },
-    removeNotification: (state, action: PayloadAction<string>) => {
+    removeNotification: (state, action: { payload: string }) => {
       state.notifications = state.notifications.filter((n) => n.id !== action.payload);
     },
     clearNotifications: (state) => {
