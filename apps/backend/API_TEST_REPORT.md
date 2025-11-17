@@ -142,7 +142,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 
 ### 우선순위 LOW
 11. ✅ ~~Admin API 엔드포인트 테스트 (완료 - System API, Users API, Organizations API)~~
-12. 통합 테스트 작성
+12. ⚠️ 통합 테스트 작성 (진행 중 - TypeORM 초기화 에러 해결 필요)
 13. E2E 테스트 작성
 
 ## 관리자 권한 테스트 결과
@@ -272,6 +272,30 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 **✅ 역할 관리**:
 - 관리자가 일반 사용자 역할 변경 가능 ✅
 - 관리자가 사용자 상태 변경 가능 (PENDING → ACTIVE) ✅
+
+## 통합 테스트 작성 시도
+
+### 작성된 테스트 파일
+- `src/modules/auth/auth.integration-spec.ts` - 회원가입, 로그인, 리프레시 토큰, 인증된 요청 (55개 테스트)
+- `src/modules/users/users.integration-spec.ts` - 프로필 조회/수정, 비밀번호 변경, 설정 관리
+- `src/modules/organizations/organizations.integration-spec.ts` - 단체 CRUD, 권한 검증, 페이지네이션
+
+### 수정 사항
+- `jest.config.js`: testRegex에 `integration-spec.ts` 패턴 추가
+- 모든 테스트 파일: UserStatus, UserRole enum 타입 사용
+- TypeORM 설정: glob 패턴으로 entity 자동 로드 (`__dirname + "/../../**/*.entity{.ts,.js}"`)
+
+### 현재 문제 ⚠️
+**에러**: `TypeError: Cannot read properties of undefined (reading 'find')`
+- 발생 위치: `@nestjs/typeorm/dist/typeorm.providers.js:10:63`
+- 추정 원인: AuthModule과 UsersModule을 동시에 import할 때 순환 의존성 또는 TypeORM repository 초기화 실패
+- 모든 테스트 실패: 55 failed, 55 total
+
+### 해결 방안 제안
+1. AppModule 전체를 사용하는 E2E 테스트 방식으로 전환
+2. 모듈별로 분리하여 테스트 (하나의 모듈만 import)
+3. TypeORM 설정 방식 변경 (forRoot 대신 forFeature 사용)
+4. 순환 의존성 분석 및 해결
 
 ## 결론
 
