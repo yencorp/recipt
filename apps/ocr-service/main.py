@@ -20,9 +20,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from src.ocr.processor import OCRProcessor
 from src.utils.config import get_settings
-from src.utils.health import HealthChecker
+from src.api import ocr_router, health_router
 
 # 설정 로드
 settings = get_settings()
@@ -67,35 +66,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# OCR 프로세서 초기화
-ocr_processor = OCRProcessor()
-health_checker = HealthChecker()
+# API 라우터 등록
+app.include_router(ocr_router)
+app.include_router(health_router)
 
 
-# 요청/응답 모델
-class OCRResult(BaseModel):
-    """OCR 처리 결과"""
-
-    success: bool = Field(description="처리 성공 여부")
-    text: str = Field(description="추출된 텍스트")
-    confidence: float = Field(description="신뢰도 (0.0-1.0)")
-    processing_time: float = Field(description="처리 시간(초)")
-    image_info: Dict[str, Any] = Field(description="이미지 정보")
-    extracted_data: Optional[Dict[str, Any]] = Field(
-        None, description="구조화된 데이터"
-    )
-
-
-class HealthResponse(BaseModel):
-    """헬스체크 응답"""
-
-    status: str
-    timestamp: str
-    version: str
-    services: Dict[str, Dict[str, Any]]
-
-
-# API 엔드포인트
+# 루트 엔드포인트
 @app.get("/", tags=["Root"])
 async def root():
     """루트 엔드포인트"""
@@ -105,129 +81,6 @@ async def root():
         "status": "running",
         "docs": "/api/docs",
     }
-
-
-@app.get("/api/health", response_model=HealthResponse, tags=["Health"])
-async def health_check():
-    """헬스체크 엔드포인트"""
-    return await health_checker.get_health_status()
-
-
-@app.post("/api/ocr/extract", response_model=OCRResult, tags=["OCR"])
-async def extract_text(
-    background_tasks: BackgroundTasks,
-    file: UploadFile = File(..., description="영수증 이미지 파일"),
-):
-    """
-    영수증 이미지에서 텍스트 추출
-
-    - **file**: 업로드할 영수증 이미지 (JPG, PNG, PDF 지원)
-    """
-    try:
-        # 파일 검증
-        if not file.content_type.startswith(("image/", "application/pdf")):
-            raise HTTPException(
-                status_code=400,
-                detail="지원하지 않는 파일 형식입니다. JPG, PNG, PDF만 지원됩니다.",
-            )
-
-        if file.size > settings.MAX_FILE_SIZE:
-            raise HTTPException(
-                status_code=413,
-                detail=f"파일 크기가 너무 큽니다. 최대 {settings.MAX_FILE_SIZE // (1024*1024)}MB까지 지원됩니다.",
-            )
-
-        # 파일 읽기
-        file_content = await file.read()
-
-        # OCR 처리
-        result = await ocr_processor.process_image(
-            image_data=file_content, filename=file.filename
-        )
-
-        # 백그라운드 작업 - 처리 로그 저장
-        background_tasks.add_task(
-            log_ocr_processing,
-            filename=file.filename,
-            success=result["success"],
-            processing_time=result["processing_time"],
-        )
-
-        logger.info(
-            "OCR processing completed",
-            filename=file.filename,
-            success=result["success"],
-            confidence=result.get("confidence", 0.0),
-        )
-
-        return OCRResult(**result)
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error("OCR processing failed", filename=file.filename, error=str(e))
-        raise HTTPException(status_code=500, detail="OCR 처리 중 오류가 발생했습니다.")
-
-
-@app.post("/api/ocr/batch", tags=["OCR"])
-async def extract_text_batch(
-    background_tasks: BackgroundTasks,
-    files: List[UploadFile] = File(..., description="영수증 이미지 파일들"),
-):
-    """
-    여러 영수증 이미지에서 일괄 텍스트 추출
-
-    - **files**: 업로드할 영수증 이미지들 (최대 10개)
-    """
-    if len(files) > settings.MAX_BATCH_SIZE:
-        raise HTTPException(
-            status_code=400,
-            detail=f"최대 {settings.MAX_BATCH_SIZE}개 파일까지 처리 가능합니다.",
-        )
-
-    results = []
-
-    for file in files:
-        try:
-            # 개별 파일 처리 (extract_text와 동일한 로직)
-            if not file.content_type.startswith(("image/", "application/pdf")):
-                results.append(
-                    {
-                        "filename": file.filename,
-                        "success": False,
-                        "error": "지원하지 않는 파일 형식",
-                    }
-                )
-                continue
-
-            file_content = await file.read()
-            result = await ocr_processor.process_image(file_content, file.filename)
-            results.append({"filename": file.filename, **result})
-
-        except Exception as e:
-            logger.error(
-                "Batch OCR processing failed", filename=file.filename, error=str(e)
-            )
-            results.append(
-                {"filename": file.filename, "success": False, "error": str(e)}
-            )
-
-    return {
-        "batch_results": results,
-        "total_files": len(files),
-        "successful": sum(1 for r in results if r.get("success", False)),
-        "failed": sum(1 for r in results if not r.get("success", False)),
-    }
-
-
-async def log_ocr_processing(filename: str, success: bool, processing_time: float):
-    """OCR 처리 로그를 기록하는 백그라운드 작업"""
-    logger.info(
-        "OCR processing logged",
-        filename=filename,
-        success=success,
-        processing_time=processing_time,
-    )
 
 
 # 앱 시작 이벤트
@@ -240,8 +93,9 @@ async def startup_event():
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     os.makedirs(settings.LOG_DIR, exist_ok=True)
 
-    # OCR 엔진 초기화 테스트
-    await ocr_processor.initialize()
+    # OCR 매니저 초기화 (라우터에서 사용하는 ocr_manager)
+    from src.api.ocr import ocr_manager
+    await ocr_manager.initialize()
 
     logger.info("OCR Service started successfully")
 
