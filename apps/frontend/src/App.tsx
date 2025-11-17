@@ -2,10 +2,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { PublicRoute } from './routes/PublicRoute';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
 
 // Placeholder Pages
-const LoginPage = () => <div className="text-center p-8">로그인 페이지</div>;
-const RegisterPage = () => <div className="text-center p-8">회원가입 페이지</div>;
 const DashboardPage = () => <div className="text-center p-8">대시보드</div>;
 const EventsPage = () => <div className="text-center p-8">행사 목록</div>;
 const EventDetailPage = () => <div className="text-center p-8">행사 상세</div>;
