@@ -175,7 +175,7 @@ docker/volumes/
 
 # Project specific
 project_data/
-receipts/
+/receipts/
 user_uploads/
 backup/
 
