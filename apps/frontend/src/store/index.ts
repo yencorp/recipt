@@ -3,7 +3,7 @@ import authReducer from './slices/authSlice';
 import uiReducer from './slices/uiSlice';
 import { api } from './api/baseApi';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     ui: uiReducer,
@@ -15,3 +15,5 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export { store };
