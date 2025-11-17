@@ -20,6 +20,7 @@ import { createDatabaseConfig } from "./config/database.config";
 // 비즈니스 모듈 imports
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
+import { EmailModule } from "./modules/email/email.module";
 import { OrganizationsModule } from "./modules/organizations/organizations.module";
 import { EventsModule } from "./modules/events/events.module";
 import { BudgetsModule } from "./modules/budgets/budgets.module";
@@ -92,6 +93,7 @@ import { PrintModule } from "./modules/print/print.module";
     DatabaseModule,
 
     // 비즈니스 모듈들
+    EmailModule,
     AuthModule,
     UsersModule,
     OrganizationsModule,

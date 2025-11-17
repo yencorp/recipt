@@ -7,6 +7,8 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
 import { User, UserStatus } from "../../entities/user.entity";
+import { EmailService } from "../email/email.service";
+import * as crypto from "crypto";
 import { JwtPayload } from "./jwt.strategy";
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from "bcrypt";
@@ -27,7 +29,8 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly emailService: EmailService
   ) {}
 
   async login(email: string, password: string): Promise<LoginResponse> {
@@ -72,11 +75,21 @@ export class AuthService {
       role: registerDto.role,
     });
 
-    // 4. TODO: 이메일 인증 토큰 생성 및 발송 (추후 구현)
-    // const emailVerificationToken = crypto.randomBytes(32).toString('hex');
-    // await this.emailService.sendVerificationEmail(user.email, emailVerificationToken);
+    // 4. 이메일 인증 토큰 생성 및 발송
+    const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+    user.emailVerificationToken = emailVerificationToken;
+    await this.usersService.update(user.id, {
+      emailVerificationToken,
+    });
 
-    // 5. JWT 토큰 생성
+    // 5. 이메일 인증 메일 발송
+    await this.emailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      emailVerificationToken
+    );
+
+    // 6. JWT 토큰 생성
     const tokens = await this.generateTokens(user);
 
     // 비밀번호 제외하고 사용자 정보 반환
@@ -200,5 +213,65 @@ export class AuthService {
       }
       throw new UnauthorizedException("유효하지 않은 토큰입니다.");
     }
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    // 1. 토큰으로 사용자 찾기
+    const users = await this.usersService.findAll();
+    const user = users.find((u) => u.emailVerificationToken === token);
+
+    if (!user) {
+      throw new BadRequestException(
+        "유효하지 않거나 만료된 인증 토큰입니다."
+      );
+    }
+
+    // 2. 이미 인증된 경우
+    if (user.emailVerifiedAt) {
+      throw new BadRequestException("이미 인증된 계정입니다.");
+    }
+
+    // 3. 이메일 인증 처리 (User 엔티티의 verifyEmail 메서드 사용)
+    user.verifyEmail();
+    await this.usersService.update(user.id, {
+      emailVerifiedAt: user.emailVerifiedAt,
+      emailVerificationToken: null,
+      status: user.status,
+    });
+
+    return {
+      message: "이메일 인증이 완료되었습니다. 이제 로그인할 수 있습니다.",
+    };
+  }
+
+  async resendVerificationEmail(email: string): Promise<{ message: string }> {
+    // 1. 사용자 찾기
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException("존재하지 않는 이메일 주소입니다.");
+    }
+
+    // 2. 이미 인증된 경우
+    if (user.emailVerifiedAt) {
+      throw new BadRequestException("이미 인증된 계정입니다.");
+    }
+
+    // 3. 새로운 인증 토큰 생성
+    const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+    await this.usersService.update(user.id, {
+      emailVerificationToken,
+    });
+
+    // 4. 이메일 재발송
+    await this.emailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      emailVerificationToken
+    );
+
+    return {
+      message: "인증 이메일이 재발송되었습니다. 이메일을 확인해 주세요.",
+    };
   }
 }

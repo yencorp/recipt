@@ -5,7 +5,11 @@ import {
   Length,
   Matches,
   IsObject,
+  IsEnum,
+  IsDate,
 } from "class-validator";
+import { UserStatus } from "../../../entities/user.entity";
+import { Type } from "class-transformer";
 
 export class UpdateUserDto {
   @ApiPropertyOptional({
@@ -50,4 +54,30 @@ export class UpdateUserDto {
   @IsOptional()
   @IsObject({ message: "추가 설정은 객체여야 합니다." })
   preferences?: Record<string, any>;
+
+  @ApiPropertyOptional({
+    description: "사용자 상태",
+    enum: UserStatus,
+    example: UserStatus.ACTIVE,
+  })
+  @IsOptional()
+  @IsEnum(UserStatus, { message: "유효한 사용자 상태를 선택해주세요." })
+  status?: UserStatus;
+
+  @ApiPropertyOptional({
+    description: "이메일 인증 토큰",
+    example: "abc123def456",
+  })
+  @IsOptional()
+  @IsString({ message: "이메일 인증 토큰은 문자열이어야 합니다." })
+  emailVerificationToken?: string | null;
+
+  @ApiPropertyOptional({
+    description: "이메일 인증 완료 시각",
+    example: "2024-01-01T00:00:00.000Z",
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: "이메일 인증 시각은 날짜여야 합니다." })
+  emailVerifiedAt?: Date | null;
 }
