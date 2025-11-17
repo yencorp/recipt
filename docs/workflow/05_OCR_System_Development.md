@@ -17,10 +17,10 @@
 **담당자**: Python/AI 개발자  
 
 **세부 작업**:
-- [ ] FastAPI 프로젝트 구조 설계
+- [x] FastAPI 프로젝트 구조 설계 (TSD 기반 app/ 디렉토리)
 - [ ] 가상환경 설정 및 의존성 관리 (requirements.txt)
 - [ ] Docker 컨테이너 설정 및 최적화
-- [ ] 환경 변수 및 설정 관리
+- [x] 환경 변수 및 설정 관리 (app/config.py)
 
 **완료 기준**:
 - FastAPI 서버 정상 시작 (포트 8000)
@@ -37,10 +37,10 @@
 **담당자**: Python/AI 개발자  
 
 **세부 작업**:
-- [ ] TesseractOCR 설치 및 한국어 언어팩 설정
-- [ ] easyOCR 라이브러리 설치 및 모델 다운로드
+- [x] TesseractOCR 설치 및 한국어 언어팩 설정 (app/core/engines/tesseract.py)
+- [x] easyOCR 라이브러리 설치 및 모델 다운로드 (app/core/engines/easyocr.py)
 - [ ] Google Vision API 클라이언트 설정
-- [ ] OCR 엔진별 기본 테스트
+- [x] OCR 엔진별 기본 테스트 (Tesseract, EasyOCR)
 
 **완료 기준**:
 - 모든 OCR 엔진 정상 동작 확인
@@ -56,10 +56,10 @@
 **담당자**: Python/AI 개발자  
 
 **세부 작업**:
-- [ ] OpenCV 기반 이미지 전처리 함수
-- [ ] 영수증 영역 자동 감지 및 크로핑
-- [ ] 이미지 회전 보정
-- [ ] 노이즈 제거 및 대비 향상
+- [x] OpenCV 기반 이미지 전처리 함수 (app/core/processors/image_processor.py)
+- [x] 영수증 영역 자동 감지 및 크로핑
+- [x] 이미지 회전 보정 (skew correction)
+- [x] 노이즈 제거 및 대비 향상 (CLAHE, binarization)
 
 **완료 기준**:
 - 이미지 전처리 파이프라인 정상 동작
@@ -78,10 +78,10 @@
 **담당자**: Python/AI 개발자  
 
 **세부 작업**:
-- [ ] OCR 엔진 순차 처리 로직 (TesseractOCR → easyOCR)
-- [ ] 인식 결과 신뢰도 평가 시스템
+- [x] OCR 엔진 순차 처리 로직 (Tesseract → EasyOCR, app/services/ocr_service.py)
+- [x] 인식 결과 신뢰도 평가 시스템 (confidence < 0.7 시 fallback)
 - [ ] 실패 시 Google Vision API 호출
-- [ ] 결과 통합 및 최적화 알고리즘
+- [x] 결과 통합 및 최적화 알고리즘 (OCRService._process_single_file)
 
 **완료 기준**:
 - 3단계 OCR 처리 파이프라인 구현
@@ -96,8 +96,8 @@
 **담당자**: Python/AI 개발자  
 
 **세부 작업**:
-- [ ] 정규표현식 기반 패턴 매칭 (날짜, 금액, 사업자번호)
-- [ ] 상호명 추출 알고리즘
+- [x] 정규표현식 기반 패턴 매칭 (날짜, 금액, 사업자번호, app/core/processors/receipt_parser.py)
+- [x] 상호명 추출 알고리즘
 - [ ] 구매 항목 및 개별 금액 파싱
 - [ ] 한글 자연어 처리 (PyKoSpacing, symspellpy)
 
@@ -119,10 +119,10 @@
 **담당자**: Python/AI 개발자  
 
 **세부 작업**:
-- [ ] 다중 파일 업로드 엔드포인트 구현
-- [ ] 파일 타입 및 크기 검증
-- [ ] 비동기 처리 큐 시스템 (Celery 또는 asyncio)
-- [ ] 처리 상태 추적 API
+- [x] 다중 파일 업로드 엔드포인트 구현 (POST /api/v1/ocr/process, app/api/ocr.py)
+- [x] 파일 타입 및 크기 검증
+- [x] 비동기 처리 큐 시스템 (asyncio.Semaphore, app/services/ocr_service.py)
+- [x] 처리 상태 추적 API (GET /api/v1/ocr/jobs/{job_id})
 
 **완료 기준**:
 - 최대 100개 파일 동시 업로드 지원
@@ -138,7 +138,7 @@
 **담당자**: Python/AI 개발자 + 백엔드 지원  
 
 **세부 작업**:
-- [ ] OCR 결과 조회 API
+- [x] OCR 결과 조회 API (GET /api/v1/ocr/jobs/{job_id}, app/api/ocr.py)
 - [ ] 결과 수정 API (사용자 피드백)
 - [ ] 썸네일 이미지 생성 및 제공
 - [ ] 학습 데이터 수집 API
