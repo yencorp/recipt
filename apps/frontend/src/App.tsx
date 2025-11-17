@@ -5,9 +5,9 @@ import { MainLayout } from './components/layout/MainLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
+import { DashboardPage } from './pages/dashboard/DashboardPage';
 
 // Placeholder Pages
-const DashboardPage = () => <div className="text-center p-8">대시보드</div>;
 const EventsPage = () => <div className="text-center p-8">행사 목록</div>;
 const EventDetailPage = () => <div className="text-center p-8">행사 상세</div>;
 const BudgetPage = () => <div className="text-center p-8">예산서</div>;

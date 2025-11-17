@@ -126,3 +126,51 @@ export interface PaginatedResponse<T> {
     totalPages: number;
   };
 }
+
+// Dashboard Types
+export interface DashboardStats {
+  totalEvents: number;
+  upcomingEvents: number;
+  completedEvents: number;
+  totalBudget: number;
+  totalExpenditure: number;
+  pendingApprovals: number;
+}
+
+export interface RecentActivity {
+  id: string;
+  type: 'event_created' | 'budget_submitted' | 'settlement_approved' | 'user_joined';
+  title: string;
+  description: string;
+  timestamp: string;
+  user: {
+    name: string;
+    role: string;
+  };
+}
+
+export interface Notification {
+  id: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+// Blog Types
+export interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  author: {
+    id: string;
+    name: string;
+    role: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  isPinned: boolean;
+  viewCount: number;
+}
