@@ -7,9 +7,7 @@ import * as request from "supertest";
 import { DataSource } from "typeorm";
 import { AuthModule } from "./auth.module";
 import { UsersModule } from "../users/users.module";
-import { User } from "../../entities/user.entity";
-import { Organization } from "../../entities/organization.entity";
-import { Membership } from "../../entities/membership.entity";
+import { User, UserStatus } from "../../entities/user.entity";
 
 describe("Auth Integration Tests", () => {
   let app: INestApplication;
@@ -26,15 +24,16 @@ describe("Auth Integration Tests", () => {
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
-            type: "postgres",
+            type: "postgres" as const,
             host: configService.get<string>("DATABASE_HOST", "localhost"),
             port: configService.get<number>("DATABASE_PORT", 5432),
             username: configService.get<string>("DATABASE_USER", "postgres"),
             password: configService.get<string>("DATABASE_PASSWORD", "postgres"),
             database: configService.get<string>("DATABASE_NAME", "recipt_db"),
-            entities: [User, Organization, Membership],
+            entities: [__dirname + "/../../**/*.entity{.ts,.js}"],
             synchronize: false,
             logging: false,
+            autoLoadEntities: false,
           }),
         }),
         JwtModule.registerAsync({
@@ -183,7 +182,7 @@ describe("Auth Integration Tests", () => {
       // 사용자 활성화 (PENDING_VERIFICATION → ACTIVE)
       await dataSource
         .getRepository(User)
-        .update({ id: testUser.id }, { status: "ACTIVE" });
+        .update({ id: testUser.id }, { status: UserStatus.ACTIVE });
     });
 
     it("올바른 이메일과 비밀번호로 로그인해야 함", async () => {
@@ -291,7 +290,7 @@ describe("Auth Integration Tests", () => {
       // 사용자 활성화
       await dataSource
         .getRepository(User)
-        .update({ id: testUser.id }, { status: "ACTIVE" });
+        .update({ id: testUser.id }, { status: UserStatus.ACTIVE });
 
       // 로그인하여 리프레시 토큰 획득
       const loginResponse = await request(app.getHttpServer())
@@ -354,7 +353,7 @@ describe("Auth Integration Tests", () => {
       // 사용자 활성화 및 로그인
       await dataSource
         .getRepository(User)
-        .update({ id: testUser.id }, { status: "ACTIVE" });
+        .update({ id: testUser.id }, { status: UserStatus.ACTIVE });
 
       const loginResponse = await request(app.getHttpServer())
         .post("/api/auth/login")

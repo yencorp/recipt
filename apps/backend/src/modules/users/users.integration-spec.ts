@@ -7,9 +7,7 @@ import * as request from "supertest";
 import { DataSource } from "typeorm";
 import { UsersModule } from "./users.module";
 import { AuthModule } from "../auth/auth.module";
-import { User } from "../../entities/user.entity";
-import { Organization } from "../../entities/organization.entity";
-import { Membership } from "../../entities/membership.entity";
+import { User, UserStatus } from "../../entities/user.entity";
 
 describe("Users Integration Tests", () => {
   let app: INestApplication;
@@ -28,15 +26,16 @@ describe("Users Integration Tests", () => {
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
-            type: "postgres",
+            type: "postgres" as const,
             host: configService.get<string>("DATABASE_HOST", "localhost"),
             port: configService.get<number>("DATABASE_PORT", 5432),
             username: configService.get<string>("DATABASE_USER", "postgres"),
             password: configService.get<string>("DATABASE_PASSWORD", "postgres"),
             database: configService.get<string>("DATABASE_NAME", "recipt_db"),
-            entities: [User, Organization, Membership],
+            entities: [__dirname + "/../../**/*.entity{.ts,.js}"],
             synchronize: false,
             logging: false,
+            autoLoadEntities: false,
           }),
         }),
         JwtModule.registerAsync({
@@ -83,7 +82,7 @@ describe("Users Integration Tests", () => {
     createdUserIds.push(userId);
 
     // 사용자 활성화
-    await dataSource.getRepository(User).update({ id: userId }, { status: "ACTIVE" });
+    await dataSource.getRepository(User).update({ id: userId }, { status: UserStatus.ACTIVE });
 
     // 로그인하여 액세스 토큰 획득
     const loginResponse = await request(app.getHttpServer())

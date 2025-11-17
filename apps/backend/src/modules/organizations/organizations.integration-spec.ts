@@ -8,9 +8,8 @@ import { DataSource } from "typeorm";
 import { OrganizationsModule } from "./organizations.module";
 import { AuthModule } from "../auth/auth.module";
 import { UsersModule } from "../users/users.module";
-import { User } from "../../entities/user.entity";
+import { User, UserStatus, UserRole } from "../../entities/user.entity";
 import { Organization } from "../../entities/organization.entity";
-import { Membership } from "../../entities/membership.entity";
 
 describe("Organizations Integration Tests", () => {
   let app: INestApplication;
@@ -32,15 +31,16 @@ describe("Organizations Integration Tests", () => {
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
-            type: "postgres",
+            type: "postgres" as const,
             host: configService.get<string>("DATABASE_HOST", "localhost"),
             port: configService.get<number>("DATABASE_PORT", 5432),
             username: configService.get<string>("DATABASE_USER", "postgres"),
             password: configService.get<string>("DATABASE_PASSWORD", "postgres"),
             database: configService.get<string>("DATABASE_NAME", "recipt_db"),
-            entities: [User, Organization, Membership],
+            entities: [__dirname + "/../../**/*.entity{.ts,.js}"],
             synchronize: false,
             logging: false,
+            autoLoadEntities: false,
           }),
         }),
         JwtModule.registerAsync({
@@ -90,8 +90,8 @@ describe("Organizations Integration Tests", () => {
     await dataSource.getRepository(User).update(
       { id: adminUserId },
       {
-        role: "ORGANIZATION_ADMIN",
-        status: "ACTIVE",
+        role: UserRole.ORGANIZATION_ADMIN,
+        status: UserStatus.ACTIVE,
       }
     );
 
@@ -126,7 +126,7 @@ describe("Organizations Integration Tests", () => {
     await dataSource.getRepository(User).update(
       { id: memberUserId },
       {
-        status: "ACTIVE",
+        status: UserStatus.ACTIVE,
       }
     );
 
