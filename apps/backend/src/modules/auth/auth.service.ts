@@ -238,8 +238,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<{ message: string }> {
     // 1. 토큰으로 사용자 찾기
-    const users = await this.usersService.findAll();
-    const user = users.find((u) => u.emailVerificationToken === token);
+    const user = await this.usersService.findByEmailVerificationToken(token);
 
     if (!user) {
       throw new BadRequestException(

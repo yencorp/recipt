@@ -4,6 +4,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
 
@@ -36,6 +37,14 @@ function App() {
         element={
           <PublicRoute>
             <RegisterPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/verify-email"
+        element={
+          <PublicRoute>
+            <VerifyEmailPage />
           </PublicRoute>
         }
       />

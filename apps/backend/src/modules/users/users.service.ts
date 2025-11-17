@@ -49,6 +49,12 @@ export class UsersService {
     });
   }
 
+  async findByEmailVerificationToken(token: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { emailVerificationToken: token },
+    });
+  }
+
   async create(userData: {
     email: string;
     passwordHash: string;
