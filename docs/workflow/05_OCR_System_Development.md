@@ -161,10 +161,10 @@
 **담당자**: 백엔드 개발자 + Python 개발자  
 
 **세부 작업**:
-- [ ] OCR 작업 요청/응답 스키마 정의
-- [ ] HTTP 클라이언트 통신 구현
+- [x] OCR 작업 요청/응답 스키마 정의 (OcrJobResponse, OcrResultResponse)
+- [x] HTTP 클라이언트 통신 구현 (modules/ocr/ocr-client.service.ts)
 - [ ] 작업 상태 동기화 시스템
-- [ ] 에러 처리 및 재시도 로직
+- [x] 에러 처리 및 재시도 로직
 
 **완료 기준**:
 - 백엔드-OCR 서비스 안정적 통신
