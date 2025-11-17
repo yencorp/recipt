@@ -1,6 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { DashboardWidget } from '@/components/dashboard/DashboardWidget';
-import type { StatCard } from '@/components/dashboard/DashboardWidget';
+import { DashboardWidget, StatCard } from '@/components/dashboard/DashboardWidget';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import type { QuickAction } from '@/components/dashboard/QuickActions';
 import { RecentActivities } from '@/components/dashboard/RecentActivities';
