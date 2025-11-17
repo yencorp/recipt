@@ -43,12 +43,14 @@ export interface Organization {
 // Event Types
 export interface Event {
   id: string;
-  name: string;
+  title: string;
+  description?: string;
+  type: EventType;
+  status: EventStatus;
   startDate: string;
   endDate: string;
   location?: string;
-  allocatedBudget?: number;
-  status: EventStatus;
+  estimatedCost?: number;
   organization: Organization;
   hasBudget: boolean;
   hasSettlement: boolean;
@@ -63,14 +65,25 @@ export enum EventStatus {
   COMPLETED = 'COMPLETED',
 }
 
+export enum EventType {
+  RETREAT = 'RETREAT',
+  WORKSHOP = 'WORKSHOP',
+  MEETING = 'MEETING',
+  SOCIAL = 'SOCIAL',
+  EDUCATION = 'EDUCATION',
+  SERVICE = 'SERVICE',
+  OTHER = 'OTHER',
+}
+
 export interface CreateEventDto {
-  name: string;
+  organizationId: string;
+  title: string;
+  description?: string;
+  type: EventType;
   startDate: string;
   endDate: string;
   location?: string;
-  allocatedBudget?: number;
-  organizationId: string;
-  description?: string;
+  estimatedCost?: number;
 }
 
 // Auth Types

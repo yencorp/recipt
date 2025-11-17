@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Event } from '@/types';
+import { EventType } from '@/types';
 
 interface EventFormProps {
   event?: Event;
@@ -48,26 +49,29 @@ export const EventForm: React.FC<EventFormProps> = ({
     resolver: zodResolver(eventSchema),
     defaultValues: event
       ? {
-          name: event.name,
+          organizationId: event.organization.id,
+          title: event.title,
+          description: event.description || '',
+          type: event.type,
           startDate: event.startDate.split('T')[0],
           endDate: event.endDate.split('T')[0],
           location: event.location || '',
-          allocatedBudget: event.allocatedBudget || undefined,
-          organizationId: event.organization.id,
-          description: event.description || '',
+          estimatedCost: event.estimatedCost || undefined,
         }
       : {
-          name: '',
+          organizationId: '',
+          title: '',
+          description: '',
+          type: EventType.OTHER,
           startDate: '',
           endDate: '',
           location: '',
-          allocatedBudget: undefined,
-          organizationId: '',
-          description: '',
+          estimatedCost: undefined,
         },
   });
 
   const selectedOrg = watch('organizationId');
+  const selectedType = watch('type');
 
   const onSubmit = async (data: EventFormData) => {
     try {
@@ -84,20 +88,90 @@ export const EventForm: React.FC<EventFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* 소속 단체 */}
+      <div className="space-y-2">
+        <label htmlFor="organizationId" className="text-sm font-medium">
+          소속 단체 <span className="text-destructive">*</span>
+        </label>
+        <Select
+          value={selectedOrg}
+          onValueChange={(value) => setValue('organizationId', value)}
+          disabled={isLoadingOrgs}
+        >
+          <SelectTrigger
+            className={errors.organizationId ? 'border-destructive' : ''}
+          >
+            <SelectValue placeholder="단체를 선택하세요" />
+          </SelectTrigger>
+          <SelectContent>
+            {organizations?.map((org) => (
+              <SelectItem key={org.id} value={org.id}>
+                {org.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.organizationId && (
+          <p className="text-sm text-destructive">
+            {errors.organizationId.message}
+          </p>
+        )}
+      </div>
+
       {/* 행사명 */}
       <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium">
+        <label htmlFor="title" className="text-sm font-medium">
           행사명 <span className="text-destructive">*</span>
         </label>
         <Input
-          id="name"
-          {...register('name')}
+          id="title"
+          {...register('title')}
           placeholder="행사명을 입력하세요"
-          className={errors.name ? 'border-destructive' : ''}
+          className={errors.title ? 'border-destructive' : ''}
         />
-        {errors.name && (
-          <p className="text-sm text-destructive">{errors.name.message}</p>
+        {errors.title && (
+          <p className="text-sm text-destructive">{errors.title.message}</p>
         )}
+      </div>
+
+      {/* 행사 유형 */}
+      <div className="space-y-2">
+        <label htmlFor="type" className="text-sm font-medium">
+          행사 유형 <span className="text-destructive">*</span>
+        </label>
+        <Select
+          value={selectedType}
+          onValueChange={(value) => setValue('type', value as EventType)}
+        >
+          <SelectTrigger className={errors.type ? 'border-destructive' : ''}>
+            <SelectValue placeholder="행사 유형을 선택하세요" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={EventType.RETREAT}>수련회</SelectItem>
+            <SelectItem value={EventType.WORKSHOP}>워크샵</SelectItem>
+            <SelectItem value={EventType.MEETING}>회의</SelectItem>
+            <SelectItem value={EventType.SOCIAL}>친교</SelectItem>
+            <SelectItem value={EventType.EDUCATION}>교육</SelectItem>
+            <SelectItem value={EventType.SERVICE}>봉사</SelectItem>
+            <SelectItem value={EventType.OTHER}>기타</SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.type && (
+          <p className="text-sm text-destructive">{errors.type.message}</p>
+        )}
+      </div>
+
+      {/* 행사 설명 */}
+      <div className="space-y-2">
+        <label htmlFor="description" className="text-sm font-medium">
+          행사 설명
+        </label>
+        <Textarea
+          id="description"
+          {...register('description')}
+          placeholder="행사에 대한 설명을 입력하세요 (선택사항)"
+          rows={4}
+        />
       </div>
 
       {/* 행사 기간 */}
@@ -145,66 +219,23 @@ export const EventForm: React.FC<EventFormProps> = ({
         />
       </div>
 
-      {/* 배정 예산 */}
+      {/* 예상 비용 */}
       <div className="space-y-2">
-        <label htmlFor="allocatedBudget" className="text-sm font-medium">
-          배정 예산
+        <label htmlFor="estimatedCost" className="text-sm font-medium">
+          예상 비용
         </label>
         <Input
-          id="allocatedBudget"
+          id="estimatedCost"
           type="number"
-          {...register('allocatedBudget', { valueAsNumber: true })}
-          placeholder="예산을 입력하세요 (선택사항)"
-          className={errors.allocatedBudget ? 'border-destructive' : ''}
+          {...register('estimatedCost', { valueAsNumber: true })}
+          placeholder="예상 비용을 입력하세요 (선택사항)"
+          className={errors.estimatedCost ? 'border-destructive' : ''}
         />
-        {errors.allocatedBudget && (
+        {errors.estimatedCost && (
           <p className="text-sm text-destructive">
-            {errors.allocatedBudget.message}
+            {errors.estimatedCost.message}
           </p>
         )}
-      </div>
-
-      {/* 소속 단체 */}
-      <div className="space-y-2">
-        <label htmlFor="organizationId" className="text-sm font-medium">
-          소속 단체 <span className="text-destructive">*</span>
-        </label>
-        <Select
-          value={selectedOrg}
-          onValueChange={(value) => setValue('organizationId', value)}
-          disabled={isLoadingOrgs}
-        >
-          <SelectTrigger
-            className={errors.organizationId ? 'border-destructive' : ''}
-          >
-            <SelectValue placeholder="단체를 선택하세요" />
-          </SelectTrigger>
-          <SelectContent>
-            {organizations?.map((org) => (
-              <SelectItem key={org.id} value={org.id}>
-                {org.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.organizationId && (
-          <p className="text-sm text-destructive">
-            {errors.organizationId.message}
-          </p>
-        )}
-      </div>
-
-      {/* 행사 설명 */}
-      <div className="space-y-2">
-        <label htmlFor="description" className="text-sm font-medium">
-          행사 설명
-        </label>
-        <Textarea
-          id="description"
-          {...register('description')}
-          placeholder="행사에 대한 설명을 입력하세요 (선택사항)"
-          rows={4}
-        />
       </div>
 
       {/* 버튼 */}
