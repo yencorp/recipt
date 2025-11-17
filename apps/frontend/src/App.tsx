@@ -4,6 +4,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { MainLayout } from './components/layout/MainLayout';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { ProfilePage } from './pages/profile/ProfilePage';
 
 // Placeholder Pages
 const DashboardPage = () => <div className="text-center p-8">대시보드</div>;
@@ -14,7 +15,6 @@ const SettlementPage = () => <div className="text-center p-8">결산서</div>;
 const OCRPage = () => <div className="text-center p-8">OCR 관리</div>;
 const BlogPage = () => <div className="text-center p-8">블로그</div>;
 const AdminPage = () => <div className="text-center p-8">관리자</div>;
-const ProfilePage = () => <div className="text-center p-8">프로필</div>;
 const UnauthorizedPage = () => (
   <div className="text-center p-8 text-destructive">접근 권한이 없습니다</div>
 );

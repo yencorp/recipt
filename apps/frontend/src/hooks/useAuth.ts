@@ -62,6 +62,8 @@ export const useAuth = () => {
     user,
     isAuthenticated,
     loading,
+    accessToken,
+    refreshToken: useSelector((state: RootState) => state.auth.refreshToken),
     isAdmin: user?.role === UserRole.ADMIN,
     isOrgAdmin:
       user?.role === UserRole.ORG_ADMIN || user?.role === UserRole.ADMIN,
