@@ -13,14 +13,14 @@
 
 ### Day 1: React 프로젝트 초기 설정 (8시간)
 
-#### Task 4.1: VITE + React 프로젝트 구조 설정 (3시간)
-**담당자**: 프론트엔드 시니어 개발자  
+#### Task 4.1: VITE + React 프로젝트 구조 설정 (3시간) ✅
+**담당자**: 프론트엔드 시니어 개발자
 
 **세부 작업**:
-- [ ] VITE 프로젝트 초기화 및 TypeScript 설정
-- [ ] 프로젝트 폴더 구조 설계 (components, pages, hooks, utils)
-- [ ] 절대 경로 import 설정
-- [ ] 개발 서버 환경 설정
+- [x] VITE 프로젝트 초기화 및 TypeScript 설정
+- [x] 프로젝트 폴더 구조 설계 (components, pages, hooks, utils)
+- [x] 절대 경로 import 설정
+- [x] 개발 서버 환경 설정
 
 **완료 기준**:
 - React 개발 서버 정상 시작
@@ -32,14 +32,14 @@
 - `frontend/tsconfig.json`
 - `frontend/src/` 폴더 구조
 
-#### Task 4.2: 상태 관리 시스템 설정 (3시간)
-**담당자**: 프론트엔드 시니어 개발자  
+#### Task 4.2: 상태 관리 시스템 설정 (3시간) ✅
+**담당자**: 프론트엔드 시니어 개발자
 
 **세부 작업**:
-- [ ] Redux Toolkit 설정 및 스토어 구성
-- [ ] RTK Query 설정 (API 통신)
-- [ ] 인증 상태 관리 슬라이스 생성
-- [ ] 전역 상태 구조 설계
+- [x] Redux Toolkit 설정 및 스토어 구성
+- [x] RTK Query 설정 (API 통신)
+- [x] 인증 상태 관리 슬라이스 생성
+- [x] 전역 상태 구조 설계
 
 **완료 기준**:
 - Redux DevTools 연동 확인
@@ -51,14 +51,14 @@
 - `frontend/src/store/slices/authSlice.ts`
 - `frontend/src/store/api/baseApi.ts`
 
-#### Task 4.3: UI 라이브러리 및 스타일링 설정 (2시간)
-**담당자**: 프론트엔드 주니어 개발자  
+#### Task 4.3: UI 라이브러리 및 스타일링 설정 (2시간) ✅
+**담당자**: 프론트엔드 주니어 개발자
 
 **세부 작업**:
-- [ ] Tailwind CSS 설정 및 커스터마이징
-- [ ] shadcn/ui 컴포넌트 라이브러리 설치
-- [ ] 공통 스타일 및 테마 설정
-- [ ] 반응형 브레이크포인트 정의
+- [x] Tailwind CSS 설정 및 커스터마이징
+- [x] shadcn/ui 컴포넌트 라이브러리 설치
+- [x] 공통 스타일 및 테마 설정
+- [x] 반응형 브레이크포인트 정의
 
 **완료 기준**:
 - Tailwind 클래스 정상 적용
