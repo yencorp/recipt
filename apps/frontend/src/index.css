@@ -50,14 +50,21 @@
 }
 
 @layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   /* 포커스 가시성 향상 */
   *:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
   }
 
   /* 키보드 포커스만 표시 (마우스 클릭 시 아웃라인 제거) */
