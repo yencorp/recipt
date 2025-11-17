@@ -158,13 +158,15 @@
 ### Day 4: 백엔드 연동 및 통신 (8시간)
 
 #### Task 5.8: NestJS 백엔드와 통신 인터페이스 (4시간)
-**담당자**: 백엔드 개발자 + Python 개발자  
+**담당자**: 백엔드 개발자 + Python 개발자
 
 **세부 작업**:
 - [x] OCR 작업 요청/응답 스키마 정의 (OcrJobResponse, OcrResultResponse)
 - [x] HTTP 클라이언트 통신 구현 (modules/ocr/ocr-client.service.ts)
-- [ ] 작업 상태 동기화 시스템
+- [x] 작업 상태 동기화 시스템 (폴링 방식, OcrJobsService)
 - [x] 에러 처리 및 재시도 로직
+- [x] 배치 업로드 TSD 명세 적용 (receipt-upload.controller.ts)
+- [x] OCR 결과 자동 저장 로직 (saveOcrResults)
 
 **완료 기준**:
 - 백엔드-OCR 서비스 안정적 통신
@@ -172,9 +174,9 @@
 - 통신 장애 시 적절한 에러 처리
 
 **산출물**:
-- `backend/src/ocr/ocr-client.service.ts`
-- `ocr-service/api/webhook.py`
-- `shared/schemas/ocr-schemas.ts`
+- `backend/src/ocr/ocr-client.service.ts` ✓
+- `backend/src/ocr/ocr-jobs.service.ts` ✓ (FastAPI 통합)
+- `backend/src/receipts/receipt-upload.controller.ts` ✓ (배치 처리)
 
 #### Task 5.9: 데이터베이스 연동 (4시간)
 **담당자**: 백엔드 개발자  
