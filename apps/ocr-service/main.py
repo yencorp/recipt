@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from src.utils.config import get_settings
-from src.api import ocr_router, health_router
+from src.api import ocr_router, health_router, results_router, feedback_router
 
 # 설정 로드
 settings = get_settings()
@@ -69,6 +69,8 @@ app.add_middleware(
 # API 라우터 등록
 app.include_router(ocr_router)
 app.include_router(health_router)
+app.include_router(results_router)
+app.include_router(feedback_router)
 
 
 # 루트 엔드포인트
