@@ -291,9 +291,12 @@ services:
       # Performance Settings
       WORKERS: 2
       WORKER_CONNECTIONS: 1000
-      
+
       # Timezone
       TZ: Asia/Seoul
+
+      # Fix HOME directory for EasyOCR
+      HOME: /app
     
     ports:
       - "8001:8001"
