@@ -52,6 +52,19 @@ export class BudgetsService {
     return budget;
   }
 
+  async findByEventId(eventId: string) {
+    const budget = await this.budgetRepository.findOne({
+      where: { eventId },
+      relations: ["event", "incomes", "expenses"],
+    });
+
+    if (!budget) {
+      throw new NotFoundException("해당 행사의 예산서를 찾을 수 없습니다.");
+    }
+
+    return budget;
+  }
+
   async create(createBudgetDto: CreateBudgetDto) {
     // 행사당 하나의 예산서만 생성 가능
     if (createBudgetDto.eventId) {
@@ -97,5 +110,26 @@ export class BudgetsService {
     const budget = await this.findOne(id);
     await this.budgetRepository.softRemove(budget);
     return { message: "예산서가 삭제되었습니다.", id };
+  }
+
+  async saveDraft(createBudgetDto: CreateBudgetDto) {
+    // DRAFT 상태로 임시 저장 (중복 체크 안함)
+    const budget = this.budgetRepository.create({
+      ...createBudgetDto,
+      status: "DRAFT" as any, // BudgetStatus.DRAFT
+    });
+    return this.budgetRepository.save(budget);
+  }
+
+  async updateDraft(id: string, updateBudgetDto: UpdateBudgetDto) {
+    const budget = await this.findOne(id);
+
+    // DRAFT 상태만 수정 가능
+    if (budget.status !== "DRAFT") {
+      throw new ConflictException("DRAFT 상태의 예산서만 임시 저장 수정이 가능합니다.");
+    }
+
+    await this.budgetRepository.update(id, updateBudgetDto);
+    return this.findOne(id);
   }
 }

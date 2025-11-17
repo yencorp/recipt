@@ -24,7 +24,7 @@ const STEPS: Step[] = [
 ];
 
 export const BudgetWizard: React.FC = () => {
-  const { eventId } = useParams<{ eventId: string }>();
+  const { id: eventId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const { data: event, isLoading: isLoadingEvent } = useGetEventQuery(eventId!);

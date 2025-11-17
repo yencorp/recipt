@@ -14,12 +14,11 @@ import { BudgetsService } from "./budgets.service";
 import { CreateBudgetDto } from "./dto/create-budget.dto";
 import { UpdateBudgetDto } from "./dto/update-budget.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { RolesGuard } from "../auth/roles.guard";
-import { OrgAdminOnly } from "../auth/roles.decorator";
+import { EventCreatorOrOrgAdminGuard } from "../../common/guards/event-creator-or-org-admin.guard";
 
 @ApiTags("Budgets")
 @Controller("budgets")
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 export class BudgetsController {
   constructor(private readonly budgetsService: BudgetsService) {}
 
@@ -35,6 +34,14 @@ export class BudgetsController {
     return this.budgetsService.findAll(organizationId);
   }
 
+  @Get("event/:eventId")
+  @ApiOperation({ summary: "행사별 예산서 조회" })
+  @ApiResponse({ status: 200, description: "예산서 조회 성공" })
+  @ApiResponse({ status: 404, description: "예산서를 찾을 수 없음" })
+  async findByEvent(@Param("eventId") eventId: string) {
+    return this.budgetsService.findByEventId(eventId);
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "예산서 상세 조회" })
   @ApiResponse({ status: 200, description: "예산서 상세 조회 성공" })
@@ -43,8 +50,17 @@ export class BudgetsController {
     return this.budgetsService.findOne(id);
   }
 
+  @Post("draft")
+  @UseGuards(EventCreatorOrOrgAdminGuard)
+  @ApiOperation({ summary: "예산서 임시 저장 (DRAFT 상태로 생성)" })
+  @ApiResponse({ status: 201, description: "임시 저장 성공" })
+  @ApiResponse({ status: 400, description: "잘못된 요청" })
+  async saveDraft(@Body() createBudgetDto: CreateBudgetDto) {
+    return this.budgetsService.saveDraft(createBudgetDto);
+  }
+
   @Post()
-  @OrgAdminOnly()
+  @UseGuards(EventCreatorOrOrgAdminGuard)
   @ApiOperation({ summary: "예산서 생성" })
   @ApiResponse({ status: 201, description: "예산서 생성 성공" })
   @ApiResponse({ status: 400, description: "잘못된 요청" })
@@ -53,8 +69,20 @@ export class BudgetsController {
     return this.budgetsService.create(createBudgetDto);
   }
 
+  @Put(":id/draft")
+  @UseGuards(EventCreatorOrOrgAdminGuard)
+  @ApiOperation({ summary: "예산서 임시 저장 수정" })
+  @ApiResponse({ status: 200, description: "임시 저장 수정 성공" })
+  @ApiResponse({ status: 404, description: "예산서를 찾을 수 없음" })
+  async updateDraft(
+    @Param("id") id: string,
+    @Body() updateBudgetDto: UpdateBudgetDto
+  ) {
+    return this.budgetsService.updateDraft(id, updateBudgetDto);
+  }
+
   @Put(":id")
-  @OrgAdminOnly()
+  @UseGuards(EventCreatorOrOrgAdminGuard)
   @ApiOperation({ summary: "예산서 수정" })
   @ApiResponse({ status: 200, description: "예산서 수정 성공" })
   @ApiResponse({ status: 404, description: "예산서를 찾을 수 없음" })
@@ -67,7 +95,7 @@ export class BudgetsController {
   }
 
   @Delete(":id")
-  @OrgAdminOnly()
+  @UseGuards(EventCreatorOrOrgAdminGuard)
   @ApiOperation({ summary: "예산서 삭제" })
   @ApiResponse({ status: 200, description: "예산서 삭제 성공" })
   @ApiResponse({ status: 404, description: "예산서를 찾을 수 없음" })

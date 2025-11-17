@@ -14,12 +14,11 @@ import { SettlementsService } from "./settlements.service";
 import { CreateSettlementDto } from "./dto/create-settlement.dto";
 import { UpdateSettlementDto } from "./dto/update-settlement.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { RolesGuard } from "../auth/roles.guard";
-import { OrgAdminOnly } from "../auth/roles.decorator";
+import { EventCreatorOrOrgAdminGuard } from "../../common/guards/event-creator-or-org-admin.guard";
 
 @ApiTags("Settlements")
 @Controller("settlements")
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 export class SettlementsController {
   constructor(private readonly settlementsService: SettlementsService) {}
 
@@ -44,7 +43,7 @@ export class SettlementsController {
   }
 
   @Post()
-  @OrgAdminOnly()
+  @UseGuards(EventCreatorOrOrgAdminGuard)
   @ApiOperation({ summary: "결산서 생성" })
   @ApiResponse({ status: 201, description: "결산서 생성 성공" })
   @ApiResponse({ status: 400, description: "잘못된 요청" })
@@ -53,7 +52,7 @@ export class SettlementsController {
   }
 
   @Put(":id")
-  @OrgAdminOnly()
+  @UseGuards(EventCreatorOrOrgAdminGuard)
   @ApiOperation({ summary: "결산서 수정" })
   @ApiResponse({ status: 200, description: "결산서 수정 성공" })
   @ApiResponse({ status: 404, description: "결산서를 찾을 수 없음" })
@@ -65,7 +64,7 @@ export class SettlementsController {
   }
 
   @Delete(":id")
-  @OrgAdminOnly()
+  @UseGuards(EventCreatorOrOrgAdminGuard)
   @ApiOperation({ summary: "결산서 삭제" })
   @ApiResponse({ status: 200, description: "결산서 삭제 성공" })
   @ApiResponse({ status: 404, description: "결산서를 찾을 수 없음" })

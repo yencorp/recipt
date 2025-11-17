@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -32,9 +32,9 @@ const STEPS: Step[] = [
 
 export const SettlementWizard: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const eventId = searchParams.get('eventId');
-  const budgetId = searchParams.get('budgetId');
+  const { id: eventId } = useParams<{ id: string }>();
+  // TODO: budgetId는 eventId로부터 조회하거나 API에서 자동으로 찾도록 수정 필요
+  const budgetId = null;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [incomeItems, setIncomeItems] = useState<SettlementItemFormData[]>([]);
