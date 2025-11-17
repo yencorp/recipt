@@ -1,7 +1,18 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ReceiptScan, UploadStatus } from "../../entities/receipt-scan.entity";
+import {
+  ReceiptScan,
+  UploadStatus,
+  ProcessingStatus as ReceiptProcessingStatus,
+  ReceiptStatus,
+} from "../../entities/receipt-scan.entity";
+import {
+  OcrResult,
+  OcrEngine,
+  OcrStatus,
+  FieldType,
+} from "../../entities/ocr-result.entity";
 import { OcrClientService } from "./ocr-client.service";
 
 export interface OcrJob {
@@ -25,6 +36,8 @@ export class OcrJobsService {
   constructor(
     @InjectRepository(ReceiptScan)
     private readonly receiptScanRepository: Repository<ReceiptScan>,
+    @InjectRepository(OcrResult)
+    private readonly ocrResultRepository: Repository<OcrResult>,
     private readonly ocrClientService: OcrClientService
   ) {}
 
@@ -210,29 +223,87 @@ export class OcrJobsService {
   }
 
   /**
-   * OCR 결과를 데이터베이스에 저장
+   * OCR 결과를 데이터베이스에 저장 (TSD 명세)
    */
   private async saveOcrResults(job: OcrJob, result: any): Promise<void> {
     try {
       // 각 OCR 결과를 해당 영수증에 저장
-      for (const ocrResult of result.results) {
+      for (const ocrResultItem of result.results) {
         const receiptScan = await this.receiptScanRepository.findOne({
-          where: { originalFilename: ocrResult.filename },
+          where: { originalFileName: ocrResultItem.filename },
         });
 
-        if (receiptScan) {
+        if (!receiptScan) {
+          this.logger.warn(
+            `Receipt scan not found for filename: ${ocrResultItem.filename}`
+          );
+          continue;
+        }
+
+        // OCR 처리 성공 여부에 따라 상태 업데이트
+        if (ocrResultItem.success) {
+          // ReceiptScan 업데이트
           await this.receiptScanRepository.update(receiptScan.id, {
-            uploadStatus: ocrResult.success
-              ? UploadStatus.UPLOADED
-              : UploadStatus.FAILED,
-            // TODO: OCR 추출 데이터를 영수증 엔티티에 저장
-            // extractedDate: ocrResult.extractedData?.date,
-            // merchantName: ocrResult.extractedData?.merchantName,
-            // totalAmount: ocrResult.extractedData?.totalAmount,
+            uploadStatus: UploadStatus.UPLOADED,
+            processingStatus: ReceiptProcessingStatus.COMPLETED,
+            status: ReceiptStatus.OCR_COMPLETED,
+            receiptDate: ocrResultItem.extractedData?.date
+              ? new Date(ocrResultItem.extractedData.date)
+              : undefined,
+            vendorName: ocrResultItem.extractedData?.merchantName,
+            totalAmount: ocrResultItem.extractedData?.totalAmount,
+            ocrConfidence: ocrResultItem.confidence,
+            rawOcrText: ocrResultItem.extractedData?.rawText,
+            processingCompletedAt: new Date(),
           });
 
+          // OcrResult 생성
+          const ocrResult = this.ocrResultRepository.create({
+            receiptScanId: receiptScan.id,
+            ocrEngine: this.mapEngineNameToEnum(ocrResultItem.engineUsed),
+            status: OcrStatus.COMPLETED,
+            rawText: ocrResultItem.extractedData?.rawText || "",
+            vendorName: ocrResultItem.extractedData?.merchantName,
+            vendorRegistrationNumber:
+              ocrResultItem.extractedData?.businessNumber,
+            receiptDate: ocrResultItem.extractedData?.date
+              ? new Date(ocrResultItem.extractedData.date)
+              : undefined,
+            totalAmount: ocrResultItem.extractedData?.totalAmount,
+            overallConfidence: ocrResultItem.confidence,
+            processingTimeMs: ocrResultItem.processingTime,
+            processedAt: new Date(),
+            structuredData: {
+              originalResult: ocrResultItem.extractedData,
+            },
+            extractedFields: this.buildExtractedFields(
+              ocrResultItem.extractedData,
+              ocrResultItem.confidence
+            ),
+            metadata: {
+              ocrRequestId: result.jobId,
+              engineUsed: ocrResultItem.engineUsed,
+              filename: ocrResultItem.filename,
+            },
+          });
+
+          await this.ocrResultRepository.save(ocrResult);
+
           this.logger.log(
-            `Saved OCR result for ${ocrResult.filename}: ${ocrResult.success ? "SUCCESS" : "FAILED"}`
+            `Saved OCR result for ${ocrResultItem.filename}: SUCCESS (confidence: ${ocrResultItem.confidence})`
+          );
+        } else {
+          // OCR 실패
+          await this.receiptScanRepository.update(receiptScan.id, {
+            uploadStatus: UploadStatus.FAILED,
+            processingStatus: ReceiptProcessingStatus.FAILED,
+            status: ReceiptStatus.ERROR,
+            errorMessage: ocrResultItem.error || "OCR 처리 실패",
+            processingCompletedAt: new Date(),
+          });
+
+          this.logger.error(
+            `OCR failed for ${ocrResultItem.filename}: ${ocrResultItem.error}`
           );
         }
       }
@@ -242,6 +313,72 @@ export class OcrJobsService {
         error.stack
       );
     }
+  }
+
+  /**
+   * OCR 엔진 이름을 OcrEngine enum으로 매핑
+   */
+  private mapEngineNameToEnum(engineName?: string): OcrEngine {
+    if (!engineName) return OcrEngine.TESSERACT;
+
+    const engineMap: Record<string, OcrEngine> = {
+      tesseract: OcrEngine.TESSERACT,
+      easyocr: OcrEngine.CUSTOM,
+      "google-vision": OcrEngine.GOOGLE_VISION,
+    };
+
+    return (
+      engineMap[engineName.toLowerCase()] ||
+      OcrEngine.TESSERACT
+    );
+  }
+
+  /**
+   * 추출된 데이터를 extractedFields 형식으로 변환
+   */
+  private buildExtractedFields(
+    extractedData: any,
+    confidence: number
+  ): OcrResult["extractedFields"] {
+    const fields: OcrResult["extractedFields"] = {};
+
+    if (extractedData?.merchantName) {
+      fields.vendorName = {
+        value: extractedData.merchantName,
+        confidence,
+        fieldType: FieldType.VENDOR_NAME,
+        source: "OCR",
+      };
+    }
+
+    if (extractedData?.businessNumber) {
+      fields.vendorRegistrationNumber = {
+        value: extractedData.businessNumber,
+        confidence,
+        fieldType: FieldType.VENDOR_REGISTRATION,
+        source: "OCR",
+      };
+    }
+
+    if (extractedData?.date) {
+      fields.receiptDate = {
+        value: extractedData.date,
+        confidence,
+        fieldType: FieldType.RECEIPT_DATE,
+        source: "OCR",
+      };
+    }
+
+    if (extractedData?.totalAmount !== undefined) {
+      fields.totalAmount = {
+        value: extractedData.totalAmount,
+        confidence,
+        fieldType: FieldType.TOTAL_AMOUNT,
+        source: "OCR",
+      };
+    }
+
+    return fields;
   }
 
   // 작업 상태 조회

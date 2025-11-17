@@ -179,13 +179,13 @@
 - `backend/src/receipts/receipt-upload.controller.ts` ✓ (배치 처리)
 
 #### Task 5.9: 데이터베이스 연동 (4시간)
-**담당자**: 백엔드 개발자  
+**담당자**: 백엔드 개발자
 
 **세부 작업**:
-- [ ] OCR 작업 결과 데이터베이스 저장
-- [ ] 영수증 메타데이터 관리
-- [ ] 처리 통계 및 로그 저장
-- [ ] 학습 데이터 관리 테이블
+- [x] OCR 작업 결과 데이터베이스 저장 (OcrResult 엔티티 생성)
+- [x] 영수증 메타데이터 관리 (ReceiptScan 업데이트)
+- [x] 처리 통계 및 로그 저장 (Job 상태 추적)
+- [x] OcrResult와 ReceiptScan 관계 설정
 
 **완료 기준**:
 - OCR 결과 완전한 데이터베이스 저장
@@ -193,8 +193,9 @@
 - 학습용 데이터 체계적 관리
 
 **산출물**:
-- `backend/src/ocr/ocr-results.service.ts`
-- `backend/src/database/migrations/015-ocr-tables.ts`
+- `backend/src/ocr/ocr-jobs.service.ts` ✓ (saveOcrResults 메서드)
+- `backend/src/entities/ocr-result.entity.ts` ✓
+- `backend/src/entities/receipt-scan.entity.ts` ✓
 
 ---
 
