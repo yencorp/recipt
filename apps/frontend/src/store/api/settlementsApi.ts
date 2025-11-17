@@ -49,6 +49,16 @@ export const settlementsApi = api.injectEndpoints({
         { type: 'Settlement', id: settlementId },
       ],
     }),
+    saveSettlementDraft: builder.mutation<Settlement, { eventId: string; settlement: Partial<CreateSettlementDto> }>({
+      query: ({ eventId, settlement }) => ({
+        url: `/settlements/draft/${eventId}`,
+        method: 'POST',
+        body: settlement,
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'Settlement', id: eventId },
+      ],
+    }),
   }),
 });
 
@@ -59,4 +69,5 @@ export const {
   useUpdateSettlementMutation,
   useUploadReceiptsMutation,
   useDeleteReceiptMutation,
+  useSaveSettlementDraftMutation,
 } = settlementsApi;
