@@ -13,6 +13,12 @@ export const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
   const [apiError, setApiError] = useState<string>('');
+  const [emailNotVerified, setEmailNotVerified] = useState<{
+    show: boolean;
+    email: string;
+  }>({ show: false, email: '' });
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const {
     register,
@@ -25,6 +31,8 @@ export const LoginPage: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setApiError('');
+      setEmailNotVerified({ show: false, email: '' });
+      setResendSuccess(false);
       const result = await login(data).unwrap();
 
       dispatch(
@@ -38,9 +46,40 @@ export const LoginPage: React.FC = () => {
       const from = (location.state as any)?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
     } catch (err: any) {
-      setApiError(
-        err?.data?.message || '로그인에 실패했습니다. 다시 시도해주세요.'
+      if (err?.data?.code === 'EMAIL_NOT_VERIFIED') {
+        setEmailNotVerified({ show: true, email: err.data.email });
+        setApiError(err.data.message);
+      } else {
+        setApiError(
+          err?.data?.message || '로그인에 실패했습니다. 다시 시도해주세요.'
+        );
+      }
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      setResendLoading(true);
+      setResendSuccess(false);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/resend-verification`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailNotVerified.email }),
+        }
       );
+
+      if (!response.ok) {
+        throw new Error('재발송에 실패했습니다.');
+      }
+
+      setResendSuccess(true);
+      setApiError('인증 이메일이 재발송되었습니다. 이메일을 확인해 주세요.');
+    } catch (error) {
+      setApiError('인증 이메일 재발송에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -58,8 +97,20 @@ export const LoginPage: React.FC = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {apiError && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-800">{apiError}</p>
+            <div className={`rounded-md p-4 ${resendSuccess ? 'bg-green-50' : 'bg-red-50'}`}>
+              <p className={`text-sm ${resendSuccess ? 'text-green-800' : 'text-red-800'}`}>
+                {apiError}
+              </p>
+              {emailNotVerified.show && !resendSuccess && (
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                  className="mt-3 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {resendLoading ? '발송 중...' : '인증 이메일 다시 받기'}
+                </button>
+              )}
             </div>
           )}
 
