@@ -63,6 +63,75 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* 모바일 터치 최적화 */
+  .touch-action-none {
+    touch-action: none;
+  }
+
+  .touch-action-pan-y {
+    touch-action: pan-y;
+  }
+
+  .touch-action-pan-x {
+    touch-action: pan-x;
+  }
+
+  /* 스크롤 스냅 */
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+
+  .snap-y {
+    scroll-snap-type: y mandatory;
+  }
+
+  .snap-center {
+    scroll-snap-align: center;
+  }
+
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  /* 모바일 safe area */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* 터치 피드백 */
+  .active\:scale-98:active {
+    transform: scale(0.98);
+  }
+
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+
+  /* 모바일 최적화 스크롤 */
+  .overflow-touch {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 텍스트 선택 비활성화 (드래그 시) */
+  .select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 }
 
 /* Print Styles */
