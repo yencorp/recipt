@@ -38,8 +38,8 @@ export const LoginPage: React.FC = () => {
       dispatch(
         setCredentials({
           user: result.user,
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
+          accessToken: result.tokens.accessToken,
+          refreshToken: result.tokens.refreshToken,
         })
       );
 

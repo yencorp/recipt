@@ -27,6 +27,11 @@ const baseQueryWithAuth: BaseQueryFn<
     // 로그인 페이지로 리다이렉트는 ProtectedRoute에서 처리
   }
 
+  // Backend의 {success: true, data: {...}} 형태에서 data만 추출
+  if (result.data && typeof result.data === 'object' && 'data' in result.data) {
+    return { ...result, data: (result.data as any).data };
+  }
+
   return result;
 };
 

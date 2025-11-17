@@ -5,6 +5,7 @@ export const eventsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getEvents: builder.query<Event[], void>({
       query: () => '/events',
+      transformResponse: (response: PaginatedResponse<Event>) => response.items,
       providesTags: ['Event'],
     }),
     getEvent: builder.query<Event, string>({
