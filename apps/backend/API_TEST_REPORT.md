@@ -141,7 +141,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 10. ✅ ~~File upload 기능 테스트 (완료)~~
 
 ### 우선순위 LOW
-11. Admin API 엔드포인트 테스트
+11. ✅ ~~Admin API 엔드포인트 테스트 (완료 - System API, Users API, Organizations API)~~
 12. 통합 테스트 작성
 13. E2E 테스트 작성
 
@@ -167,6 +167,49 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTY1Y2MwNi00NDg0LTQyOWMtOWU2OC1
 | `/api/admin/users/:id` | PUT | ✅ | 사용자 역할/상태 수정 성공 (MEMBER → ORGANIZATION_ADMIN) |
 | `/api/admin/organizations` | GET | ✅ | 단체 목록 조회 성공 |
 | `/api/admin/organizations/statistics` | GET | ✅ | 단체 통계 조회 성공 |
+
+### ✅ Admin System API 테스트
+
+**SUPER_ADMIN 테스트 계정**:
+```json
+{
+  "id": "28b68d79-07a1-4e71-8ff3-1ec24c9c7cf5",
+  "email": "superadmin@example.com",
+  "role": "SUPER_ADMIN",
+  "status": "ACTIVE"
+}
+```
+
+| 엔드포인트 | 메서드 | 상태 | 결과 |
+|----------|------|------|------|
+| `/api/admin/system/status` | GET | ✅ | 시스템 상태 조회 성공 (status: healthy, uptime: 5h 29m, memory: 139MB RSS) |
+| `/api/admin/system/settings` | GET | ✅ | 시스템 설정 조회 성공 (maintenanceMode: false, registrationEnabled: true, maxOrganizationsPerUser: 10) |
+| `/api/admin/system/settings` | PUT | ✅ | 설정 변경 성공 (maxOrganizationsPerUser: 10 → 15) |
+| `/api/admin/system/database/stats` | GET | ✅ | 데이터베이스 통계 조회 성공 (users: 8, organizations: 1, events: 0) |
+| `/api/admin/system/backup` | POST | ✅ | 백업 요청 성공 (stub implementation) |
+
+**테스트 상세**:
+- ✅ 시스템 상태: 서버 healthy, uptime 5시간 29분, 메모리 사용량 139MB RSS / 65MB heap
+- ✅ 설정 관리: maxOrganizationsPerUser를 10에서 15로 변경 후 조회로 검증 완료
+- ✅ 데이터베이스 통계: 8명 사용자, 1개 단체, 0개 행사/예산/결산
+- ✅ 백업 시스템: 백업 요청 API 정상 동작 (실제 백업 로직은 추후 구현 예정)
+
+### ✅ Admin Users API 확장 테스트
+
+| 엔드포인트 | 메서드 | 상태 | 결과 |
+|----------|------|------|------|
+| `/api/admin/users?role=MEMBER&status=ACTIVE` | GET | ✅ | 필터링 조회 성공 (role=MEMBER, status=ACTIVE 필터링, 2명 조회) |
+| `/api/admin/users/statistics` | GET | ✅ | 사용자 통계 성공 (total: 8, active: 7, SUPER_ADMIN: 4, ORGANIZATION_ADMIN: 1, MEMBER: 3) |
+| `/api/admin/users/:id` | GET | ✅ | 사용자 상세 조회 성공 |
+| `/api/admin/users/:id` | PUT | ✅ | 역할 변경 성공 (MEMBER → TREASURER) |
+| `/api/admin/users/:id/suspend` | PUT | ✅ | 사용자 정지 성공 (status: ACTIVE → SUSPENDED) |
+| `/api/admin/users/:id/activate` | PUT | ✅ | 사용자 활성화 성공 (status: SUSPENDED → ACTIVE) |
+
+**테스트 상세**:
+- ✅ 필터링 기능: role, status 파라미터로 사용자 목록 필터링 정상 작동
+- ✅ 통계 조회: 총 8명 (7명 활성), SUPER_ADMIN 4명, ORGANIZATION_ADMIN 1명, MEMBER 3명
+- ✅ 역할 변경: MEMBER 역할을 TREASURER로 변경 후 확인 완료
+- ✅ 상태 관리: 사용자 정지(SUSPENDED) 및 재활성화(ACTIVE) 기능 정상 작동
 
 ### ✅ CRUD 작업 테스트 성공
 
@@ -239,9 +282,9 @@ Backend API는 **전반적으로 정상 작동**하고 있으며, Docker 환경�
 - ✅ **실행**: Docker 컨테이너 정상 실행
 - ✅ **인증**: JWT 인증 시스템 정상 작동
 - ✅ **권한**: 역할 기반 권한 시스템 정상 작동
-- ✅ **API**: 30개 이상 엔드포인트 테스트 완료, 모두 정상 응답
+- ✅ **API**: 40개 이상 엔드포인트 테스트 완료, 모두 정상 응답
 - ✅ **CRUD**: 생성/조회/수정/삭제 작업 모두 정상
-- ✅ **Admin**: 관리자 API 및 권한 시스템 정상 (Dashboard 포함)
+- ✅ **Admin**: 관리자 API 및 권한 시스템 정상 (Dashboard, System, Users, Organizations 포함)
 - ✅ **보안**: CRITICAL 보안 이슈 수정 완료 (passwordHash 제거)
 - ✅ **캐시**: Redis 캐시 시스템 정상 작동
 - ✅ **WebSocket**: NotificationsGateway 실시간 알림 시스템 활성화
