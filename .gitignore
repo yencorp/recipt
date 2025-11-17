@@ -157,8 +157,9 @@ processed_images/
 temp/
 ocr_cache/
 
-# Machine Learning
+# Machine Learning (but not app source code models)
 models/
+!apps/*/app/models/
 *.pkl
 *.h5
 *.pb
