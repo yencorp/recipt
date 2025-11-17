@@ -64,3 +64,68 @@
     text-wrap: balance;
   }
 }
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 인쇄 시 불필요한 요소 숨기기 */
+  .print\:hidden,
+  nav,
+  aside,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* 인쇄 시 여백 제거 */
+  .print\:p-0 {
+    padding: 0 !important;
+  }
+
+  .print\:m-0 {
+    margin: 0 !important;
+  }
+
+  /* 인쇄 시 그림자 제거 */
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  /* 페이지 분리 방지 */
+  table,
+  tr,
+  td,
+  th {
+    page-break-inside: avoid;
+  }
+
+  /* 제목 다음 페이지 분리 방지 */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+  }
+
+  /* 링크 URL 표시하지 않기 */
+  a[href]:after {
+    content: none !important;
+  }
+
+  /* 배경색 유지 */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
