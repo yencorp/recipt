@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, ArrowRight, Check } from 'lucide-react';
 import { OCRResult } from '@/store/api/ocrApi';
-import { SettlementItemFormData } from '@/schemas/settlementSchema';
+import type { SettlementItemFormData } from '@/schemas/settlementSchema';
 
 interface MappingSuggestion {
   ocrResult: OCRResult;

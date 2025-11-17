@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { useLogoutMutation } from '@/store/api/authApi';
 import { logout as logoutAction } from '@/store/slices/authSlice';
@@ -18,13 +18,31 @@ export const useAuth = () => {
     (state) => state.auth
   );
   const [logoutMutation] = useLogoutMutation();
+  const hasCheckedToken = useRef(false);
+
+  const logout = useCallback(async () => {
+    try {
+      // 토큰 갱신 타이머 중지
+      stopTokenRefresh();
+
+      // 백엔드 로그아웃 API 호출
+      await logoutMutation().unwrap();
+    } catch (error) {
+      console.error('Logout API failed:', error);
+    } finally {
+      // Redux 상태 초기화 및 로그인 페이지로 이동
+      dispatch(logoutAction());
+      navigate('/login');
+    }
+  }, [dispatch, navigate, logoutMutation]);
 
   // 토큰 자동 갱신 로직
   useEffect(() => {
     if (isAuthenticated && accessToken) {
-      // 토큰이 이미 만료되었는지 확인
-      if (isTokenExpired(accessToken)) {
+      // 토큰이 이미 만료되었는지 확인 (최초 1회만)
+      if (!hasCheckedToken.current && isTokenExpired(accessToken)) {
         console.warn('[useAuth] Access token expired, logging out');
+        hasCheckedToken.current = true;
         logout();
         return;
       }
@@ -39,24 +57,9 @@ export const useAuth = () => {
     } else {
       // 인증되지 않은 경우 타이머 중지
       stopTokenRefresh();
+      hasCheckedToken.current = false;
     }
-  }, [isAuthenticated, accessToken]);
-
-  const logout = async () => {
-    try {
-      // 토큰 갱신 타이머 중지
-      stopTokenRefresh();
-
-      // 백엔드 로그아웃 API 호출
-      await logoutMutation().unwrap();
-    } catch (error) {
-      console.error('Logout API failed:', error);
-    } finally {
-      // Redux 상태 초기화 및 로그인 페이지로 이동
-      dispatch(logoutAction());
-      navigate('/login');
-    }
-  };
+  }, [isAuthenticated, accessToken, logout]);
 
   return {
     user,

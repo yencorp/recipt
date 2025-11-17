@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AdminUser, useUpdateUserMutation } from '@/store/api/adminApi';
+import { useUpdateUserMutation } from '@/store/api/adminApi';
+import type { AdminUser } from '@/store/api/adminApi';
 import { useGetOrganizationsQuery } from '@/store/api/organizationsApi';
 
 const userEditSchema = z.object({

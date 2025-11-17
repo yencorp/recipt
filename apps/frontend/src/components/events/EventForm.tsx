@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { eventSchema, EventFormData } from '@/schemas/eventSchema';
+import { eventSchema } from '@/schemas/eventSchema';
+import type { EventFormData } from '@/schemas/eventSchema';
 import {
   useCreateEventMutation,
   useUpdateEventMutation,

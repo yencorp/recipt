@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { SettlementItemFormData, settlementItemSchema } from '@/schemas/settlementSchema';
+import { settlementItemSchema } from '@/schemas/settlementSchema';
+import type { SettlementItemFormData } from '@/schemas/settlementSchema';
 
 interface SettlementItemFormProps {
   onSubmit: (data: SettlementItemFormData) => void;

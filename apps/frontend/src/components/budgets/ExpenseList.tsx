@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { BudgetItemForm } from './BudgetItemForm';
-import { BudgetItemFormData } from '@/schemas/budgetSchema';
+import type { BudgetItemFormData } from '@/schemas/budgetSchema';
 
 interface ExpenseListProps {
   items: BudgetItemFormData[];

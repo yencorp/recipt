@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { UserPlus, Download, RefreshCw } from 'lucide-react';
 import { UserTable } from '@/components/admin/UserTable';
 import { UserEditModal } from '@/components/admin/UserEditModal';
-import { AdminUser, useGetAllUsersQuery } from '@/store/api/adminApi';
+import { useGetAllUsersQuery } from '@/store/api/adminApi';
+import type { AdminUser } from '@/store/api/adminApi';
 
 export const UsersPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);

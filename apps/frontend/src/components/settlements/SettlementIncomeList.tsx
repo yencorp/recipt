@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { SettlementItemForm } from './SettlementItemForm';
-import { SettlementItemFormData } from '@/schemas/settlementSchema';
+import type { SettlementItemFormData } from '@/schemas/settlementSchema';
 
 interface SettlementIncomeListProps {
   items: SettlementItemFormData[];

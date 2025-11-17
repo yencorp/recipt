@@ -34,7 +34,8 @@ import {
   Trash2,
   Shield,
 } from 'lucide-react';
-import { AdminUser, useUpdateUserStatusMutation, useDeleteUserMutation } from '@/store/api/adminApi';
+import { useUpdateUserStatusMutation, useDeleteUserMutation } from '@/store/api/adminApi';
+import type { AdminUser } from '@/store/api/adminApi';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 

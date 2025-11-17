@@ -18,7 +18,7 @@ import {
   Search,
 } from 'lucide-react';
 import { OCRResult } from '@/store/api/ocrApi';
-import { SettlementItemFormData } from '@/schemas/settlementSchema';
+import type { SettlementItemFormData } from '@/schemas/settlementSchema';
 import { MappingSuggestions } from './MappingSuggestions';
 import { cn } from '@/lib/utils';
 

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Users, Building2, Calendar, FileText } from 'lucide-react';
 import { StatisticsChart } from '@/components/admin/StatisticsChart';
-import { SystemStatus, SystemMetric } from '@/components/admin/SystemStatus';
+import { SystemStatus } from '@/components/admin/SystemStatus';
+import type { SystemMetric } from '@/components/admin/SystemStatus';
 import {
   useGetSystemStatsQuery,
   useGetActivityLogsQuery,

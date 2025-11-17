@@ -10,7 +10,7 @@ import { SettlementIncomeList } from '@/components/settlements/SettlementIncomeL
 import { SettlementExpenseList } from '@/components/settlements/SettlementExpenseList';
 import { ReceiptUploader } from '@/components/receipts/ReceiptUploader';
 import { BudgetComparison } from '@/components/settlements/BudgetComparison';
-import { SettlementItemFormData } from '@/schemas/settlementSchema';
+import type { SettlementItemFormData } from '@/schemas/settlementSchema';
 import {
   useCreateSettlementMutation,
   useSaveSettlementDraftMutation,
