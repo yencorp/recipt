@@ -180,26 +180,27 @@ export class OcrQueueService {
   }
 
   // OCR 결과 데이터베이스 저장
-  private async saveOcrResult(
-    receiptScanId: string,
-    ocrResult: OcrResult
-  ): Promise<void> {
-    const result = this.ocrResultRepository.create({
-      receiptScanId,
-      rawText: ocrResult.text || "",
-      overallConfidence: ocrResult.confidence || 0,
-      structuredData: {},
-      extractedFields: {},
-      totalAmount: ocrResult.metadata?.totalAmount || null,
-      receiptDate: ocrResult.metadata?.date
-        ? new Date(ocrResult.metadata.date)
-        : null,
-      vendorName: ocrResult.metadata?.merchantName || null,
-    });
+  // 더 이상 사용되지 않음 - OcrJobsService 사용
+  // private async saveOcrResult(
+  //   receiptScanId: string,
+  //   ocrResult: any
+  // ): Promise<void> {
+  //   const result = this.ocrResultRepository.create({
+  //     receiptScanId,
+  //     rawText: ocrResult.text || "",
+  //     overallConfidence: ocrResult.confidence || 0,
+  //     structuredData: {},
+  //     extractedFields: {},
+  //     totalAmount: ocrResult.metadata?.totalAmount || null,
+  //     receiptDate: ocrResult.metadata?.date
+  //       ? new Date(ocrResult.metadata.date)
+  //       : null,
+  //     vendorName: ocrResult.metadata?.merchantName || null,
+  //   });
 
-    await this.ocrResultRepository.save(result);
-    console.log(`OCR result saved for receipt scan: ${receiptScanId}`);
-  }
+  //   await this.ocrResultRepository.save(result);
+  //   console.log(`OCR result saved for receipt scan: ${receiptScanId}`);
+  // }
 
   // 큐 상태 조회
   getQueueStatus() {
