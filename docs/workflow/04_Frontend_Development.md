@@ -250,20 +250,20 @@
 
 ### Day 6: 행사 관리 인터페이스 (8시간)
 
-#### Task 4.12: 행사 목록 및 카드 컴포넌트 (4시간)
+#### Task 4.12: 행사 목록 및 카드 컴포넌트 (4시간) ✅
 **담당자**: 프론트엔드 개발자 2명 (병렬 작업)
 
 **Developer A: 행사 목록 페이지 (2시간)**:
-- [ ] 행사 목록 페이지 레이아웃
-- [ ] 필터링 및 검색 기능
-- [ ] 정렬 및 페이지네이션
-- [ ] 행사 상태별 표시
+- [x] 행사 목록 페이지 레이아웃
+- [x] 필터링 및 검색 기능
+- [x] 정렬 및 페이지네이션
+- [x] 행사 상태별 표시
 
 **Developer B: 행사 카드 컴포넌트 (2시간)**:
-- [ ] 행사 정보 카드 디자인
-- [ ] 진행 상태 표시 (예산서/결산서 완료 여부)
-- [ ] 액션 버튼 (편집, 삭제, 예결산 작성)
-- [ ] 권한별 버튼 표시 제어
+- [x] 행사 정보 카드 디자인
+- [x] 진행 상태 표시 (예산서/결산서 완료 여부)
+- [x] 액션 버튼 (편집, 삭제, 예결산 작성)
+- [x] 권한별 버튼 표시 제어
 
 **완료 기준**:
 - 행사 목록 정상 표시 및 필터링
@@ -271,18 +271,20 @@
 - 권한별 액션 버튼 제어
 
 **산출물**:
-- `frontend/src/pages/events/EventsPage.tsx`
+- `frontend/src/pages/events/EventListPage.tsx`
 - `frontend/src/components/events/EventCard.tsx`
 - `frontend/src/components/events/EventFilters.tsx`
+- `frontend/src/store/api/eventsApi.ts`
+- `frontend/src/schemas/eventSchema.ts`
 
-#### Task 4.13: 행사 생성/편집 모달 (4시간)
-**담당자**: 프론트엔드 시니어 개발자  
+#### Task 4.13: 행사 생성/편집 모달 (4시간) ✅
+**담당자**: 프론트엔드 시니어 개발자
 
 **세부 작업**:
-- [ ] 행사 생성/편집 모달 컴포넌트
-- [ ] 날짜 선택 컴포넌트 (date picker)
-- [ ] 단체 선택 드롭다운
-- [ ] 폼 유효성 검증 및 제출
+- [x] 행사 생성/편집 모달 컴포넌트
+- [x] 날짜 선택 컴포넌트 (date picker)
+- [x] 단체 선택 드롭다운
+- [x] 폼 유효성 검증 및 제출
 
 **완료 기준**:
 - 행사 정보 입력/수정 정상 동작
@@ -292,6 +294,7 @@
 **산출물**:
 - `frontend/src/components/events/EventModal.tsx`
 - `frontend/src/components/events/EventForm.tsx`
+- `frontend/src/store/api/organizationsApi.ts`
 
 ---
 
