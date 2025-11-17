@@ -7,15 +7,17 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 import { VerifyEmailPage } from './pages/auth/VerifyEmailPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
+import { EventListPage } from './pages/events/EventListPage';
+import { BudgetWizard } from './pages/budgets/BudgetWizard';
+import { SettlementWizard } from './pages/settlements/SettlementWizard';
+import { UsersPage } from './pages/admin/UsersPage';
+import { OrganizationsPage } from './pages/admin/OrganizationsPage';
+import { SystemDashboard } from './pages/admin/SystemDashboard';
 
-// Placeholder Pages
-const EventsPage = () => <div className="text-center p-8">행사 목록</div>;
-const EventDetailPage = () => <div className="text-center p-8">행사 상세</div>;
-const BudgetPage = () => <div className="text-center p-8">예산서</div>;
-const SettlementPage = () => <div className="text-center p-8">결산서</div>;
-const OCRPage = () => <div className="text-center p-8">OCR 관리</div>;
-const BlogPage = () => <div className="text-center p-8">블로그</div>;
-const AdminPage = () => <div className="text-center p-8">관리자</div>;
+// Placeholder Pages (아직 구현되지 않은 페이지들)
+const EventDetailPage = () => <div className="text-center p-8">행사 상세 페이지 (준비 중)</div>;
+const OCRPage = () => <div className="text-center p-8">OCR 관리 (준비 중)</div>;
+const BlogPage = () => <div className="text-center p-8">블로그 (준비 중)</div>;
 const UnauthorizedPage = () => (
   <div className="text-center p-8 text-destructive">접근 권한이 없습니다</div>
 );
@@ -61,10 +63,10 @@ function App() {
                 <Route path="profile" element={<ProfilePage />} />
 
                 {/* Events */}
-                <Route path="events" element={<EventsPage />} />
+                <Route path="events" element={<EventListPage />} />
                 <Route path="events/:id" element={<EventDetailPage />} />
-                <Route path="events/:id/budget" element={<BudgetPage />} />
-                <Route path="events/:id/settlement" element={<SettlementPage />} />
+                <Route path="events/:id/budget" element={<BudgetWizard />} />
+                <Route path="events/:id/settlement" element={<SettlementWizard />} />
 
                 {/* OCR */}
                 <Route path="ocr/:settlementId" element={<OCRPage />} />
@@ -73,14 +75,15 @@ function App() {
                 <Route path="blog" element={<BlogPage />} />
 
                 {/* Admin */}
-                <Route
-                  path="admin/*"
-                  element={
-                    <ProtectedRoute requiredRole="ADMIN">
-                      <AdminPage />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="admin/*" element={
+                  <ProtectedRoute requiredRole="ADMIN">
+                    <Routes>
+                      <Route index element={<SystemDashboard />} />
+                      <Route path="users" element={<UsersPage />} />
+                      <Route path="organizations" element={<OrganizationsPage />} />
+                    </Routes>
+                  </ProtectedRoute>
+                } />
 
                 <Route path="unauthorized" element={<UnauthorizedPage />} />
               </Routes>
