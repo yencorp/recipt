@@ -182,5 +182,8 @@ backup/
 # Serena MCP memory
 .serena/
 
+# Claude Code
+.claude/
+
 # Playwright MCP screenshots
 .playwright-mcp/
