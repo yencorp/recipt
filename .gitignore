@@ -175,3 +175,7 @@ project_data/
 receipts/
 user_uploads/
 backup/
+
+# Claude Code
+.claude/
+claudedocs/
